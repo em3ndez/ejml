@@ -191,6 +191,14 @@ subprojects {
             option("NullAway:TreatGeneratedAsUnannotated", true)
             option("NullAway:AnnotatedPackages", "org.ejml")
         }
+
+        // Include to disable on test code
+        if (name.toLowerCase().contains("test")) {
+            options.errorprone {
+                disable("NullAway")
+            }
+            options.errorprone.enabled = false
+        }
     }
 
     // Skip these codeless directories when publishing jars locally or to a remote destination
