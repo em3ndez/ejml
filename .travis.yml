@@ -1,6 +1,0 @@
-language: java
-jdk:
-  - openjdk11
-install:
-  - ./gradlew autogenerate
-  - ./gradlew assemble

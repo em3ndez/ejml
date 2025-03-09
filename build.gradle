@@ -30,7 +30,7 @@ allprojects {
     apply plugin: 'com.peterabeles.gversion'
 
     group = 'org.ejml'
-    version = '0.43.1'
+    version = '0.43.2-SNAPSHOT'
 
     project.ext.commons_io_version = '2.11.0'
     project.ext.lombok_version = '1.18.24'
@@ -68,9 +68,6 @@ subprojects {
         options.release = 11
     }
 
-    // Enable incremental compile. Should make single file changes faster
-    tasks.withType(JavaCompile) { options.incremental = true }
-
     // Fail on jar conflict
     configurations.all { resolutionStrategy { failOnVersionConflict() } }
 
@@ -93,7 +90,7 @@ subprojects {
 
     test {
         useJUnitPlatform()
-        reports.html.enabled = false
+        reports.html.setRequired(false)
         testLogging.showStandardStreams = true                 // Print stdout making debugging easier
         testLogging.exceptionFormat TestExceptionFormat.FULL
         testLogging.showCauses true
@@ -133,7 +130,7 @@ subprojects {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
         compileOnly "org.jetbrains:annotations:$project.jetnull_version" // @Nullable
         compileOnly "javax.annotation:jsr250-api:$project.jsr250_version"  // @Generated
-        testCompileOnly project.sourceSets.main.compileClasspath
+        testCompileOnly files(project.sourceSets.main.compileClasspath)
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:${junit_version}")
         testImplementation("org.junit.jupiter:junit-jupiter-params:${junit_version}")
@@ -141,15 +138,15 @@ subprojects {
 
         generateImplementation project(':main:autocode')
 
-        annotationProcessor("com.github.bsideup.jabel:jabel-javac-plugin:$jabel_version")
-        testAnnotationProcessor("com.github.bsideup.jabel:jabel-javac-plugin:$jabel_version")
+        annotationProcessor("com.pkware.jabel:jabel-javac-plugin:$jabel_version")
+        testAnnotationProcessor("com.pkware.jabel:jabel-javac-plugin:$jabel_version")
 
         annotationProcessor "org.projectlombok:lombok:${lombok_version}"  // @Getter @Setter
 
         errorprone("com.google.errorprone:error_prone_core:$errorprone_version")
 
-        benchmarksImplementation project.sourceSets.main.runtimeClasspath
-        benchmarksImplementation project.sourceSets.main.compileClasspath
+        benchmarksImplementation files(project.sourceSets.main.runtimeClasspath)
+        benchmarksImplementation files(project.sourceSets.main.compileClasspath)
         benchmarksImplementation("org.openjdk.jmh:jmh-core:$jmh_version")
         benchmarksAnnotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:$jmh_version")
 
@@ -183,7 +180,7 @@ subprojects {
                 "FloatingPointLiteralPrecision", // too many false positives in test code
                 "MissingSummary", "UnescapedEntity", "EmptyBlockTag")
         options.errorprone.error("MissingOverride", "MissingCasesInEnumSwitch", "BadInstanceof",
-                "PublicConstructorForAbstractClass", "EmptyCatch", "NarrowingCompoundAssignment", "JdkObsolete")
+                "EmptyCatch", "NarrowingCompoundAssignment", "JdkObsolete")
 
         if (name.startsWith("compileTest")) {
             options.errorprone.disable("ReferenceEquality", "IntLongMath", "ClassCanBeStatic")
@@ -368,5 +365,5 @@ task oneJarBin(type: Jar, dependsOn: javadocProjects.collect { it + ":compileJav
 
 wrapper {
     distributionType = Wrapper.DistributionType.BIN
-    gradleVersion = '7.3.3'
+    gradleVersion = '8.12.1'
 }
