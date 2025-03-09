@@ -334,9 +334,9 @@ public class CommonOps_DDRM {
         output = reshapeOrDeclare(output, a, a.numCols, a.numCols);
 
         if (a.numCols >= EjmlParameters.MULT_INNER_SWITCH) {
-            MatrixMultProduct_DDRM.inner_small(a, output);
-        } else {
             MatrixMultProduct_DDRM.inner_reorder(a, output);
+        } else {
+            MatrixMultProduct_DDRM.inner_small(a, output);
         }
         return output;
     }

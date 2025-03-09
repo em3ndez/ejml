@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -21,6 +21,7 @@ package org.ejml.dense.row.mult;
 import org.ejml.data.DMatrix1Row;
 
 import java.util.Arrays;
+//CONCURRENT_INLINE import org.ejml.concurrency.EjmlConcurrency;
 
 /**
  * <p>
@@ -37,6 +38,7 @@ import java.util.Arrays;
 public class MatrixMultProduct_DDRM {
 
     public static void outer( DMatrix1Row a, DMatrix1Row c ) {
+        //CONCURRENT_BELOW EjmlConcurrency.loopFor(0, a.numRows, i -> {
         for (int i = 0; i < a.numRows; i++) {
             int indexC1 = i*c.numCols + i;
             int indexC2 = indexC1;
@@ -51,6 +53,8 @@ public class MatrixMultProduct_DDRM {
                 c.data[indexC2] = c.data[indexC1++] = sum;
             }
         }
+        //CONCURRENT_ABOVE });
+
 //        for( int i = 0; i < a.numRows; i++ ) {
 //            for( int j = 0; j < a.numRows; j++ ) {
 //                double sum = 0;
@@ -92,6 +96,7 @@ public class MatrixMultProduct_DDRM {
 
     public static void inner_reorder( DMatrix1Row a, DMatrix1Row c ) {
 
+        //CONCURRENT_BELOW EjmlConcurrency.loopFor(0, a.numCols, i -> {
         for (int i = 0; i < a.numCols; i++) {
             int indexC = i*c.numCols + i;
             double valAi = a.data[i];
@@ -114,6 +119,7 @@ public class MatrixMultProduct_DDRM {
                 c.data[indexC2] = c.data[indexC++];
             }
         }
+        //CONCURRENT_ABOVE });
 
 //        for( int i = 0; i < a.numCols; i++ ) {
 //            for( int j = i; j < a.numCols; j++ ) {
@@ -132,6 +138,7 @@ public class MatrixMultProduct_DDRM {
     }
 
     public static void inner_reorder_upper( DMatrix1Row a, DMatrix1Row c ) {
+        //CONCURRENT_BELOW EjmlConcurrency.loopFor(0, a.numCols, i -> {
         for (int i = 0; i < a.numCols; i++) {
             int indexC = i*c.numCols + i;
             double valAi = a.data[i];
@@ -148,6 +155,7 @@ public class MatrixMultProduct_DDRM {
                 }
             }
         }
+        //CONCURRENT_ABOVE });
     }
 
     /**
@@ -156,27 +164,30 @@ public class MatrixMultProduct_DDRM {
      *
      * <p>B = A<sup>T</sup>*A</sup>
      *
-     * @param A (Input) Matrix
-     * @param B (Output) Storage for output.
+     * @param a (Input) Matrix
+     * @param b (Output) Storage for output.
      */
-    public static void inner_reorder_lower( DMatrix1Row A, DMatrix1Row B ) {
-        final int cols = A.numCols;
-        B.reshape(cols, cols);
+    public static void inner_reorder_lower( DMatrix1Row a, DMatrix1Row b ) {
+        final int cols = a.numCols;
+        b.reshape(cols, cols);
 
-        Arrays.fill(B.data, 0);
+        Arrays.fill(b.data, 0);
+
+        //CONCURRENT_BELOW EjmlConcurrency.loopFor(0, a.numCols, i -> {
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j <= i; j++) {
-                B.data[i*cols + j] += A.data[i]*A.data[j];
+                b.data[i*cols + j] += a.data[i]*a.data[j];
             }
 
-            for (int k = 1; k < A.numRows; k++) {
+            for (int k = 1; k < a.numRows; k++) {
                 int indexRow = k*cols;
-                double valI = A.data[i + indexRow];
+                double valI = a.data[i + indexRow];
                 int indexB = i*cols;
                 for (int j = 0; j <= i; j++) {
-                    B.data[indexB++] += valI*A.data[indexRow++];
+                    b.data[indexB++] += valI*a.data[indexRow++];
                 }
             }
         }
+        //CONCURRENT_ABOVE });
     }
 }

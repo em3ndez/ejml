@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -20,9 +20,13 @@ package org.ejml.dense.row;
 import org.ejml.EjmlParameters;
 import org.ejml.UtilEjml;
 import org.ejml.data.DMatrix1Row;
+import org.ejml.data.DMatrixD1;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.misc.TransposeAlgs_MT_DDRM;
 import org.ejml.dense.row.mult.MatrixMatrixMult_MT_DDRM;
+import org.ejml.dense.row.mult.MatrixMultProduct_DDRM;
+import org.ejml.dense.row.mult.MatrixMultProduct_MT_DDRM;
+import org.ejml.dense.row.mult.VectorVectorMult_DDRM;
 import org.jetbrains.annotations.Nullable;
 
 import static org.ejml.UtilEjml.reshapeOrDeclare;
@@ -345,6 +349,56 @@ public class CommonOps_MT_DDRM {
      */
     public static void multAddTransAB( double alpha, DMatrix1Row a, DMatrix1Row b, DMatrix1Row c ) {
         MatrixMatrixMult_MT_DDRM.multAddTransAB(alpha, a, b, c);
+    }
+
+    /**
+     * <p>Computes the matrix multiplication inner product:<br>
+     * <br>
+     * c = a<sup>T</sup> * a <br>
+     * <br>
+     * c<sub>ij</sub> = &sum;<sub>k=1:n</sub> { a<sub>ki</sub> * a<sub>kj</sub>}
+     * </p>
+     *
+     * <p>
+     * Is faster than using a generic matrix multiplication by taking advantage of symmetry. For
+     * vectors there is an even faster option, see {@link VectorVectorMult_DDRM#innerProd(DMatrixD1, DMatrixD1)}
+     * </p>
+     *
+     * @param a The matrix being multiplied. Not modified.
+     * @param output Where the results of the operation are stored. Modified.
+     */
+    public static <T extends DMatrix1Row> T multInner( T a, @Nullable T output ) {
+        output = reshapeOrDeclare(output, a, a.numCols, a.numCols);
+        UtilEjml.checkSameInstance(a, output);
+
+        if (a.numCols >= EjmlParameters.MULT_INNER_SWITCH) {
+            MatrixMultProduct_MT_DDRM.inner_reorder(a, output);
+        } else {
+            MatrixMultProduct_DDRM.inner_small(a, output);
+        }
+        return output;
+    }
+
+    /**
+     * <p>Computes the matrix multiplication outer product:<br>
+     * <br>
+     * c = a * a<sup>T</sup> <br>
+     * <br>
+     * c<sub>ij</sub> = &sum;<sub>k=1:m</sub> { a<sub>ik</sub> * a<sub>jk</sub>}
+     * </p>
+     *
+     * <p>
+     * Is faster than using a generic matrix multiplication by taking advantage of symmetry.
+     * </p>
+     *
+     * @param a The matrix being multiplied. Not modified.
+     * @param output Where the results of the operation are stored. Modified.
+     */
+    public static <T extends DMatrix1Row> T multOuter( T a, @Nullable T output ) {
+        output = reshapeOrDeclare(output, a, a.numRows, a.numRows);
+        UtilEjml.checkSameInstance(a, output);
+        MatrixMultProduct_MT_DDRM.outer(a, output);
+        return output;
     }
 
     /**

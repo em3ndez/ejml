@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -73,9 +73,11 @@ public class BenchmarkCommonOps_MT_DDRM {
     @Benchmark public void multTransAB_sAAA() { CommonOps_MT_DDRM.multTransAB(1.2,A, B, C); }
     @Benchmark public void multAddTransAB_AAA() { CommonOps_MT_DDRM.multAddTransAB(A, B, C); }
     @Benchmark public void multAddTransAB_sAAA() { CommonOps_MT_DDRM.multAddTransAB(1.2,A, B, C); }
-    @Benchmark public void multTransB_AAA() {  CommonOps_MT_DDRM.multTransB(A, B, C); }
-    @Benchmark public void multTransB_sAAA() {  CommonOps_MT_DDRM.multTransB(1.2,A, B, C); }
-    @Benchmark public void transpose_inplace() {  CommonOps_MT_DDRM.transpose(A); }
+    @Benchmark public void multTransB_AAA() { CommonOps_MT_DDRM.multTransB(A, B, C); }
+    @Benchmark public void multTransB_sAAA() { CommonOps_MT_DDRM.multTransB(1.2,A, B, C); }
+    @Benchmark public void multInner() { CommonOps_MT_DDRM.multInner(A, B); }
+    @Benchmark public void multOuter() { CommonOps_MT_DDRM.multOuter(A, B); }
+    @Benchmark public void transpose_inplace() { CommonOps_MT_DDRM.transpose(A); }
     @Benchmark public void transpose() { CommonOps_MT_DDRM.transpose(A, B); }
     // @formatter:on
 
