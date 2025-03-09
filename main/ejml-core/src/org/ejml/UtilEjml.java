@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -270,11 +270,13 @@ public class UtilEjml {
         checkTooLargeComplex(rows, cols);
     }
 
+    @SuppressWarnings({"NarrowCalculation", "IntegerMultiplicationImplicitCastToLong"})
     public static void checkTooLarge( int rows, int cols ) {
         if ((rows*cols) != ((long)rows*cols))
             throw new IllegalArgumentException("Matrix size exceeds the size of an integer");
     }
 
+    @SuppressWarnings({"NarrowCalculation", "IntegerMultiplicationImplicitCastToLong"})
     public static void checkTooLargeComplex( int rows, int cols ) {
         if ((2*rows*cols) != ((long)rows*cols*2))
             throw new IllegalArgumentException("Matrix size exceeds the size of an integer");
@@ -673,11 +675,11 @@ public class UtilEjml {
         return numCols > Integer.MAX_VALUE/numRows;
     }
 
-    public static void printTime( String message, Process timer ) {
+    public static void printTime( String message, EjmlProcess timer ) {
         printTime("Processing... ", message, timer);
     }
 
-    public static void printTime( String pre, String message, Process timer ) {
+    public static void printTime( String pre, String message, EjmlProcess timer ) {
         System.out.printf(pre);
         long time0 = System.nanoTime();
         timer.process();
@@ -685,7 +687,7 @@ public class UtilEjml {
         System.out.println(message + " " + ((time1 - time0)*1e-6) + " (ms)");
     }
 
-    public interface Process {
+    public interface EjmlProcess {
         void process();
     }
 

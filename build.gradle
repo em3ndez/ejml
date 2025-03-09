@@ -169,7 +169,7 @@ subprojects {
     // for vectors or scalars. Perhaps a more verbose name should be used but it's disabled for now to reduce build spam
     tasks.withType(JavaCompile).configureEach {
         options.errorprone.enabled = false
-        if (path.contains("Benchmarks") || path.contains("examples") || path.contains("regression"))
+        if (path.contains("Benchmarks") || path.contains("examples") || path.contains("regression") || name.contains("Test"))
             return
 
         options.errorprone.enabled = true
@@ -190,14 +190,6 @@ subprojects {
             check("NullAway", CheckSeverity.ERROR)
             option("NullAway:TreatGeneratedAsUnannotated", true)
             option("NullAway:AnnotatedPackages", "org.ejml")
-        }
-
-        // Include to disable on test code
-        if (name.toLowerCase().contains("test")) {
-            options.errorprone {
-                disable("NullAway")
-            }
-            options.errorprone.enabled = false
         }
     }
 

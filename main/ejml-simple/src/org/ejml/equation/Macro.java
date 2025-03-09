@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -19,8 +19,8 @@
 package org.ejml.equation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Definition of a macro. Each input will replace the word of its name
@@ -60,9 +60,9 @@ public class Macro {
 
     public class Assign extends Operation {
 
-        HashMap<String, Macro> macros;
+        Map<String, Macro> macros;
 
-        protected Assign( HashMap<String, Macro> macros ) {
+        protected Assign( Map<String, Macro> macros ) {
             super("Macro:" + Macro.this.name);
             this.macros = macros;
         }
@@ -73,7 +73,7 @@ public class Macro {
         }
     }
 
-    public Operation createOperation( HashMap<String, Macro> macros ) {
+    public Operation createOperation( Map<String, Macro> macros ) {
         return new Assign(macros);
     }
 }

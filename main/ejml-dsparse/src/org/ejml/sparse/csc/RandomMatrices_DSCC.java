@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -243,7 +243,7 @@ public class RandomMatrices_DSCC {
      * @return Random matrix
      */
     public static DMatrixSparseCSC triangle( boolean upper, int N, double minFill, double maxFill, Random rand ) {
-        int nz = (int)(((N - 1)*(N - 1)/2)*(rand.nextDouble()*(maxFill - minFill) + minFill)) + N;
+        int nz = Math.toIntExact((((N - 1L)*(N - 1L)/2L)*(long)(rand.nextDouble()*(maxFill - minFill) + minFill)) + N);
 
         if (upper) {
             return triangleUpper(N, 0, nz, -1, 1, rand);
@@ -300,6 +300,7 @@ public class RandomMatrices_DSCC {
      * @param rand Random number generator
      * @return Randomly generated matrix
      */
+    @SuppressWarnings("NarrowCalculation")
     public static DMatrixSparseCSC generateUniform( int numRows, int numCols, int nzEntriesPerColumn,
                                                     double min, double max, Random rand ) {
         if (nzEntriesPerColumn > numRows) {
