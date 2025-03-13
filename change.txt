@@ -9,6 +9,7 @@ Date format: year/month/day
 - Updated dependencies
 - Added concurrent version of some functions in MatrixMultProduct_DDRM
 - CommonOps_DDRM.multInner() now calls the correct implementation for large matrices
+- MatrixVectorMult_DDRM has more informative exceptions
 
 ----- Version 0.43.1
 2023/Sep/23

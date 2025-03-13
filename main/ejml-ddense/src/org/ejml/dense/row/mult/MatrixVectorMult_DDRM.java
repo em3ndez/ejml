@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2025, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -18,6 +18,7 @@
 package org.ejml.dense.row.mult;
 
 import org.ejml.MatrixDimensionException;
+import org.ejml.UtilEjml;
 import org.ejml.data.DMatrix1Row;
 import org.ejml.data.DMatrixD1;
 import org.ejml.data.DMatrixRMaj;
@@ -60,13 +61,9 @@ public class MatrixVectorMult_DDRM {
      */
     public static void mult( DMatrix1Row A, DMatrixD1 B, DMatrixD1 C ) {
         if (B.numRows == 1) {
-            if (A.numCols != B.numCols) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numCols, B.numCols, "A.numRows and B.numCols are not compatible");
         } else if (B.numCols == 1) {
-            if (A.numCols != B.numRows) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numCols, B.numRows, "A.numCols and B.numRows are not compatible");
         } else {
             throw new MatrixDimensionException("B is not a vector");
         }
@@ -110,13 +107,9 @@ public class MatrixVectorMult_DDRM {
      */
     public static void multAdd( DMatrix1Row A, DMatrixD1 B, DMatrixD1 C ) {
         if (B.numRows == 1) {
-            if (A.numCols != B.numCols) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numCols, B.numCols, "A.numRows and B.numCols are not compatible");
         } else if (B.numCols == 1) {
-            if (A.numCols != B.numRows) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numCols, B.numRows, "A.numCols and B.numRows are not compatible");
         } else {
             throw new MatrixDimensionException("B is not a vector");
         }
@@ -165,13 +158,9 @@ public class MatrixVectorMult_DDRM {
      */
     public static void multTransA_small( DMatrix1Row A, DMatrixD1 B, DMatrixD1 C ) {
         if (B.numRows == 1) {
-            if (A.numRows != B.numCols) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numRows, B.numCols, "A.numRows and B.numCols are not compatible");
         } else if (B.numCols == 1) {
-            if (A.numRows != B.numRows) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numRows, B.numRows, "A.numRows and B.numRows are not compatible");
         } else {
             throw new MatrixDimensionException("B is not a vector");
         }
@@ -202,13 +191,9 @@ public class MatrixVectorMult_DDRM {
      */
     public static void multTransA_reorder( DMatrix1Row A, DMatrixD1 B, DMatrixD1 C ) {
         if (B.numRows == 1) {
-            if (A.numRows != B.numCols) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numRows, B.numCols, "A.numRows and B.numCols are not compatible");
         } else if (B.numCols == 1) {
-            if (A.numRows != B.numRows) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numRows, B.numRows, "A.numRows and B.numRows are not compatible");
         } else {
             throw new MatrixDimensionException("B is not a vector");
         }
@@ -256,13 +241,9 @@ public class MatrixVectorMult_DDRM {
      */
     public static void multAddTransA_small( DMatrix1Row A, DMatrixD1 B, DMatrixD1 C ) {
         if (B.numRows == 1) {
-            if (A.numRows != B.numCols) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numRows, B.numCols, "A.numRows and B.numCols are not compatible");
         } else if (B.numCols == 1) {
-            if (A.numRows != B.numRows) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numRows, B.numRows, "A.numRows and B.numRows are not compatible");
         } else {
             throw new MatrixDimensionException("B is not a vector");
         }
@@ -293,13 +274,9 @@ public class MatrixVectorMult_DDRM {
      */
     public static void multAddTransA_reorder( DMatrix1Row A, DMatrixD1 B, DMatrixD1 C ) {
         if (B.numRows == 1) {
-            if (A.numRows != B.numCols) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numRows, B.numCols, "A.numRows and B.numCols are not compatible");
         } else if (B.numCols == 1) {
-            if (A.numRows != B.numRows) {
-                throw new MatrixDimensionException("A and B are not compatible");
-            }
+            UtilEjml.assertShape(A.numRows, B.numRows, "A.numRows and B.numRows are not compatible");
         } else {
             throw new MatrixDimensionException("B is not a vector");
         }
@@ -328,9 +305,9 @@ public class MatrixVectorMult_DDRM {
                                        DMatrix1Row B,
                                        double[] c, int offsetC ) {
         if (a.length - offsetA < B.numRows)
-            throw new IllegalArgumentException("Length of 'a' isn't long enough");
+            throw new IllegalArgumentException("Length of 'a' isn't long enough. "+ a.length + "-" + offsetA + " < " + B.numCols);
         if (c.length - offsetC < B.numCols)
-            throw new IllegalArgumentException("Length of 'c' isn't long enough");
+            throw new IllegalArgumentException("Length of 'c' isn't long enough. " + c.length + "-" + offsetC + " < " + B.numCols);
 
         int cols = B.numCols;
         double output = 0;

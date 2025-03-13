@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2025, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -168,7 +168,7 @@ public class MatrixMatrixMult_DDRM {
      */
     public static void multTransA_reorder( DMatrix1Row A, DMatrix1Row B, DMatrix1Row C ) {
         UtilEjml.assertTrue(A != C && B != C, "Neither 'A' or 'B' can be the same matrix as 'C'");
-        UtilEjml.assertShape(A.numRows, B.numRows, "The 'A' and 'B' matrices do not have compatible dimensions");
+        UtilEjml.assertShape(A.numRows, B.numRows, "A.numRows and B.numRows are not compatible.");
         C.reshape(A.numCols, B.numCols);
 
         if (A.numCols == 0 || A.numRows == 0) {
