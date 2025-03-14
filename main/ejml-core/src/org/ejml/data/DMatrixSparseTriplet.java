@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2025, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -65,8 +65,8 @@ public class DMatrixSparseTriplet implements DMatrixSparse {
         if (numRows < 0 || numCols < 0 || arrayLength < 0)
             throw new IllegalArgumentException("Rows, columns, and arrayLength must be not be negative");
 
-        nz_rowcol.reshape(arrayLength*2);
-        nz_value.reshape(arrayLength);
+        this.nz_rowcol.reshape(arrayLength*2);
+        this.nz_value.reshape(arrayLength);
         this.numRows = numRows;
         this.numCols = numCols;
     }
@@ -79,6 +79,10 @@ public class DMatrixSparseTriplet implements DMatrixSparse {
         nz_length = 0;
         numRows = 0;
         numCols = 0;
+
+        // Note: reshaping to zero shouldn't matter since 'length' is not used inside this class
+        nz_rowcol.reshape(0);
+        nz_value.reshape(0);
     }
 
     @Override public void reshape( int numRows, int numCols ) {
@@ -87,6 +91,8 @@ public class DMatrixSparseTriplet implements DMatrixSparse {
         this.numRows = numRows;
         this.numCols = numCols;
         this.nz_length = 0;
+        this.nz_rowcol.reshape(0);
+        this.nz_value.reshape(0);
     }
 
     @Override public void reshape( int numRows, int numCols, int arrayLength ) {
@@ -267,7 +273,7 @@ public class DMatrixSparseTriplet implements DMatrixSparse {
     }
 
     @Override public void shrinkArrays() {
-        if (nz_length < nz_value.length) {
+        if (nz_length < nz_value.data.length) {
             double[] vtmp = new double[nz_length];
             int[] rctmp = new int[nz_length*2];
 
