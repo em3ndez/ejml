@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -36,8 +36,7 @@ import java.util.Arrays;
  * @author Peter Abeles
  */
 public class SingularOps_DDRM {
-    private SingularOps_DDRM(){}
-
+    private SingularOps_DDRM() {}
 
     /**
      * Returns an array of all the singular values in A sorted in ascending order
@@ -161,7 +160,7 @@ public class SingularOps_DDRM {
      * @param sv (Output) sorted list of singular values. Can be null.
      * @param Vt (Output) Storage for transposed V. Can be null.
      */
-    public static boolean svd( DMatrixRMaj A, @Nullable DMatrixRMaj U, DGrowArray sv, @Nullable DMatrixRMaj Vt ) {
+    public static boolean svd( DMatrixRMaj A, @Nullable DMatrixRMaj U, @Nullable DGrowArray sv, @Nullable DMatrixRMaj Vt ) {
 
         boolean needU = U != null;
         boolean needV = Vt != null;
@@ -184,6 +183,8 @@ public class SingularOps_DDRM {
         if (needV)
             svd.getV(Vt, true);
 
+        if (sv == null)
+            sv = new DGrowArray();
         sv.reshape(N);
         System.arraycopy(svd.getSingularValues(), 0, sv.data, 0, N);
 
