@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -37,7 +37,7 @@ import static org.ejml.equation.TokenList.Type;
  * Aliases are made to Matrices and scalar values which can then be manipulated by specifying an equation in a string.
  * These equations can either be "pre-compiled" [1] into a sequence of operations or immediately executed. While the
  * former is more verbose, when dealing with small matrices it significantly faster and runs close to the speed of
- * normal hand written code.
+ * normal handwritten code.
  * </p>
  * <p>
  * Each string represents a single line and must have one and only one assignment '=' operator. Temporary variables
@@ -48,7 +48,7 @@ import static org.ejml.equation.TokenList.Type;
  * <p>
  * The compiler currently produces simplistic code. For example, if it encounters the following equation "a = b*c' it
  * will not invoke multTransB(b,c,a), but will explicitly transpose c and then call mult(). In the future it
- * will recognize such short cuts.
+ * will recognize such shortcuts.
  * </p>
  *
  * Usage example:
@@ -69,6 +69,13 @@ import static org.ejml.equation.TokenList.Type;
  * eq.process("x = [2:3:25 1 4]");            // create a row matrix from the number sequence
  * </pre>
  *
+ * When accessing array elements it returns scalar values:
+ * <pre>
+ * eq.process("x = P(1,2)"); // x is a scalar and equal to the element row=1 and col=2 in P
+ * eq.process("x = P(4)");   // x is a scalar and it will access the 5-th element in P using row-major ordering.
+ *                           // Note that Matlab is column major. If P is 3x2, then P(4) is the same as P(2, 0)
+ * </pre>
+ *
  * To pre-compile one of the above lines, do the following instead:
  * <pre>
  * Sequence predictX = eq.compile("x = F*x");
@@ -87,7 +94,7 @@ import static org.ejml.equation.TokenList.Type;
  * In this case 'C' was lazily declared. To access the variable, or any others, you can use one of the lookup*()
  * functions.
  *
- * Sometimes you don't get the results you expect and it can be helpful to print out the tokens and which operations
+ * Sometimes you don't get the results you expect, and it can be helpful to print out the tokens and which operations
  * the compiler selected. To do this set the second parameter to eq.compile() or eq.process() to true:
  * <pre>
  * Code:
@@ -684,7 +691,7 @@ public class Equation {
 
                     TokenList.Token a = left.remove(left.size() - 1);
 
-                    // remember the element before so the new one can be inserted afterwards
+                    // remember the element before so the new one can be inserted afterward
                     TokenList.Token before = a.previous;
 
                     TokenList sublist = tokens.extractSubList(a, t);
@@ -692,7 +699,7 @@ public class Equation {
                     sublist.remove(sublist.first);
                     sublist.remove(sublist.last);
 
-                    // if its a function before () then the () indicates its an input to a function
+                    // if it's a function before () then the () indicates it's an input to a function
                     if (before != null && before.getType() == Type.FUNCTION) {
                         List<TokenList.Token> inputs = parseParameterCommaBlock(sublist, sequence);
                         if (inputs.isEmpty())

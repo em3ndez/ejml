@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -285,7 +285,7 @@ public class TestEquation extends EjmlStandardJUnit {
     }
 
     @Test
-    public void compile_parentheses_extractScalar() {
+    public void compile_parentheses_extractScalar_2D() {
         Equation eq = new Equation();
 
         SimpleMatrix B = SimpleMatrix.random_DDRM(8, 8, -1, 1, rand);
@@ -294,8 +294,29 @@ public class TestEquation extends EjmlStandardJUnit {
 
         eq.process("A=B(1,2)");
         Variable v = eq.lookupVariable("A");
-        assertTrue(v instanceof VariableDouble);
+        assertInstanceOf(VariableDouble.class, v);
         assertEquals(eq.lookupDouble("A"), B.get(1, 2), UtilEjml.TEST_F64);
+    }
+
+    @Test
+    public void compile_parentheses_extractScalar_1D() {
+        Equation eq = new Equation();
+
+        SimpleMatrix B = SimpleMatrix.random_DDRM(8, 8, -1, 1, rand);
+
+        eq.alias(B, "B");
+
+        eq.process("A=B(1)");
+        eq.process("C=B(10)");
+
+        Variable va = eq.lookupVariable("A");
+        assertInstanceOf(VariableDouble.class, va);
+        assertEquals(eq.lookupDouble("A"), B.get(1), UtilEjml.TEST_F64);
+
+        Variable vc = eq.lookupVariable("C");
+        assertInstanceOf(VariableDouble.class, vc);
+        assertEquals(eq.lookupDouble("C"), B.get(10), UtilEjml.TEST_F64);
+        assertEquals(eq.lookupDouble("C"), B.get(1, 2), UtilEjml.TEST_F64);
     }
 
     @Test
