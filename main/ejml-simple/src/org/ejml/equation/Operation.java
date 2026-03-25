@@ -76,7 +76,6 @@ public abstract class Operation {
             ret.op = new Operation("multiply-mm") {
                 @Override
                 public void process() {
-
                     resize(output, mA.matrix.numRows, mB.matrix.numCols);
                     try {
                         CommonOps_DDRM.mult(mA.matrix, mB.matrix, output.matrix);
@@ -1080,14 +1079,42 @@ public abstract class Operation {
     }
 
     public static Info max_two( final Variable A, final Variable P, ManagerTempVariables manager ) {
-        Info ret = new Info();
+        if (A instanceof VariableMatrix && P instanceof VariableScalar) {
+            return max_two_axis((VariableMatrix)A, (VariableScalar)P, manager);
+        } else if (A instanceof VariableScalar sa && P instanceof VariableScalar sb) {
+            var ret = new Info();
+
+            // If both are integers, keep as an integer
+            if (sa.getScalarType() == VariableScalar.Type.INTEGER && sb.getScalarType() == VariableScalar.Type.INTEGER) {
+                var output = manager.createInteger();
+                ret.output = output;
+                ret.op = new Operation("max_scalar_int") {
+                    @Override public void process() {
+                        output.value = Math.max(((VariableInteger)sa).value, ((VariableInteger)sb).value);
+                    }
+                };
+            } else {
+                var output = manager.createDouble();
+                ret.output = output;
+                ret.op = new Operation("max_scalar") {
+                    @Override public void process() {
+                        output.value = Math.max(sa.getDouble(), sb.getDouble());
+                    }
+                };
+            }
+            return ret;
+        } else {
+            throw new RuntimeException("max(a,b) expected (Matrix, scalar) or (scalar, scalar)");
+        }
+    }
+
+    /// Implements max where the request is to find the max value along all rows or all columns of a matrix
+    public static Info max_two_axis( VariableMatrix varA, final VariableScalar varP, ManagerTempVariables manager) {
+        var ret = new Info();
         final VariableMatrix output = manager.createMatrix();
         ret.output = output;
 
-        if (!(A instanceof VariableMatrix varA) || !(P instanceof VariableScalar))
-            throw new RuntimeException("max(A,d) A = matrix and d = scalar");
-
-        final double valueP = ((VariableScalar)P).getDouble();
+        final double valueP = varP.getDouble();
 
         if (valueP == 0) {
             ret.op = new Operation("max_rows") {
@@ -1148,14 +1175,42 @@ public abstract class Operation {
     }
 
     public static Info min_two( final Variable A, final Variable P, ManagerTempVariables manager ) {
-        Info ret = new Info();
+        if (A instanceof VariableMatrix && P instanceof VariableScalar) {
+            return min_two_axis((VariableMatrix)A, (VariableScalar)P, manager);
+        } else if (A instanceof VariableScalar sa && P instanceof VariableScalar sb) {
+            var ret = new Info();
+
+            // If both are integers, keep as an integer
+            if (sa.getScalarType() == VariableScalar.Type.INTEGER && sb.getScalarType() == VariableScalar.Type.INTEGER) {
+                var output = manager.createInteger();
+                ret.output = output;
+                ret.op = new Operation("min_scalar_int") {
+                    @Override public void process() {
+                        output.value = Math.min(((VariableInteger)sa).value, ((VariableInteger)sb).value);
+                    }
+                };
+            } else {
+                var output = manager.createDouble();
+                ret.output = output;
+                ret.op = new Operation("min_scalar") {
+                    @Override public void process() {
+                        output.value = Math.min(sa.getDouble(), sb.getDouble());
+                    }
+                };
+            }
+            return ret;
+        } else {
+            throw new RuntimeException("max(a,b) expected (Matrix, scalar) or (scalar, scalar)");
+        }
+    }
+
+    /// Implements min where the request is to find the max value along all rows or all columns of a matrix
+    public static Info min_two_axis( VariableMatrix varA, final VariableScalar varP, ManagerTempVariables manager) {
+        var ret = new Info();
         final VariableMatrix output = manager.createMatrix();
         ret.output = output;
 
-        if (!(A instanceof VariableMatrix varA) || !(P instanceof VariableScalar))
-            throw new RuntimeException("min(A,d) A = matrix and d = scalar");
-
-        final double valueP = ((VariableScalar)P).getDouble();
+        final double valueP = varP.getDouble();
 
         if (valueP == 0) {
             ret.op = new Operation("min_rows") {

@@ -1314,9 +1314,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(MatrixFeatures_DDRM.isIdentical(expected, eq.lookupDDRM("b"), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void max_rows() {
-        Equation eq = new Equation();
+    @Test void max_2_rows() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1329,9 +1328,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(MatrixFeatures_DDRM.isIdentical(expected, eq.lookupDDRM("b"), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void max_cols() {
-        Equation eq = new Equation();
+    @Test void max_2_cols() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1344,9 +1342,27 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(MatrixFeatures_DDRM.isIdentical(expected, eq.lookupDDRM("b"), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void min_rows() {
-        Equation eq = new Equation();
+    @Test void max_2_scalar() {
+        var eq = new Equation();
+
+        eq.process("b=max(2.0,-8)");
+        assertEquals(2.0, eq.lookupDouble("b"));
+        eq.process("b=max(2,-8.0)");
+        assertEquals(2.0, eq.lookupDouble("b"));
+        eq.process("b=max(4.0,-8.0)");
+        assertEquals(4.0, eq.lookupDouble("b"));
+    }
+
+    @Test void max_2_scalar_ints() {
+        var eq = new Equation();
+
+        eq.process("b=max(2,-8)");
+
+        assertEquals(2, eq.lookupInteger("b"));
+    }
+
+    @Test void min_2_rows() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1359,9 +1375,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(MatrixFeatures_DDRM.isIdentical(expected, eq.lookupDDRM("b"), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void min_cols() {
-        Equation eq = new Equation();
+    @Test void min_2_cols() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1374,9 +1389,27 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(MatrixFeatures_DDRM.isIdentical(expected, eq.lookupDDRM("b"), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void eye() {
-        Equation eq = new Equation();
+    @Test void min_2_scalar() {
+        var eq = new Equation();
+
+        eq.process("b=min(2.0,-8)");
+        assertEquals(-8.0, eq.lookupDouble("b"));
+        eq.process("b=min(2,-8.0)");
+        assertEquals(-8.0, eq.lookupDouble("b"));
+        eq.process("b=min(4.0,-7.0)");
+        assertEquals(-7.0, eq.lookupDouble("b"));
+    }
+
+    @Test void min_2_scalar_ints() {
+        var eq = new Equation();
+
+        eq.process("b=min(2,-8)");
+
+        assertEquals(2, eq.lookupInteger("b"));
+    }
+
+    @Test void eye() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1431,9 +1464,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4.6, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void max_matrix() {
-        Equation eq = new Equation();
+    @Test void max_1_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
 
@@ -1447,9 +1479,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(expected, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void max_int() {
-        Equation eq = new Equation();
+    @Test void max_1_int() {
+        var eq = new Equation();
 
         eq.alias(4, "A");
         eq.alias(1, "B");
@@ -1460,9 +1491,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void max_scalar() {
-        Equation eq = new Equation();
+    @Test void max_1_scalar() {
+        var eq = new Equation();
 
         eq.alias(4.6, "A");
         eq.alias(1.1, "B");
@@ -1473,9 +1503,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4.6, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void min_matrix() {
-        Equation eq = new Equation();
+    @Test void min_1_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
 
@@ -1489,9 +1518,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(expected, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void min_int() {
-        Equation eq = new Equation();
+    @Test void min_1_int() {
+        var eq = new Equation();
 
         eq.alias(4, "A");
         eq.alias(1, "B");
@@ -1502,9 +1530,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void min_scalar() {
-        Equation eq = new Equation();
+    @Test void min_1_scalar() {
+        var eq = new Equation();
 
         eq.alias(4.6, "A");
         eq.alias(1.1, "B");

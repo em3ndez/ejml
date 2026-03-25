@@ -152,8 +152,10 @@ import static org.ejml.equation.TokenList.Type;
  * abs(A)       Absolute value of A.
  * max(A)       Element with the largest value in A.
  * max(A,d)     Vector containing largest element along the rows (d=0) or columns (d=1)
+ * max(a,b)     Returns the max value of a or b. Both a and b are scalars.
  * min(A)       Element with the smallest value in A.
  * min(A,d)     Vector containing largest element along the rows (d=0) or columns (d=1)
+ * min(a,b)     Returns the min value of a or b. Both a and b are scalars.
  * pow(a,b)     Computes a to the power of b. Can also be invoked with "a^b" scalars only.
  * sqrt(a)      Computes the square root of a.
  * sin(a)       Math.sin(a) for scalars only
