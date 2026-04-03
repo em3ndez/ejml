@@ -162,6 +162,7 @@ import static org.ejml.equation.TokenList.Type;
  * atan2(a,b)   Math.atan2(a,b) for scalars only
  * exp(a)       Math.exp(a) for scalars is also an element-wise matrix operator
  * log(a)       Math.log(a) for scalars is also an element-wise matrix operator
+ * scalar(a)    Converts a 1x1 matrix into a scalar.
  * </pre>
  *
  * <h2>Supported operations</h2>

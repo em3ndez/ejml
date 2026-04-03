@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -68,16 +68,14 @@ public abstract class Operation {
 
     public static Info multiply( final Variable A, final Variable B, ManagerTempVariables manager ) {
 
-        Info ret = new Info();
+        var ret = new Info();
 
-        if (A instanceof VariableMatrix && B instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA && B instanceof VariableMatrix mB) {
             final VariableMatrix output = manager.createMatrix();
             ret.output = output;
             ret.op = new Operation("multiply-mm") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
-                    VariableMatrix mB = (VariableMatrix)B;
 
                     resize(output, mA.matrix.numRows, mB.matrix.numCols);
                     try {
@@ -89,26 +87,22 @@ public abstract class Operation {
                     }
                 }
             };
-        } else if (A instanceof VariableInteger && B instanceof VariableInteger) {
+        } else if (A instanceof VariableInteger mA && B instanceof VariableInteger mB) {
             final VariableInteger output = manager.createInteger();
             ret.output = output;
             ret.op = new Operation("multiply-ii") {
                 @Override
                 public void process() {
-                    VariableInteger mA = (VariableInteger)A;
-                    VariableInteger mB = (VariableInteger)B;
 
                     output.value = mA.value*mB.value;
                 }
             };
-        } else if (A instanceof VariableScalar && B instanceof VariableScalar) {
+        } else if (A instanceof VariableScalar mA && B instanceof VariableScalar mB) {
             final VariableDouble output = manager.createDouble();
             ret.output = output;
             ret.op = new Operation("multiply-ss") {
                 @Override
                 public void process() {
-                    VariableScalar mA = (VariableScalar)A;
-                    VariableScalar mB = (VariableScalar)B;
 
                     output.value = mA.getDouble()*mB.getDouble();
                 }
@@ -146,10 +140,8 @@ public abstract class Operation {
 
         if (A instanceof VariableMatrix && B instanceof VariableMatrix) {
             return solve(B, A, manager);
-        } else if (A instanceof VariableMatrix && B instanceof VariableScalar) {
+        } else if (A instanceof VariableMatrix m && B instanceof VariableScalar s) {
             final VariableMatrix output = manager.createMatrix();
-            final VariableMatrix m = (VariableMatrix)A;
-            final VariableScalar s = (VariableScalar)B;
             ret.output = output;
             ret.op = new Operation("divide-ma") {
                 @Override
@@ -158,10 +150,8 @@ public abstract class Operation {
                     CommonOps_DDRM.divide(m.matrix, s.getDouble(), output.matrix);
                 }
             };
-        } else if (A instanceof VariableScalar && B instanceof VariableMatrix) {
+        } else if (A instanceof VariableScalar s && B instanceof VariableMatrix m) {
             final VariableMatrix output = manager.createMatrix();
-            final VariableMatrix m = (VariableMatrix)B;
-            final VariableScalar s = (VariableScalar)A;
             ret.output = output;
             ret.op = new Operation("divide-ma") {
                 @Override
@@ -170,14 +160,12 @@ public abstract class Operation {
                     CommonOps_DDRM.divide(s.getDouble(), m.matrix, output.matrix);
                 }
             };
-        } else if (A instanceof VariableInteger && B instanceof VariableInteger) {
+        } else if (A instanceof VariableInteger mA && B instanceof VariableInteger mB) {
             final VariableInteger output = manager.createInteger();
             ret.output = output;
             ret.op = new Operation("divide-ii") {
                 @Override
                 public void process() {
-                    VariableInteger mA = (VariableInteger)A;
-                    VariableInteger mB = (VariableInteger)B;
 
                     output.value = mA.value/mB.value;
                 }
@@ -435,14 +423,12 @@ public abstract class Operation {
     public static Info add( final Variable A, final Variable B, ManagerTempVariables manager ) {
         Info ret = new Info();
 
-        if (A instanceof VariableMatrix && B instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA && B instanceof VariableMatrix mB) {
             final VariableMatrix output = manager.createMatrix();
             ret.output = output;
             ret.op = new Operation("add-mm") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
-                    VariableMatrix mB = (VariableMatrix)B;
 
                     resize(output, mA.matrix.numRows, mA.matrix.numCols);
                     try {
@@ -452,26 +438,22 @@ public abstract class Operation {
                     }
                 }
             };
-        } else if (A instanceof VariableInteger && B instanceof VariableInteger) {
+        } else if (A instanceof VariableInteger mA && B instanceof VariableInteger mB) {
             final VariableInteger output = manager.createInteger(0);
             ret.output = output;
             ret.op = new Operation("add-ii") {
                 @Override
                 public void process() {
-                    VariableInteger mA = (VariableInteger)A;
-                    VariableInteger mB = (VariableInteger)B;
 
                     output.value = mA.value + mB.value;
                 }
             };
-        } else if (A instanceof VariableScalar && B instanceof VariableScalar) {
+        } else if (A instanceof VariableScalar mA && B instanceof VariableScalar mB) {
             final VariableDouble output = manager.createDouble();
             ret.output = output;
             ret.op = new Operation("add-ss") {
                 @Override
                 public void process() {
-                    VariableScalar mA = (VariableScalar)A;
-                    VariableScalar mB = (VariableScalar)B;
 
                     output.value = mA.getDouble() + mB.getDouble();
                 }
@@ -513,14 +495,12 @@ public abstract class Operation {
     public static Info subtract( final Variable A, final Variable B, ManagerTempVariables manager ) {
         Info ret = new Info();
 
-        if (A instanceof VariableMatrix && B instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA && B instanceof VariableMatrix mB) {
             final VariableMatrix output = manager.createMatrix();
             ret.output = output;
             ret.op = new Operation("subtract-mm") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
-                    VariableMatrix mB = (VariableMatrix)B;
 
                     resize(output, mA.matrix.numRows, mA.matrix.numCols);
                     try {
@@ -530,26 +510,22 @@ public abstract class Operation {
                     }
                 }
             };
-        } else if (A instanceof VariableInteger && B instanceof VariableInteger) {
+        } else if (A instanceof VariableInteger mA && B instanceof VariableInteger mB) {
             final VariableInteger output = manager.createInteger(0);
             ret.output = output;
             ret.op = new Operation("subtract-ii") {
                 @Override
                 public void process() {
-                    VariableInteger mA = (VariableInteger)A;
-                    VariableInteger mB = (VariableInteger)B;
 
                     output.value = mA.value - mB.value;
                 }
             };
-        } else if (A instanceof VariableScalar && B instanceof VariableScalar) {
+        } else if (A instanceof VariableScalar mA && B instanceof VariableScalar mB) {
             final VariableDouble output = manager.createDouble();
             ret.output = output;
             ret.op = new Operation("subtract-ss") {
                 @Override
                 public void process() {
-                    VariableScalar mA = (VariableScalar)A;
-                    VariableScalar mB = (VariableScalar)B;
 
                     output.value = mA.getDouble() - mB.getDouble();
                 }
@@ -587,14 +563,12 @@ public abstract class Operation {
     public static Info elementMult( final Variable A, final Variable B, ManagerTempVariables manager ) {
         Info ret = new Info();
 
-        if (A instanceof VariableMatrix && B instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA && B instanceof VariableMatrix mB) {
             final VariableMatrix output = manager.createMatrix();
             ret.output = output;
             ret.op = new Operation("elementMult-mm") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
-                    VariableMatrix mB = (VariableMatrix)B;
 
                     resize(output, mA.matrix.numRows, mA.matrix.numCols);
                     CommonOps_DDRM.elementMult(mA.matrix, mB.matrix, output.matrix);
@@ -610,14 +584,12 @@ public abstract class Operation {
     public static Info elementDivision( final Variable A, final Variable B, ManagerTempVariables manager ) {
         Info ret = new Info();
 
-        if (A instanceof VariableMatrix && B instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA && B instanceof VariableMatrix mB) {
             final VariableMatrix output = manager.createMatrix();
             ret.output = output;
             ret.op = new Operation("elementDivision-mm") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
-                    VariableMatrix mB = (VariableMatrix)B;
 
                     resize(output, mA.matrix.numRows, mA.matrix.numCols);
                     CommonOps_DDRM.elementDiv(mA.matrix, mB.matrix, output.matrix);
@@ -866,13 +838,12 @@ public abstract class Operation {
     public static Info transpose( final Variable A, ManagerTempVariables manager ) {
         Info ret = new Info();
 
-        if (A instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA) {
             final VariableMatrix output = manager.createMatrix();
             ret.output = output;
             ret.op = new Operation("transpose-m") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
                     output.matrix.reshape(mA.matrix.numCols, mA.matrix.numRows);
                     CommonOps_DDRM.transpose(mA.matrix, output.matrix);
                 }
@@ -889,13 +860,12 @@ public abstract class Operation {
     public static Info inv( final Variable A, ManagerTempVariables manager ) {
         Info ret = new Info();
 
-        if (A instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA) {
             final VariableMatrix output = manager.createMatrix();
             ret.output = output;
             ret.op = new Operation("inv-m") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
                     output.matrix.reshape(mA.matrix.numRows, mA.matrix.numCols);
                     if (!CommonOps_DDRM.invert(mA.matrix, output.matrix))
                         throw new RuntimeException("Inverse failed!");
@@ -922,13 +892,12 @@ public abstract class Operation {
     public static Info pinv( final Variable A, ManagerTempVariables manager ) {
         Info ret = new Info();
 
-        if (A instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA) {
             final VariableMatrix output = manager.createMatrix();
             ret.output = output;
             ret.op = new Operation("pinv-m") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
                     output.matrix.reshape(mA.matrix.numCols, mA.matrix.numRows);
                     CommonOps_DDRM.pinv(mA.matrix, output.matrix);
                 }
@@ -986,11 +955,10 @@ public abstract class Operation {
         final VariableDouble output = manager.createDouble();
         ret.output = output;
 
-        if (A instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA) {
             ret.op = new Operation("det-m") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
                     output.value = CommonOps_DDRM.det(mA.matrix);
                 }
             };
@@ -1012,11 +980,10 @@ public abstract class Operation {
         final VariableDouble output = manager.createDouble();
         ret.output = output;
 
-        if (A instanceof VariableMatrix) {
+        if (A instanceof VariableMatrix mA) {
             ret.op = new Operation("trace-m") {
                 @Override
                 public void process() {
-                    VariableMatrix mA = (VariableMatrix)A;
                     output.value = CommonOps_DDRM.trace(mA.matrix);
                 }
             };
@@ -1062,11 +1029,10 @@ public abstract class Operation {
         final VariableDouble output = manager.createDouble();
         ret.output = output;
 
-        if (!(A instanceof VariableMatrix) || !(P instanceof VariableScalar))
+        if (!(A instanceof VariableMatrix varA) || !(P instanceof VariableScalar))
             throw new RuntimeException("normP(A,p) A should be a matrix and p a scalar");
 
         final double valueP = ((VariableScalar)P).getDouble();
-        final VariableMatrix varA = (VariableMatrix)A;
 
         ret.op = new Operation("normP") {
             @Override
@@ -1118,11 +1084,10 @@ public abstract class Operation {
         final VariableMatrix output = manager.createMatrix();
         ret.output = output;
 
-        if (!(A instanceof VariableMatrix) || !(P instanceof VariableScalar))
+        if (!(A instanceof VariableMatrix varA) || !(P instanceof VariableScalar))
             throw new RuntimeException("max(A,d) A = matrix and d = scalar");
 
         final double valueP = ((VariableScalar)P).getDouble();
-        final VariableMatrix varA = (VariableMatrix)A;
 
         if (valueP == 0) {
             ret.op = new Operation("max_rows") {
@@ -1187,11 +1152,10 @@ public abstract class Operation {
         final VariableMatrix output = manager.createMatrix();
         ret.output = output;
 
-        if (!(A instanceof VariableMatrix) || !(P instanceof VariableScalar))
+        if (!(A instanceof VariableMatrix varA) || !(P instanceof VariableScalar))
             throw new RuntimeException("min(A,d) A = matrix and d = scalar");
 
         final double valueP = ((VariableScalar)P).getDouble();
-        final VariableMatrix varA = (VariableMatrix)A;
 
         if (valueP == 0) {
             ret.op = new Operation("min_rows") {
@@ -1590,15 +1554,34 @@ public abstract class Operation {
         return ret;
     }
 
+    public static Info matrixToScalar( final Variable A, ManagerTempVariables manager ) {
+        Info ret = new Info();
+        final VariableDouble output = manager.createDouble();
+        ret.output = output;
+
+        if (!(A instanceof VariableMatrix varA))
+            throw new RuntimeException("scalar(A) A = 1x1 matrix");
+
+        if (varA.matrix.numCols != 1 || varA.matrix.numRows != 1)
+            throw new RuntimeException("Input must be 1x1 matrix");
+
+        ret.op = new Operation("scalar_mat") {
+            @Override
+            public void process() {
+                output.value = varA.matrix.data[0];
+            }
+        };
+
+        return ret;
+    }
+
     public static Info sum_one( final Variable A, ManagerTempVariables manager ) {
         Info ret = new Info();
         final VariableDouble output = manager.createDouble();
         ret.output = output;
 
-        if (!(A instanceof VariableMatrix))
+        if (!(A instanceof VariableMatrix varA))
             throw new RuntimeException("sum(A) A = matrix");
-
-        final VariableMatrix varA = (VariableMatrix)A;
 
         ret.op = new Operation("sum_all") {
             @Override
@@ -1615,11 +1598,10 @@ public abstract class Operation {
         final VariableMatrix output = manager.createMatrix();
         ret.output = output;
 
-        if (!(A instanceof VariableMatrix) || !(P instanceof VariableScalar))
+        if (!(A instanceof VariableMatrix varA) || !(P instanceof VariableScalar))
             throw new RuntimeException("sum(A,p) A = matrix and p = scalar");
 
         final double valueP = ((VariableScalar)P).getDouble();
-        final VariableMatrix varA = (VariableMatrix)A;
 
         if (valueP == 0) {
             ret.op = new Operation("sum_rows") {

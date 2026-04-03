@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -187,6 +187,7 @@ public class ManagerFunctions {
         input1.put("log", Operation::log);
         input1.put("sqrt", Operation::sqrt);
         input1.put("rng", Operation::rng);
+        input1.put("scalar", Operation::matrixToScalar);
 
         inputN.put("normP", ( inputs, manager ) -> {
             if (inputs.size() != 2) throw new RuntimeException("Two inputs expected");
