@@ -33,10 +33,10 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"SameParameterValue", "ForLoopReplaceableByForEach"})
 public class TestOperation extends EjmlStandardJUnit {
-    @Test
-    public void divide_matrix_scalar() {
-        Equation eq = new Equation();
+    @Test void divide_matrix_scalar() {
+        var eq = new Equation();
 
         SimpleMatrix x = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
@@ -50,9 +50,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(b.divide(2.5).isIdentical(x, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void divide_scalar_matrix() {
-        Equation eq = new Equation();
+    @Test void divide_scalar_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix x = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
@@ -69,9 +68,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(MatrixFeatures_DDRM.isIdentical(tmp, (DMatrixRMaj)x.getMatrix(), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void divide_int_int() {
-        Equation eq = new Equation();
+    @Test void divide_int_int() {
+        var eq = new Equation();
 
         eq.alias(4, "A");
         eq.alias(13, "b");
@@ -84,9 +82,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(13/4, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void divide_scalar_scalar() {
-        Equation eq = new Equation();
+    @Test void divide_scalar_scalar() {
+        var eq = new Equation();
 
         eq.alias(5, "A");
         eq.alias(4.2, "b");
@@ -99,9 +96,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4.2/5.0, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void divide_matrix_matrix() {
-        Equation eq = new Equation();
+    @Test void divide_matrix_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix x = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
@@ -116,9 +112,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(A.solve(b).isIdentical(x, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void ldivide_matrix_matrix() {
-        Equation eq = new Equation();
+    @Test void ldivide_matrix_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix x = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
@@ -133,9 +128,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(A.solve(b).isIdentical(x, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void multiply_matrix_scalar() {
-        Equation eq = new Equation();
+    @Test void multiply_matrix_scalar() {
+        var eq = new Equation();
 
         SimpleMatrix x = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
@@ -150,9 +144,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(b.scale(2.5).isIdentical(x, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void multiply_int_int() {
-        Equation eq = new Equation();
+    @Test void multiply_int_int() {
+        var eq = new Equation();
 
         eq.alias(4, "A");
         eq.alias(13, "b");
@@ -165,9 +158,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(13*4, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void multiply_scalar_scalar() {
-        Equation eq = new Equation();
+    @Test void multiply_scalar_scalar() {
+        var eq = new Equation();
 
         eq.alias(5, "A");
         eq.alias(4.2, "b");
@@ -180,9 +172,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4.2*5.0, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void multiply_matrix_matrix() {
-        Equation eq = new Equation();
+    @Test void multiply_matrix_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix x = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
@@ -200,9 +191,8 @@ public class TestOperation extends EjmlStandardJUnit {
     /**
      * See if it throws an informative error message
      */
-    @Test
-    public void multiply_matrix1x1_matrixNxM() {
-        Equation eq = new Equation();
+    @Test void multiply_matrix1x1_matrixNxM() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix B = SimpleMatrix.random_DDRM(1, 1, -1, 1, rand);
@@ -224,9 +214,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void elementMult_matrix() {
-        Equation eq = new Equation();
+    @Test void elementMult_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
@@ -239,9 +228,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.elementMult(b).isIdentical(c, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void elementDivide_matrix() {
-        Equation eq = new Equation();
+    @Test void elementDivide_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
@@ -254,9 +242,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.elementDiv(b).isIdentical(c, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void elementPower_mm() {
-        Equation eq = new Equation();
+    @Test void elementPower_mm() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(6, 5, 0, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(6, 5, 0, 1, rand);
@@ -269,9 +256,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.elementPower(b).isIdentical(c, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void elementPower_ms() {
-        Equation eq = new Equation();
+    @Test void elementPower_ms() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(6, 5, 0, 1, rand);
         double b = 1.1;
@@ -284,9 +270,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.elementPower(b).isIdentical(c, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void elementPower_sm() {
-        Equation eq = new Equation();
+    @Test void elementPower_sm() {
+        var eq = new Equation();
 
         double a = 1.1;
         SimpleMatrix b = SimpleMatrix.random_DDRM(6, 5, 0, 1, rand);
@@ -301,9 +286,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(expected.isIdentical(c, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void elementPower_ss() {
-        Equation eq = new Equation();
+    @Test void elementPower_ss() {
+        var eq = new Equation();
 
         double a = 1.1;
         double b = 0.7;
@@ -317,9 +301,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.pow(a, b), found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void kron_matrix_matrix() {
-        Equation eq = new Equation();
+    @Test void kron_matrix_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(2, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 2, -1, 1, rand);
@@ -332,9 +315,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.kron(b).isIdentical(c, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void power_double_double() {
-        Equation eq = new Equation();
+    @Test void power_double_double() {
+        var eq = new Equation();
 
         eq.alias(1.1, "a");
         eq.process("a=2.3^4.2");
@@ -342,9 +324,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.pow(2.3, 4.2), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void power_int_int() {
-        Equation eq = new Equation();
+    @Test void power_int_int() {
+        var eq = new Equation();
 
         eq.alias(1.1, "a");
         eq.process("a=2^4");
@@ -352,27 +333,24 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.pow(2, 4), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void sqrt_int() {
-        Equation eq = new Equation();
+    @Test void sqrt_int() {
+        var eq = new Equation();
 
         eq.process("a=sqrt(5)");
 
         assertEquals(Math.sqrt(5), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void sqrt_double() {
-        Equation eq = new Equation();
+    @Test void sqrt_double() {
+        var eq = new Equation();
 
         eq.process("a=sqrt(5.7)");
 
         assertEquals(Math.sqrt(5.7), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void atan2_scalar() {
-        Equation eq = new Equation();
+    @Test void atan2_scalar() {
+        var eq = new Equation();
 
         eq.alias(1.1, "a");
         eq.process("a=atan2(1.1,0.5)");
@@ -380,9 +358,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.atan2(1.1, 0.5), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void neg_int() {
-        Equation eq = new Equation();
+    @Test void neg_int() {
+        var eq = new Equation();
 
         eq.alias(2, "a");
         eq.alias(3, "b");
@@ -391,9 +368,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(-3, eq.lookupInteger("a"));
     }
 
-    @Test
-    public void neg_scalar() {
-        Equation eq = new Equation();
+    @Test void neg_scalar() {
+        var eq = new Equation();
 
         eq.alias(2.1, "a");
         eq.alias(3.1, "b");
@@ -402,9 +378,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(-3.1, eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void neg_matrix() {
-        Equation eq = new Equation();
+    @Test void neg_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(1, 1, -1, 1, rand);
         SimpleMatrix B = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
@@ -419,9 +394,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void sin() {
-        Equation eq = new Equation();
+    @Test void sin() {
+        var eq = new Equation();
 
         eq.alias(1.1, "a");
         eq.process("a=sin(2.1)");
@@ -429,9 +403,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.sin(2.1), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void cos() {
-        Equation eq = new Equation();
+    @Test void cos() {
+        var eq = new Equation();
 
         eq.alias(1.1, "a");
         eq.process("a=cos(2.1)");
@@ -439,9 +412,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.cos(2.1), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void atan() {
-        Equation eq = new Equation();
+    @Test void atan() {
+        var eq = new Equation();
 
         eq.alias(1.1, "a");
         eq.process("a=atan(2.1)");
@@ -449,9 +421,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.atan(2.1), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void exp_s() {
-        Equation eq = new Equation();
+    @Test void exp_s() {
+        var eq = new Equation();
 
         eq.alias(1.1, "a");
         eq.process("a=exp(2.1)");
@@ -459,9 +430,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.exp(2.1), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void exp_m() {
-        Equation eq = new Equation();
+    @Test void exp_m() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, 0, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, 0, 1, rand);
@@ -474,9 +444,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(expected.isIdentical(b, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void log_s() {
-        Equation eq = new Equation();
+    @Test void log_s() {
+        var eq = new Equation();
 
         eq.alias(1.1, "a");
         eq.process("a=log(2.1)");
@@ -484,9 +453,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(Math.log(2.1), eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void log_m() {
-        Equation eq = new Equation();
+    @Test void log_m() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, 0, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, 0, 1, rand);
@@ -499,9 +467,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(expected.isIdentical(b, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void add_int_int() {
-        Equation eq = new Equation();
+    @Test void add_int_int() {
+        var eq = new Equation();
 
         eq.alias(1, "a");
         eq.process("a=2 + 3");
@@ -509,9 +476,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(5, eq.lookupInteger("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void add_scalar_scalar() {
-        Equation eq = new Equation();
+    @Test void add_scalar_scalar() {
+        var eq = new Equation();
 
         eq.alias(1.2, "a");
         eq.process("a= 2.3 + 3");
@@ -519,9 +485,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(5.3, eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void add_matrix_matrix() {
-        Equation eq = new Equation();
+    @Test void add_matrix_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -533,9 +498,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(b.plus(c).isIdentical(a, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void add_matrix_scalar() {
-        Equation eq = new Equation();
+    @Test void add_matrix_scalar() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -552,9 +516,8 @@ public class TestOperation extends EjmlStandardJUnit {
     /**
      * See if it throws an informative error message
      */
-    @Test
-    public void add_matrix1x1_matrixNxM() {
-        Equation eq = new Equation();
+    @Test void add_matrix1x1_matrixNxM() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix B = SimpleMatrix.random_DDRM(1, 1, -1, 1, rand);
@@ -576,9 +539,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void subtract_int_int() {
-        Equation eq = new Equation();
+    @Test void subtract_int_int() {
+        var eq = new Equation();
 
         eq.alias(1, "a");
         eq.process("a=2 - 3");
@@ -586,9 +548,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(-1, eq.lookupInteger("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void subtract_scalar_scalar() {
-        Equation eq = new Equation();
+    @Test void subtract_scalar_scalar() {
+        var eq = new Equation();
 
         eq.alias(1.2, "a");
         eq.process("a= 2.3 - 3");
@@ -596,9 +557,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(2.3 - 3.0, eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void subtract_matrix_matrix() {
-        Equation eq = new Equation();
+    @Test void subtract_matrix_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -610,9 +570,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(b.minus(c).isIdentical(a, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void subtract_matrix_scalar() {
-        Equation eq = new Equation();
+    @Test void subtract_matrix_scalar() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -632,9 +591,8 @@ public class TestOperation extends EjmlStandardJUnit {
     /**
      * See if it throws an informative error message
      */
-    @Test
-    public void subtract_matrix1x1_matrixNxM() {
-        Equation eq = new Equation();
+    @Test void subtract_matrix1x1_matrixNxM() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix B = SimpleMatrix.random_DDRM(1, 1, -1, 1, rand);
@@ -656,9 +614,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void copy_matrix_matrix() {
-        Equation eq = new Equation();
+    @Test void copy_matrix_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -669,9 +626,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.isIdentical(b, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void copy_double_matrix() {
-        Equation eq = new Equation();
+    @Test void copy_double_matrix() {
+        var eq = new Equation();
 
         DMatrixRMaj src = new DMatrixRMaj(1, 1, true, 2.5);
         eq.alias(1.2, "a");
@@ -690,9 +646,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void copy_int_int() {
-        Equation eq = new Equation();
+    @Test void copy_int_int() {
+        var eq = new Equation();
 
         eq.alias(2, "a");
         eq.alias(3, "b");
@@ -702,9 +657,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(3, eq.lookupInteger("a"));
     }
 
-    @Test
-    public void copy_double_scalar() {
-        Equation eq = new Equation();
+    @Test void copy_double_scalar() {
+        var eq = new Equation();
 
         // int to double
         eq.alias(2.2, "a");
@@ -719,9 +673,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(3.5, eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void copy_submatrix_matrix_case0() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_matrix_case0() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(2, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -732,9 +685,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.isIdentical(b.extractMatrix(1, 3, 1, 4), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void copy_submatrix_matrix_case1() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_matrix_case1() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(2, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -742,15 +694,14 @@ public class TestOperation extends EjmlStandardJUnit {
         eq.alias(a, "a", b, "b");
         eq.process("b(0 1,3 2 0)=a");
 
-        int rows[] = new int[]{0, 1};
-        int cols[] = new int[]{3, 2, 0};
+        int[] rows = new int[]{0, 1};
+        int[] cols = new int[]{3, 2, 0};
 
         checkSubMatrixArraysInsert(a, b, rows, cols);
     }
 
-    @Test
-    public void copy_submatrix_matrix_case2() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_matrix_case2() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 2, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -758,15 +709,14 @@ public class TestOperation extends EjmlStandardJUnit {
         eq.alias(a, "a", b, "b");
         eq.process("b(:,2:)=a");
 
-        int rows[] = new int[]{0, 1, 2};
-        int cols[] = new int[]{2, 3};
+        int[] rows = new int[]{0, 1, 2};
+        int[] cols = new int[]{2, 3};
 
         checkSubMatrixArraysInsert(a, b, rows, cols);
     }
 
-    @Test
-    public void copy_submatrix_matrix_case3() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_matrix_case3() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(6, 1, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -779,9 +729,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void copy_submatrix_matrix_case4() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_matrix_case4() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(7, 1, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -794,9 +743,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void copy_submatrix_matrix_case5() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_matrix_case5() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3*4 - 2, 1, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -809,9 +757,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void copy_submatrix_matrix_case6() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_matrix_case6() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3*4 - 2, 1, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -824,9 +771,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void copy_submatrix_scalar_case0() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_scalar_case0() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -838,84 +784,78 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4.5, b.get(2, 3), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void copy_submatrix_scalar_case1() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_scalar_case1() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
         eq.alias(b, "b");
         eq.process("b(0:1,1:3)=4.5");
 
-        int rows[] = new int[]{0, 1};
-        int cols[] = new int[]{1, 2, 3};
+        int[] rows = new int[]{0, 1};
+        int[] cols = new int[]{1, 2, 3};
 
         checkSubMatrixArraysInsert(4.5, b, rows, cols);
     }
 
-    @Test
-    public void copy_submatrix_scalar_case2() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_scalar_case2() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
         eq.alias(b, "b");
         eq.process("b(:,2:)=4.5");
 
-        int rows[] = new int[]{0, 1, 2};
-        int cols[] = new int[]{2, 3};
+        int[] rows = new int[]{0, 1, 2};
+        int[] cols = new int[]{2, 3};
 
         checkSubMatrixArraysInsert(4.5, b, rows, cols);
     }
 
-    @Test
-    public void copy_submatrix_scalar_case3() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_scalar_case3() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
         eq.alias(b, "b");
         eq.process("b(1 0 3)=4.5");
 
-        int indexes[] = new int[]{1, 0, 3};
+        int[] indexes = new int[]{1, 0, 3};
         for (int i = 0; i < indexes.length; i++) {
-            assertEquals(b.get(indexes[i]), 4.5, UtilEjml.TEST_F64);
+            assertEquals(4.5, b.get(indexes[i]), UtilEjml.TEST_F64);
         }
     }
 
-    @Test
-    public void copy_submatrix_scalar_case4() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_scalar_case4() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
         eq.alias(b, "b");
         eq.process("b(1:3)=4.5");
 
-        int indexes[] = new int[]{1, 2, 3};
+        int[] indexes = new int[]{1, 2, 3};
         for (int i = 0; i < indexes.length; i++) {
-            assertEquals(b.get(indexes[i]), 4.5, UtilEjml.TEST_F64);
+            assertEquals(4.5, b.get(indexes[i]), UtilEjml.TEST_F64);
         }
     }
 
-    @Test
-    public void copy_submatrix_scalar_case5() {
-        Equation eq = new Equation();
+    @Test void copy_submatrix_scalar_case5() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(2, 3, -1, 1, rand);
 
         eq.alias(b, "b");
         eq.process("b(2 3:)=4.5");
 
-        int indexes[] = new int[]{2, 3, 4, 5};
+        int[] indexes = new int[]{2, 3, 4, 5};
         for (int i = 0; i < indexes.length; i++) {
-            assertEquals(b.get(indexes[i]), 4.5, UtilEjml.TEST_F64);
+            assertEquals(4.5, b.get(indexes[i]), UtilEjml.TEST_F64);
         }
     }
 
-    @Test
-    public void extract_one_case0() {
-        Equation eq = new Equation();
+    @Test void extract_one_case0() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -928,9 +868,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(b.get(2), found.get(1), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void extract_one_case1() {
-        Equation eq = new Equation();
+    @Test void extract_one_case1() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -944,9 +883,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void extract_one_case2() {
-        Equation eq = new Equation();
+    @Test void extract_one_case2() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -960,9 +898,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void extract_one_case3() {
-        Equation eq = new Equation();
+    @Test void extract_one_case3() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -976,9 +913,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void extract_two_case0() {
-        Equation eq = new Equation();
+    @Test void extract_two_case0() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -986,15 +922,14 @@ public class TestOperation extends EjmlStandardJUnit {
         eq.process("c=b(1 2,1 0 2)");
         DMatrixRMaj found = eq.lookupDDRM("c");
 
-        int rows[] = new int[]{1, 2};
-        int cols[] = new int[]{1, 0, 2};
+        int[] rows = new int[]{1, 2};
+        int[] cols = new int[]{1, 0, 2};
 
         checkSubMatrixArraysExtract(b, found, rows, cols);
     }
 
-    @Test
-    public void extract_two_case1() {
-        Equation eq = new Equation();
+    @Test void extract_two_case1() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1002,15 +937,14 @@ public class TestOperation extends EjmlStandardJUnit {
         eq.process("c=b(1:2,2:3)");
         DMatrixRMaj found = eq.lookupDDRM("c");
 
-        int rows[] = new int[]{1, 2};
-        int cols[] = new int[]{2, 3};
+        int[] rows = new int[]{1, 2};
+        int[] cols = new int[]{2, 3};
 
         checkSubMatrixArraysExtract(b, found, rows, cols);
     }
 
-    @Test
-    public void extract_two_case2() {
-        Equation eq = new Equation();
+    @Test void extract_two_case2() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1018,15 +952,14 @@ public class TestOperation extends EjmlStandardJUnit {
         eq.process("c=b(2:,1:)");
         DMatrixRMaj found = eq.lookupDDRM("c");
 
-        int rows[] = new int[]{2};
-        int cols[] = new int[]{1, 2, 3};
+        int[] rows = new int[]{2};
+        int[] cols = new int[]{1, 2, 3};
 
         checkSubMatrixArraysExtract(b, found, rows, cols);
     }
 
-    @Test
-    public void extract_two_case3() {
-        Equation eq = new Equation();
+    @Test void extract_two_case3() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1034,15 +967,14 @@ public class TestOperation extends EjmlStandardJUnit {
         eq.process("c=b(:,:)");
         DMatrixRMaj found = eq.lookupDDRM("c");
 
-        int rows[] = new int[]{0, 1, 2};
-        int cols[] = new int[]{0, 1, 2, 3};
+        int[] rows = new int[]{0, 1, 2};
+        int[] cols = new int[]{0, 1, 2, 3};
 
         checkSubMatrixArraysExtract(b, found, rows, cols);
     }
 
-    @Test
-    public void extractScalar_one() {
-        Equation eq = new Equation();
+    @Test void extractScalar_one() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1053,9 +985,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(b.get(3), found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void extractScalar_two() {
-        Equation eq = new Equation();
+    @Test void extractScalar_two() {
+        var eq = new Equation();
 
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1066,9 +997,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(b.get(2, 3), found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void transpose_matrix() {
-        Equation eq = new Equation();
+    @Test void transpose_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
@@ -1083,8 +1013,7 @@ public class TestOperation extends EjmlStandardJUnit {
      * This was causing an exception to be thrown because minus was handled
      * incorrectly after transpose
      */
-    @Test
-    public void transpose_then_subtract() {
+    @Test void transpose_then_subtract() {
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 3, -1, 1, rand);
         SimpleMatrix c = SimpleMatrix.random_DDRM(3, 3, -1, 1, rand);
 
@@ -1097,9 +1026,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(expected.isIdentical(z, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void inv_matrix() {
-        Equation eq = new Equation();
+    @Test void inv_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(3, 3, -1, 1, rand);
@@ -1110,9 +1038,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.invert().isIdentical(b, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void inv_scalar() {
-        Equation eq = new Equation();
+    @Test void inv_scalar() {
+        var eq = new Equation();
 
         eq.alias(2.2, "a", 3.3, "b");
         eq.process("b=inv(a)");
@@ -1120,9 +1047,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(1.0/2.2, eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void pinv_matrix() {
-        Equation eq = new Equation();
+    @Test void pinv_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(4, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(1, 1, -1, 1, rand);
@@ -1133,9 +1059,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(a.pseudoInverse().isIdentical(b, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void pinv_scalar() {
-        Equation eq = new Equation();
+    @Test void pinv_scalar() {
+        var eq = new Equation();
 
         eq.alias(2.2, "a", 3.3, "b");
         eq.process("b=pinv(a)");
@@ -1143,9 +1068,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(1.0/2.2, eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void rref_matrix() {
-        Equation eq = new Equation();
+    @Test void rref_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(4, 3, -1, 1, rand);
         SimpleMatrix b = SimpleMatrix.random_DDRM(1, 1, -1, 1, rand);
@@ -1159,9 +1083,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(MatrixFeatures_DDRM.isIdentical(expected, (DMatrixRMaj)b.getMatrix(), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void rref_scalar() {
-        Equation eq = new Equation();
+    @Test void rref_scalar() {
+        var eq = new Equation();
 
         eq.process("a=rref(2.3)");
         assertEquals(1, eq.lookupDouble("a"), UtilEjml.TEST_F64);
@@ -1173,9 +1096,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(1, eq.lookupDouble("a"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void det_matrix() {
-        Equation eq = new Equation();
+    @Test void det_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(4, 4, -1, 1, rand);
 
@@ -1185,18 +1107,16 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(a.determinant(), eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void det_scalar() {
-        Equation eq = new Equation();
+    @Test void det_scalar() {
+        var eq = new Equation();
 
         eq.process("b=det(5.6)");
 
         assertEquals(5.6, eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void trace_matrix() {
-        Equation eq = new Equation();
+    @Test void trace_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1206,9 +1126,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(a.trace(), eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void normF_matrix() {
-        Equation eq = new Equation();
+    @Test void normF_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1218,18 +1137,16 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(a.normF(), eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void normF_scalar() {
-        Equation eq = new Equation();
+    @Test void normF_scalar() {
+        var eq = new Equation();
 
         eq.process("b=normF(5.6)");
 
         assertEquals(5.6, eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void normP() {
-        Equation eq = new Equation();
+    @Test void normP() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1241,8 +1158,7 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(expected, eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void matrixToScalar() {
+    @Test void matrixToScalar() {
         var eq = new Equation();
 
         eq.alias(new DMatrixRMaj(new double[][]{{2.5}}), "a");
@@ -1250,8 +1166,7 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(2.5, eq.lookupDouble("b"));
     }
 
-    @Test
-    public void matrixToScalar_invalid_input() {
+    @Test void matrixToScalar_invalid_input() {
         // Matrix which is not 1x1
         try {
             var eq = new Equation();
@@ -1270,9 +1185,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void sum_one() {
-        Equation eq = new Equation();
+    @Test void sum_one() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1284,9 +1198,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(expected, eq.lookupDouble("b"), UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void sum_rows() {
-        Equation eq = new Equation();
+    @Test void sum_rows() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1299,9 +1212,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(MatrixFeatures_DDRM.isIdentical(expected, eq.lookupDDRM("b"), UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void sum_cols() {
-        Equation eq = new Equation();
+    @Test void sum_cols() {
+        var eq = new Equation();
 
         SimpleMatrix a = SimpleMatrix.random_DDRM(3, 4, -1, 1, rand);
 
@@ -1405,7 +1317,7 @@ public class TestOperation extends EjmlStandardJUnit {
 
         eq.process("b=min(2,-8)");
 
-        assertEquals(2, eq.lookupInteger("b"));
+        assertEquals(-8, eq.lookupInteger("b"));
     }
 
     @Test void eye() {
@@ -1419,9 +1331,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(SimpleMatrix.identity(3).isIdentical(a, UtilEjml.TEST_F64));
     }
 
-    @Test
-    public void abs_matrix() {
-        Equation eq = new Equation();
+    @Test void abs_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix B = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
@@ -1431,16 +1342,15 @@ public class TestOperation extends EjmlStandardJUnit {
 
         eq.process("B=abs(A)");
 
-        for (int i = 0; i < A.numRows(); i++) {
-            for (int j = 0; j < A.numCols(); j++) {
-                assertTrue(B.get(i, j) == Math.abs(A.get(i, j)));
+        for (int i = 0; i < A.getNumRows(); i++) {
+            for (int j = 0; j < A.getNumCols(); j++) {
+                assertEquals(B.get(i, j), Math.abs(A.get(i, j)));
             }
         }
     }
 
-    @Test
-    public void abs_int() {
-        Equation eq = new Equation();
+    @Test void abs_int() {
+        var eq = new Equation();
 
         eq.alias(-4, "A");
         eq.alias(1, "B");
@@ -1451,9 +1361,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void abs_scalar() {
-        Equation eq = new Equation();
+    @Test void abs_scalar() {
+        var eq = new Equation();
 
         eq.alias(-4.6, "A");
         eq.alias(1.1, "B");
@@ -1542,9 +1451,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(4.6, found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void zeros() {
-        Equation eq = new Equation();
+    @Test void zeros() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 8, -1, 1, rand);
 
@@ -1559,9 +1467,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void ones() {
-        Equation eq = new Equation();
+    @Test void ones() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 8, -1, 1, rand);
 
@@ -1576,9 +1483,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void rng() {
-        Equation eq = new Equation();
+    @Test void rng() {
+        var eq = new Equation();
 
         eq.process("rng(345)");
         eq.process("A=rand(1,2)");
@@ -1594,10 +1500,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void rand() {
-        Equation eq = new Equation();
-
+    @Test void rand() {
+        var eq = new Equation();
         eq.process("A=rand(6,8)");
 
         SimpleMatrix A = eq.lookupSimple("A");
@@ -1610,10 +1514,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void randn() {
-        Equation eq = new Equation();
-
+    @Test void randn() {
+        var eq = new Equation();
         eq.process("A=randn(6,8)");
 
         SimpleMatrix A = eq.lookupSimple("A");
@@ -1627,9 +1529,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertTrue(total < 6*8);
     }
 
-    @Test
-    public void diag_vector() {
-        Equation eq = new Equation();
+    @Test void diag_vector() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 6, -1, 1, rand);
         SimpleMatrix B = SimpleMatrix.random_DDRM(6, 1, -1, 1, rand);
@@ -1650,9 +1551,8 @@ public class TestOperation extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void diag_matrix() {
-        Equation eq = new Equation();
+    @Test void diag_matrix() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 8, -1, 1, rand);
         SimpleMatrix B = SimpleMatrix.random_DDRM(6, 1, -1, 1, rand);
@@ -1662,17 +1562,16 @@ public class TestOperation extends EjmlStandardJUnit {
 
         eq.process("B=diag(A)");
 
-        assertEquals(6, B.numRows());
-        assertEquals(1, B.numCols());
+        assertEquals(6, B.getNumRows());
+        assertEquals(1, B.getNumCols());
 
         for (int i = 0; i < 6; i++) {
             assertEquals(A.get(i, i), B.get(i, 0), UtilEjml.TEST_F64);
         }
     }
 
-    @Test
-    public void dot() {
-        Equation eq = new Equation();
+    @Test void dot() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 1, -1, 1, rand);
         SimpleMatrix B = SimpleMatrix.random_DDRM(6, 1, -1, 1, rand);
@@ -1688,9 +1587,8 @@ public class TestOperation extends EjmlStandardJUnit {
         assertEquals(A.dot(B), found, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void solve() {
-        Equation eq = new Equation();
+    @Test void solve() {
+        var eq = new Equation();
 
         SimpleMatrix A = SimpleMatrix.random_DDRM(6, 5, -1, 1, rand);
         SimpleMatrix x = SimpleMatrix.random_DDRM(5, 3, -1, 1, rand);
@@ -1715,7 +1613,7 @@ public class TestOperation extends EjmlStandardJUnit {
     }
 
     private void checkSubMatrixArraysInsert( SimpleMatrix src, SimpleMatrix dst, int[] rows, int[] cols ) {
-        assertTrue(src.numRows() == rows.length && src.numCols() == cols.length);
+        assertTrue(src.getNumRows() == rows.length && src.getNumCols() == cols.length);
         for (int i = 0; i < rows.length; i++) {
             for (int j = 0; j < cols.length; j++) {
                 assertEquals(src.get(i, j), dst.get(rows[i], cols[j]), UtilEjml.TEST_F64);
