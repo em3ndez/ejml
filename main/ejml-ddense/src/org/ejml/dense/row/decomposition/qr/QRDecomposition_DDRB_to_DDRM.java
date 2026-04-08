@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.dense.row.decomposition.qr;
 
 import org.ejml.EjmlParameters;
@@ -51,7 +50,7 @@ public class QRDecomposition_DDRB_to_DDRM
             Q = UtilDecompositons_DDRM.ensureIdentity(Q, Ablock.numRows, Ablock.numRows);
         }
 
-        DMatrixRBlock Qblock = new DMatrixRBlock();
+        var Qblock = new DMatrixRBlock();
         Qblock.numRows = Q.numRows;
         Qblock.numCols = Q.numCols;
         Qblock.blockLength = blockLength;

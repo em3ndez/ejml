@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.dense.block.decomposition.qr;
 
 import org.ejml.data.DGrowArray;
@@ -138,26 +137,17 @@ public class QRDecompositionHouseholder_DDRB
         if (compact) {
             if (Q == null) {
                 Q = new DMatrixRBlock(numRows, minLength, blockLength);
-                MatrixOps_DDRB.setIdentity(Q);
             } else {
-                if (Q.numRows != numRows || Q.numCols != minLength) {
-                    throw new IllegalArgumentException("Unexpected matrix dimension. Found " + Q.numRows + " " + Q.numCols);
-                } else {
-                    MatrixOps_DDRB.setIdentity(Q);
-                }
+                Q.reshape(numRows, minLength);
             }
         } else {
             if (Q == null) {
                 Q = new DMatrixRBlock(numRows, numRows, blockLength);
-                MatrixOps_DDRB.setIdentity(Q);
             } else {
-                if (Q.numRows != numRows || Q.numCols != numRows) {
-                    throw new IllegalArgumentException("Unexpected matrix dimension. Found " + Q.numRows + " " + Q.numCols);
-                } else {
-                    MatrixOps_DDRB.setIdentity(Q);
-                }
+                Q.reshape(numRows, numRows);
             }
         }
+        MatrixOps_DDRB.setIdentity(Q);
         return Q;
     }
 
