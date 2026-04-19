@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -22,6 +22,7 @@ import org.ejml.EjmlStandardJUnit;
 import org.ejml.EjmlUnitTests;
 import org.ejml.UtilEjml;
 import org.ejml.data.DMatrixRMaj;
+import org.ejml.dense.row.CommonOps_DDRM;
 import org.ejml.dense.row.MatrixFeatures_DDRM;
 import org.ejml.dense.row.RandomMatrices_DDRM;
 import org.ejml.dense.row.decomposition.CheckDecompositionInterface_DDRM;
@@ -181,5 +182,21 @@ public abstract class GenericQrCheck_DDRM extends EjmlStandardJUnit {
         alg.getQ((DMatrixRMaj)Q.getMatrix(), true);
         assertEquals(height, Q.numRows());
         assertEquals(width, Q.numCols());
+    }
+
+    // It should be able to decompose a singular matrix. R will have zeros or near zeros in it
+    @Test void singularMatrix() {
+        DMatrixRMaj A = RandomMatrices_DDRM.singular(6, 4, rand, 1, 1, 1, 0);
+
+        QRDecomposition<DMatrixRMaj> alg = createQRDecomposition();
+
+        // ignore the return value. It will often not detect that it's singular
+        alg.decompose(A.copy());
+
+        DMatrixRMaj Q = alg.getQ(null, false);
+        DMatrixRMaj R = alg.getR(null, false);
+
+        DMatrixRMaj found = CommonOps_DDRM.mult(Q, R, null);
+        assertTrue(MatrixFeatures_DDRM.isEquals(A, found, UtilEjml.TEST_F64));
     }
 }
