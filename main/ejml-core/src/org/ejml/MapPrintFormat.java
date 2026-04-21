@@ -1,0 +1,86 @@
+/*
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
+ *
+ * This file is part of Efficient Java Matrix Library (EJML).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.ejml;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/// Describes a map or list of maps is formatted when converted into a string.
+public class MapPrintFormat {
+    /// Number of significant digits it will display when converting a float
+    @Getter @Setter public int precision = 6;
+    /// Separator that splits key-value pairs
+    @Getter @Setter public String valueSeparator = ": ";
+    /// Separator between two key-value pairs
+    @Getter @Setter public String pairSeparator = ", ";
+    /// Prefix for an item in the list. If a single item, this is still applied.
+    @Getter @Setter public String itemPrefix = "{";
+    /// Suffix for an item in the list. If a single item, this is still applied.
+    @Getter @Setter public String itemSuffix = "}";
+    /// Separator applied after each item in the list
+    @Getter @Setter public String itemSeparator = ",\n";
+    /// Prefix applied before the list
+    @Getter @Setter public String listPrefix = "{";
+    /// Prefix applied after the list
+    @Getter @Setter public String listSuffix = "}";
+    /// Character which indicates a decimal in floating point numbers
+    @Getter @Setter public char decimal = '.';
+
+    public MapPrintFormat() {}
+
+    public MapPrintFormat( int precision, String valueSeparator, String pairSeparator,
+                           String itemPrefix, String itemSuffix, String itemSeparator,
+                           String listPrefix, String listSuffix ) {
+        this.precision = precision;
+        this.valueSeparator = valueSeparator;
+        this.pairSeparator = pairSeparator;
+        this.itemPrefix = itemPrefix;
+        this.itemSuffix = itemSuffix;
+        this.itemSeparator = itemSeparator;
+        this.listPrefix = listPrefix;
+        this.listSuffix = listSuffix;
+    }
+
+    /// Sets values relevant when printing a single item
+    public MapPrintFormat setSingle(String valueSeparator, String pairSeparator,
+                                    String itemPrefix, String itemSuffix) {
+        this.valueSeparator = valueSeparator;
+        this.pairSeparator = pairSeparator;
+        this.itemPrefix = itemPrefix;
+        this.itemSuffix = itemSuffix;
+        return this;
+    }
+
+    public MapPrintFormat fsetPrecision( int precision ) {
+        this.precision = precision;
+        return this;
+    }
+
+    public MapPrintFormat setTo( MapPrintFormat src ) {
+        this.precision = src.precision;
+        this.valueSeparator = src.valueSeparator;
+        this.pairSeparator = src.pairSeparator;
+        this.itemPrefix = src.itemPrefix;
+        this.itemSuffix = src.itemSuffix;
+        this.itemSeparator = src.itemSeparator;
+        this.listPrefix = src.listPrefix;
+        this.listSuffix = src.listSuffix;
+        this.decimal = src.decimal;
+        return this;
+    }
+}

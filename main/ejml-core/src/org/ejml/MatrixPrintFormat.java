@@ -20,18 +20,18 @@ package org.ejml;
 import lombok.Getter;
 import lombok.Setter;
 
-/// Describes a matrix is formatted when converted into a string. By default, it will
+/// Describes how a matrix is formatted when converted into a string. By default, it will
 /// print a matrix into the standard Java format.
 public class MatrixPrintFormat {
     /// Number of significant digits it will display
-    @Getter @Setter int precision = 6;
-    @Getter @Setter String colSeparator = ", ";
-    @Getter @Setter String rowSeparator = ",\n";
-    @Getter @Setter String rowPrefix = "{";
-    @Getter @Setter String rowSuffix = "}";
-    @Getter @Setter String prefix = "{";
-    @Getter @Setter String suffix = "}";
-    @Getter @Setter char decimal = '.';
+    @Getter @Setter public int precision = 6;
+    @Getter @Setter public String colSeparator = ", ";
+    @Getter @Setter public String rowSeparator = ",\n";
+    @Getter @Setter public String rowPrefix = "{";
+    @Getter @Setter public String rowSuffix = "}";
+    @Getter @Setter public String prefix = "{";
+    @Getter @Setter public String suffix = "}";
+    @Getter @Setter public char decimal = '.';
 
     public MatrixPrintFormat() {}
 
@@ -94,6 +94,7 @@ public class MatrixPrintFormat {
         this.rowSuffix = src.rowSuffix;
         this.prefix = src.prefix;
         this.suffix = src.suffix;
+        this.decimal = src.decimal;
         return this;
     }
 }
