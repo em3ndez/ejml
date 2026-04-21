@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -17,6 +17,10 @@
  */
 package org.ejml.data;
 
+import org.ejml.MatrixPrintFormat;
+
+import static org.ejml.UtilEjml.fancyString2;
+
 /**
  * Interface for all 64F real matrices.
  *
@@ -31,7 +35,7 @@ public interface DMatrix extends Matrix {
      * @param col Matrix element's column index.
      * @return The specified element's value.
      */
-    double get(int row, int col);
+    double get( int row, int col );
 
     /**
      * Same as {@link #get} but does not perform bounds check on input parameters. This results in about a 25%
@@ -43,7 +47,7 @@ public interface DMatrix extends Matrix {
      * @param col Matrix element's column index.
      * @return The specified element's value.
      */
-    double unsafe_get(int row, int col);
+    double unsafe_get( int row, int col );
 
     /**
      * Sets the value of the specified matrix element.
@@ -52,7 +56,7 @@ public interface DMatrix extends Matrix {
      * @param col Matrix element's column index.
      * @param val The element's new value.
      */
-    void set(int row, int col, double val);
+    void set( int row, int col, double val );
 
     /**
      * Same as {@link #setTo} but does not perform bounds check on input parameters. This results in about a 25%
@@ -64,7 +68,7 @@ public interface DMatrix extends Matrix {
      * @param col Matrix element's column index.
      * @param val The element's new value.
      */
-    void unsafe_set(int row, int col, double val);
+    void unsafe_set( int row, int col, double val );
 
     /**
      * Returns the number of elements in this matrix, which is the number of rows
@@ -73,6 +77,30 @@ public interface DMatrix extends Matrix {
      * @return Number of elements in this matrix.
      */
     default int getNumElements() {
-        return getNumRows() * getNumCols();
+        return getNumRows()*getNumCols();
+    }
+
+    /// Customizable formatting for converting a Matrix into a string
+    default String format( MatrixPrintFormat format ) {
+        int precision = format.getPrecision();
+        int numRows = getNumRows();
+        int numCols = getNumCols();
+        char decimal = format.getDecimal();
+        var builder = new StringBuilder();
+        builder.append(format.getPrefix());
+        for (int row = 0; row < numRows; row++) {
+            builder.append(format.getRowPrefix());
+            for (int col = 0; col < numCols - 1; col++) {
+                builder.append(fancyString2(get(row, col), precision, decimal));
+                builder.append(format.getColSeparator());
+            }
+            if (numCols > 0)
+                builder.append(fancyString2(get(row, numCols - 1), precision, decimal));
+            builder.append(format.getRowSuffix());
+            if (row < numRows - 1)
+                builder.append(format.getRowSeparator());
+        }
+        builder.append(format.getSuffix());
+        return builder.toString();
     }
 }

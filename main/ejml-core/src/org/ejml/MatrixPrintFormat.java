@@ -25,25 +25,26 @@ import lombok.Setter;
 public class MatrixPrintFormat {
     /// Number of significant digits it will display
     @Getter @Setter int precision = 6;
-    @Getter @Setter String colSeperator = ", ";
-    @Getter @Setter String rowSeperator = ",\n";
+    @Getter @Setter String colSeparator = ", ";
+    @Getter @Setter String rowSeparator = ",\n";
     @Getter @Setter String rowPrefix = "{";
     @Getter @Setter String rowSuffix = "}";
     @Getter @Setter String prefix = "{";
     @Getter @Setter String suffix = "}";
+    @Getter @Setter char decimal = '.';
 
     public MatrixPrintFormat() {}
 
     public MatrixPrintFormat( int precision,
-                              String colSeperator,
-                              String rowSeperator,
+                              String colSeparator,
+                              String rowSeparator,
                               String rowPrefix,
                               String rowSuffix,
                               String prefix,
                               String suffix ) {
         this.precision = precision;
-        this.colSeperator = colSeperator;
-        this.rowSeperator = rowSeperator;
+        this.colSeparator = colSeparator;
+        this.rowSeparator = rowSeparator;
         this.rowPrefix = rowPrefix;
         this.rowSuffix = rowSuffix;
         this.prefix = prefix;
@@ -55,13 +56,13 @@ public class MatrixPrintFormat {
         return this;
     }
 
-    public MatrixPrintFormat fsetColSeperator( String colSeperator) {
-        this.colSeperator = colSeperator;
+    public MatrixPrintFormat fsetColSeparator( String colSeparator) {
+        this.colSeparator = colSeparator;
         return this;
     }
 
-    public MatrixPrintFormat fsetRowSeperator( String rowSeperator) {
-        this.rowSeperator = rowSeperator;
+    public MatrixPrintFormat fsetRowSeparator( String rowSeparator) {
+        this.rowSeparator = rowSeparator;
         return this;
     }
 
@@ -82,6 +83,17 @@ public class MatrixPrintFormat {
 
     public MatrixPrintFormat fsetSuffix( String suffix) {
         this.suffix = suffix;
+        return this;
+    }
+
+    public MatrixPrintFormat setTo( MatrixPrintFormat src ) {
+        this.precision = src.precision;
+        this.colSeparator = src.colSeparator;
+        this.rowSeparator = src.rowSeparator;
+        this.rowPrefix = src.rowPrefix;
+        this.rowSuffix = src.rowSuffix;
+        this.prefix = src.prefix;
+        this.suffix = src.suffix;
         return this;
     }
 }

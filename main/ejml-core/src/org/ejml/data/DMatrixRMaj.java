@@ -344,21 +344,22 @@ public class DMatrixRMaj extends DMatrix1Row {
 
     /// Converts the matrix into a string using the specified formatting.
     ///
-    public String format( MatrixPrintFormat format ) {
+    @Override public String format( MatrixPrintFormat format ) {
         int precision = format.getPrecision();
         var builder = new StringBuilder();
+        char decimal = format.getDecimal();
         builder.append(format.getPrefix());
         for (int row = 0; row < numRows; row++) {
             builder.append(format.getRowPrefix());
             for (int col = 0; col < numCols - 1; col++) {
-                builder.append(fancyString2(data[row*numCols + col], precision, '.'));
-                builder.append(format.getColSeperator());
+                builder.append(fancyString2(data[row*numCols + col], precision, decimal));
+                builder.append(format.getColSeparator());
             }
             if (numCols > 0)
-                builder.append(fancyString2(data[row*numCols + numCols - 1], precision, '.'));
+                builder.append(fancyString2(data[row*numCols + numCols - 1], precision, decimal));
             builder.append(format.getRowSuffix());
             if (row < numRows - 1)
-                builder.append(format.getRowSeperator());
+                builder.append(format.getRowSeparator());
         }
         builder.append(format.getSuffix());
         return builder.toString();
