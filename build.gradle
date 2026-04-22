@@ -56,15 +56,19 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
-        toolchain { languageVersion = JavaLanguageVersion.of(17) }
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+            // Specify vendor to get around a Github Java 25 issue
+            vendor.set(JvmVendorSpec.AZUL)
+        }
     }
 
     // Prevents tons of errors if someone is using ASCII
     tasks.withType(JavaCompile).configureEach { options.encoding = "UTF-8" }
 
-    // Creates Java 11 byte code but Java 17 syntax
+    // Creates Java 11 byte code but Java 25 syntax
     tasks.withType(JavaCompile).configureEach {
-        sourceCompatibility = 17
+        sourceCompatibility = 25
         options.release = 11
     }
 
