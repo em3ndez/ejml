@@ -91,26 +91,6 @@ subprojects {
         options.compilerArgs << '--should-stop=ifError=FLOW'
     }
 
-    // Pre-load ByteBuddy agent statically to avoid JEP-451 dynamic agent warnings
-    configurations { byteBuddyAgent }
-
-    tasks.withType(Test).configureEach {
-        jvmArgumentProviders.add(
-                objects.newInstance(JavaAgentArgumentProvider).tap {
-                    classpath.from(configurations.byteBuddyAgent)
-                }
-        )
-
-        jvmArgs += [
-                '-XX:+EnableDynamicAgentLoading',   // belt-and-suspenders for any other agents
-                '-XX:+IgnoreUnrecognizedVMOptions',
-                '--add-opens=java.base/java.lang=ALL-UNNAMED',
-                '--add-opens=java.base/java.util=ALL-UNNAMED',
-                '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
-                '-Dsun.misc.Unsafe.allowUnsafeObjectFieldOffset=true',
-        ]
-    }
-
     // Fail on jar conflict
     configurations.all { resolutionStrategy { failOnVersionConflict() } }
 
@@ -173,7 +153,6 @@ subprojects {
     }
 
     dependencies {
-        byteBuddyAgent "net.bytebuddy:byte-buddy-agent:${bytebuddy_version}"
         compileOnly 'us.hebi.matlab.mat:mfl-ejml:0.5.7'
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
         compileOnly "org.jetbrains:annotations:$project.jetnull_version" // @Nullable
