@@ -21,13 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /// Describes a map or list of maps is formatted when converted into a string.
-public class MapPrintFormat {
+public class MapPrintFormat extends PrintFormat {
     /// Default valued used in toString and other location. Modifying this will modify the formatting in many locations
     /// Only the end user should be tweaking this and not any library and its subject to change.
     public final static MapPrintFormat DEFAULT = new MapPrintFormat();
 
-    /// Number of significant digits it will display when converting a float
-    @Getter @Setter public int precision = 6;
     /// Separator that splits key-value pairs
     @Getter @Setter public String valueSeparator = ": ";
     /// Separator between two key-value pairs
@@ -42,8 +40,6 @@ public class MapPrintFormat {
     @Getter @Setter public String listPrefix = "{";
     /// Prefix applied after the list
     @Getter @Setter public String listSuffix = "}";
-    /// Character which indicates a decimal in floating point numbers
-    @Getter @Setter public char decimal = '.';
 
     public MapPrintFormat() {}
 
@@ -60,14 +56,52 @@ public class MapPrintFormat {
         this.listSuffix = listSuffix;
     }
 
+    /// Shorthand for adding a pair using [StringBuilder]
+    ///
+    /// @param isMore Are there more pairs that need to be added. If true it will add a separator
+    public void pair( StringBuilder builder, String name, double value, boolean isMore ) {
+        builder.append(name);
+        builder.append(valueSeparator);
+        builder.append(f(value));
+        if (isMore)
+            builder.append(pairSeparator);
+    }
+
+    /// Shorthand for adding a pair as [String].
+    ///
+    /// @param isMore Are there more pairs that need to be added. If true it will add a separator
+    public String pair( String name, double value, boolean isMore ) {
+        String txt = name + valueSeparator + f(value);
+        return txt + (isMore ? pairSeparator : "");
+    }
+
+    public String pair( String name, String value, boolean isMore ) {
+        String txt = name + valueSeparator + value;
+        return txt + (isMore ? pairSeparator : "");
+    }
+
     /// Sets values relevant when printing a single item
-    public MapPrintFormat setSingle(String valueSeparator, String pairSeparator,
-                                    String itemPrefix, String itemSuffix) {
+    public MapPrintFormat setSingle( String valueSeparator, String pairSeparator,
+                                     String itemPrefix, String itemSuffix ) {
         this.valueSeparator = valueSeparator;
         this.pairSeparator = pairSeparator;
         this.itemPrefix = itemPrefix;
         this.itemSuffix = itemSuffix;
         return this;
+    }
+
+    /// Creates an analogous matrix formatter. Used when you need to mix formats.
+    public MatrixPrintFormat convertToMatrix() {
+        var out = new MatrixPrintFormat();
+        out.precision = precision;
+        out.decimal = decimal;
+        out.prefix = listPrefix;
+        out.suffix = listSuffix;
+        out.rowPrefix = itemPrefix;
+        out.rowSuffix = itemSuffix;
+        out.rowSeparator = itemSeparator;
+        out.colSeparator =  pairSeparator;
+        return out;
     }
 
     public MapPrintFormat fsetPrecision( int precision ) {

@@ -22,20 +22,18 @@ import lombok.Setter;
 
 /// Describes how a matrix is formatted when converted into a string. By default, it will
 /// print a matrix into the standard Java format.
-public class MatrixPrintFormat {
+public class MatrixPrintFormat extends PrintFormat {
     /// Default valued used in toString and other location. Modifying this will modify the formatting in many locations
     /// Only the end user should be tweaking this and not any library and its subject to change.
     public final static MatrixPrintFormat DEFAULT = new MatrixPrintFormat();
 
     /// Number of significant digits it will display
-    @Getter @Setter public int precision = 6;
     @Getter @Setter public String colSeparator = ", ";
     @Getter @Setter public String rowSeparator = ",\n";
     @Getter @Setter public String rowPrefix = "{";
     @Getter @Setter public String rowSuffix = "}";
     @Getter @Setter public String prefix = "{";
     @Getter @Setter public String suffix = "}";
-    @Getter @Setter public char decimal = '.';
 
     public MatrixPrintFormat() {}
 
