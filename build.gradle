@@ -73,10 +73,28 @@ subprojects {
         options.release = 11
     }
 
-    // Needed by ErrorProne
     tasks.withType(JavaCompile).configureEach {
+        // Needed by ErrorProne
         options.compilerArgs.removeAll { it.startsWith('--should-stop=ifError') }
         options.compilerArgs << '--should-stop=ifError=FLOW'
+
+        // To reduce stdout spam caused by Lombok being evil
+        options.forkOptions.jvmArgs += [
+                '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
+        ]
+    }
+
+    // Remove ByteBuddy warnings
+    tasks.withType(Test).configureEach {
+        jvmArgs += [
+                '-XX:+EnableDynamicAgentLoading',
+                '--add-opens=java.base/java.lang=ALL-UNNAMED',
+                '--add-opens=java.base/java.util=ALL-UNNAMED'
+        ]
     }
 
     // Fail on jar conflict
@@ -380,5 +398,5 @@ task oneJarBin(type: Jar, dependsOn: javadocProjects.collect { it + ":compileJav
 
 wrapper {
     distributionType = Wrapper.DistributionType.BIN
-    gradleVersion = '8.12.1'
+    gradleVersion = '8.14.2'
 }

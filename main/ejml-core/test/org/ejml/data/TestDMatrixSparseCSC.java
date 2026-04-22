@@ -151,7 +151,7 @@ public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
         var a = new DMatrixSparseCSC(4, 5, 0);
         a.set(1, 2, 1.2345);
         a.set(0, 4, 2.1);
-        a.set(3, 1, 3.965);
+        a.set(3, 1, 3.966);
 
         String found = a.format(new MapPrintFormat().fsetPrecision(2));
         assertEquals("{{row: 3, col: 1, value: 3.97},\n" +
