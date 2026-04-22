@@ -615,8 +615,9 @@ public class UtilEjml {
         boolean useFloat = true;
         if (vabs > 0.0) {
             // How many digits to encode decimal
-            double decimal = vabs - (int)vabs;
-            int countInt = digitCount(Math.round(vabs - decimal));
+            double floored = Math.floor(vabs);
+            double decimal = vabs - floored;
+            int countInt = digitCount(floored);
 
             // Does the integer component exceed our character budget?
             if (countInt > lengthExp) {
