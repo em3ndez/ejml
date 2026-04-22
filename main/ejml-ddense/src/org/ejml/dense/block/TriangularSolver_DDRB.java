@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -236,11 +236,7 @@ public class TriangularSolver_DDRB {
 
         if (transB) {
             if (upper) {
-                if (transT) {
-                    throw new IllegalArgumentException("Operation not yet supported");
-                } else {
-                    throw new IllegalArgumentException("Operation not yet supported");
-                }
+                throw new IllegalArgumentException("Operation not yet supported");
             } else {
                 if (transT) {
                     throw new IllegalArgumentException("Operation not yet supported");

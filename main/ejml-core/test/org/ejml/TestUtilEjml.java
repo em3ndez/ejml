@@ -32,8 +32,8 @@ public class TestUtilEjml extends EjmlStandardJUnit {
     void max_array() {
         double[] a = new double[]{-1, 2, 3, 4, 5, 6, 3, 4, 5, 7, 8, 2, 3, -5, -6};
 
-        assertEquals(UtilEjml.max(a, 0, a.length), 8);
-        assertEquals(UtilEjml.max(a, 6, 3), 5);
+        assertEquals(8, UtilEjml.max(a, 0, a.length));
+        assertEquals(5, UtilEjml.max(a, 6, 3));
     }
 
     /**

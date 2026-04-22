@@ -31,7 +31,7 @@ import static org.ejml.UtilEjml.fancyString2;
 ///
 /// The matrix is stored internally in a row-major 1D array format:
 ///
-/// data[ y\*numCols + x ] = data[y][x]
+/// {@code data[ y*numCols + x ] = data[y][x]}
 ///
 /// For example:
 ///

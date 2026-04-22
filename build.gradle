@@ -223,6 +223,7 @@ subprojects {
         options.errorprone.enabled = true
         options.errorprone.disableWarningsInGeneratedCode = true
         options.errorprone.disable("TypeParameterUnusedInFormals", "StringSplitter", "InconsistentCapitalization",
+                "AssignmentExpression", // used throughout the code and I don't mind it
                 "HidingField", // this is sometimes done when the specific type is known by child. Clean up later.
                 "ClassNewInstance", // yes it's deprecated, but new version is more verbose with ignored errors
                 "FloatingPointLiteralPrecision", // too many false positives in test code
