@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -17,6 +17,7 @@
  */
 package org.ejml.data;
 
+import org.ejml.MatrixPrintFormat;
 import org.ejml.UtilEjml;
 import org.ejml.ops.MatrixIO;
 
@@ -290,4 +291,10 @@ public abstract class DMatrixD1 implements ReshapeMatrix, DMatrix {
     public void setNumCols( int numCols ) {
         this.numCols = numCols;
     }
+
+    /// Converts the array into a string format for display purposes.
+    /// The conversion is done using [#format(MatrixPrintFormat)].
+    ///
+    /// @return String representation of the matrix.
+    @Override public String toString() { return format(MatrixPrintFormat.DEFAULT); }
 }

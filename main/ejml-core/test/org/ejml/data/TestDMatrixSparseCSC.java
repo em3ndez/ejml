@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -18,6 +18,7 @@
 
 package org.ejml.data;
 
+import org.ejml.MapPrintFormat;
 import org.ejml.ops.DConvertMatrixStruct;
 import org.ejml.sparse.csc.CommonOps_DSCC;
 import org.ejml.sparse.csc.RandomMatrices_DSCC;
@@ -25,9 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Peter Abeles
- */
 public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
 
     @Override
@@ -45,9 +43,8 @@ public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
         return CommonOps_DSCC.checkStructure((DMatrixSparseCSC)m);
     }
 
-    @Test
-    void constructor_veryLarge() {
-        DMatrixSparseCSC a = new DMatrixSparseCSC(1_000_000_000, 100_000_000, 4);
+    @Test void constructor_veryLarge() {
+        var a = new DMatrixSparseCSC(1_000_000_000, 100_000_000, 4);
 
         assertEquals(0, a.nz_length);
         assertEquals(1_000_000_000, a.numRows);
@@ -56,9 +53,8 @@ public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
         assertEquals(4, a.nz_rows.length);
     }
 
-    @Test
-    void growMaxLength_veryLarge() {
-        DMatrixSparseCSC a = new DMatrixSparseCSC(1_000_000_000, 100_000_000, 4);
+    @Test void growMaxLength_veryLarge() {
+        var a = new DMatrixSparseCSC(1_000_000_000, 100_000_000, 4);
 
         a.growMaxLength(10, false);
         assertEquals(0, a.nz_length);
@@ -68,9 +64,8 @@ public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
         assertEquals(10, a.nz_rows.length);
     }
 
-    @Test
-    void reshape_row_col_length() {
-        DMatrixSparseCSC a = new DMatrixSparseCSC(2, 3, 4);
+    @Test void reshape_row_col_length() {
+        var a = new DMatrixSparseCSC(2, 3, 4);
 
         a.reshape(1, 2, 3);
         assertTrue(CommonOps_DSCC.checkStructure(a));
@@ -87,9 +82,8 @@ public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
         assertEquals(0, a.nz_length);
     }
 
-    @Test
-    void sortIndices() {
-        DMatrixSparseCSC a = RandomMatrices_DSCC.rectangle(5, 4, 20, -1, 1, rand);
+    @Test void sortIndices() {
+        var a = RandomMatrices_DSCC.rectangle(5, 4, 20, -1, 1, rand);
 
         // make sure it's not sorted correctly
         a.nz_rows[0] = 2;
@@ -104,9 +98,8 @@ public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
         assertTrue(a.indicesSorted);
     }
 
-    @Test
-    void growMaxColumns() {
-        DMatrixSparseCSC a = RandomMatrices_DSCC.rectangle(5, 4, 20, -1, 1, rand);
+    @Test void growMaxColumns() {
+        var a = RandomMatrices_DSCC.rectangle(5, 4, 20, -1, 1, rand);
         a.col_idx[0] = 5;
         a.col_idx[1] = 15;
 
@@ -133,9 +126,8 @@ public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
     /**
      * The matrix is already sorted. See if it is still sorted after set has been called.
      */
-    @Test
-    void set_sorted() {
-        DMatrixSparseCSC a = new DMatrixSparseCSC(4, 5, 0);
+    @Test void set_sorted() {
+        var a = new DMatrixSparseCSC(4, 5, 0);
         a.indicesSorted = true;
 
         a.set(1, 2, 1);
@@ -153,5 +145,17 @@ public class TestDMatrixSparseCSC extends GenericTestsDMatrixSparse {
         a.set(2, 2, 1);
         assertTrue(a.indicesSorted);
         assertTrue(CommonOps_DSCC.checkStructure(a));
+    }
+
+    @Test void format_Map() {
+        var a = new DMatrixSparseCSC(4, 5, 0);
+        a.set(1, 2, 1.2345);
+        a.set(0, 4, 2.1);
+        a.set(3, 1, 3.965);
+
+        String found = a.format(new MapPrintFormat().fsetPrecision(2));
+        assertEquals("{{row: 3, col: 1, value: 3.97},\n" +
+                "{row: 1, col: 2, value: 1.23},\n" +
+                "{row: 0, col: 4, value: 2.1}}", found);
     }
 }

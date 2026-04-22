@@ -23,15 +23,13 @@ import static org.ejml.UtilEjml.fancyString2;
 
 /**
  * Interface for all 64F real matrices.
- *
- * @author Peter Abeles
  */
 public interface DMatrix extends Matrix {
 
     /**
-     * Returns the value of value of the specified matrix element.
+     * Returns the value of the specified matrix element.
      *
-     * @param row Matrix element's row index..
+     * @param row Matrix element's row index.
      * @param col Matrix element's column index.
      * @return The specified element's value.
      */
@@ -43,7 +41,7 @@ public interface DMatrix extends Matrix {
      * It is not recommended that this function be used, except in highly optimized code where the bounds are
      * implicitly being checked.
      *
-     * @param row Matrix element's row index..
+     * @param row Matrix element's row index.
      * @param col Matrix element's column index.
      * @return The specified element's value.
      */

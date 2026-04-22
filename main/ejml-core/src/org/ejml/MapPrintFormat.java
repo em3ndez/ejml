@@ -22,6 +22,10 @@ import lombok.Setter;
 
 /// Describes a map or list of maps is formatted when converted into a string.
 public class MapPrintFormat {
+    /// Default valued used in toString and other location. Modifying this will modify the formatting in many locations
+    /// Only the end user should be tweaking this and not any library and its subject to change.
+    public final static MapPrintFormat DEFAULT = new MapPrintFormat();
+
     /// Number of significant digits it will display when converting a float
     @Getter @Setter public int precision = 6;
     /// Separator that splits key-value pairs
