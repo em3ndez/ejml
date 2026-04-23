@@ -19,4 +19,4 @@
 package org.ejml;
 
 // Nothing to test.
-public class TestMatrixPrintFormat extends EjmlStandardJUnit{}
+public class TestMatrixPrintFormat extends EjmlStandardJUnit {}

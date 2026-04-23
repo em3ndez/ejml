@@ -629,7 +629,7 @@ public class UtilEjml {
                     int countDecimal = digitCount(decimalScaled);
                     if (countDecimal > lengthExp - countInt - 2)
                         useFloat = false;
-                } else {
+                } else if (decimalScaled != 0.0) {
                     // the non-zero numbers are outside the precision allowed
                     useFloat = false;
                 }

@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml;
 
 import lombok.Getter;
@@ -32,5 +31,37 @@ public abstract class PrintFormat {
     /// Applies standard formatting to the double
     public String f( double value ) {
         return UtilEjml.fancyString2(value, precision, decimal);
+    }
+
+    public String f( String separator, double... values ) {
+        var builder = new StringBuilder();
+        f(builder, separator, values);
+        return builder.toString();
+    }
+
+    public void f( StringBuilder builder, String separator, double... values ) {
+        if (values.length == 0)
+            return;
+        for (int i = 0; i < values.length - 1; i++) {
+            builder.append(f(values[i]));
+            builder.append(separator);
+        }
+        builder.append(f(values[values.length - 1]));
+    }
+
+    public String f( String separator, float... values ) {
+        var builder = new StringBuilder();
+        f(builder, separator, values);
+        return builder.toString();
+    }
+
+    public void f( StringBuilder builder, String separator, float... values ) {
+        if (values.length == 0)
+            return;
+        for (int i = 0; i < values.length - 1; i++) {
+            builder.append(f(values[i]));
+            builder.append(separator);
+        }
+        builder.append(f(values[values.length - 1]));
     }
 }

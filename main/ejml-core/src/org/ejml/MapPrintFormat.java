@@ -80,6 +80,26 @@ public class MapPrintFormat extends PrintFormat {
         return txt + (isMore ? pairSeparator : "");
     }
 
+    public void pair( StringBuilder builder, String name, double[] values, boolean isMore ) {
+        builder.append(name);
+        builder.append(valueSeparator);
+        builder.append(itemPrefix);
+        f(builder, pairSeparator, values);
+        builder.append(itemSuffix);
+        if (isMore)
+            builder.append(pairSeparator);
+    }
+
+    public void pair( StringBuilder builder, String name, float[] values, boolean isMore ) {
+        builder.append(name);
+        builder.append(valueSeparator);
+        builder.append(itemPrefix);
+        f(builder, pairSeparator, values);
+        builder.append(itemSuffix);
+        if (isMore)
+            builder.append(pairSeparator);
+    }
+
     /// Sets values relevant when printing a single item
     public MapPrintFormat setSingle( String valueSeparator, String pairSeparator,
                                      String itemPrefix, String itemSuffix ) {

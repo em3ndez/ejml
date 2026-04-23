@@ -193,6 +193,9 @@ public class TestUtilEjml extends EjmlStandardJUnit {
         assertEquals("1", UtilEjml.fancyString2(1, 2, '.'));
         assertEquals("-12", UtilEjml.fancyString2(-12, 2, '.'));
         assertEquals("12", UtilEjml.fancyString2(12, 2, '.'));
+        assertEquals("320", UtilEjml.fancyString2(320, 1, '.'));
+        assertEquals("320", UtilEjml.fancyString2(320, 2, '.'));
+        assertEquals("3000", UtilEjml.fancyString2(3000, 3, '.'));
         assertEquals("3", UtilEjml.fancyString2(3.2, 0, '.'));
         assertEquals("0", UtilEjml.fancyString2(0.23, 0, '.'));
         assertEquals("0.2", UtilEjml.fancyString2(0.23, 1, '.'));
