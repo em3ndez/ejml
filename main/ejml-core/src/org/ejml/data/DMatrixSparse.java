@@ -18,7 +18,6 @@
 package org.ejml.data;
 
 import org.ejml.MapPrintFormat;
-import org.ejml.UtilEjml;
 
 import java.util.Iterator;
 
@@ -61,10 +60,9 @@ public interface DMatrixSparse extends DMatrix, MatrixSparse {
         while (iter.hasNext()) {
             CoordinateRealValue cell = iter.next();
             builder.append(format.itemPrefix);
-            builder.append("row").append(format.valueSeparator).append(cell.row).append(format.pairSeparator);
-            builder.append("col").append(format.valueSeparator).append(cell.col).append(format.pairSeparator);
-            builder.append("value").append(format.valueSeparator).append
-                    (UtilEjml.fancyString2(cell.value, format.precision, format.decimal));
+            format.pair(builder, "row", cell.row, true);
+            format.pair(builder, "col", cell.col, true);
+            format.pair(builder, "value", cell.value, false);
             builder.append(format.itemSuffix);
             if (iter.hasNext())
                 builder.append(format.itemSeparator);

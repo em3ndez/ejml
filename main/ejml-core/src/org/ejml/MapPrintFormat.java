@@ -37,9 +37,9 @@ public class MapPrintFormat extends PrintFormat {
     /// Separator applied after each item in the list
     @Getter @Setter public String itemSeparator = ",\n";
     /// Prefix applied before the list
-    @Getter @Setter public String listPrefix = "{";
+    @Getter @Setter public String listPrefix = "[";
     /// Prefix applied after the list
-    @Getter @Setter public String listSuffix = "}";
+    @Getter @Setter public String listSuffix = "]";
 
     public MapPrintFormat() {}
 

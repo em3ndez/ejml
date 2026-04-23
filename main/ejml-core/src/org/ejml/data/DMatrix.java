@@ -19,8 +19,6 @@ package org.ejml.data;
 
 import org.ejml.MatrixPrintFormat;
 
-import static org.ejml.UtilEjml.fancyString2;
-
 /**
  * Interface for all 64F real matrices.
  */
@@ -89,11 +87,11 @@ public interface DMatrix extends Matrix {
         for (int row = 0; row < numRows; row++) {
             builder.append(format.getRowPrefix());
             for (int col = 0; col < numCols - 1; col++) {
-                builder.append(fancyString2(get(row, col), precision, decimal));
+                builder.append(format.f(get(row, col)));
                 builder.append(format.getColSeparator());
             }
             if (numCols > 0)
-                builder.append(fancyString2(get(row, numCols - 1), precision, decimal));
+                builder.append(format.f(get(row, numCols - 1)), precision, decimal);
             builder.append(format.getRowSuffix());
             if (row < numRows - 1)
                 builder.append(format.getRowSeparator());

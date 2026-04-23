@@ -32,8 +32,8 @@ public class MatrixPrintFormat extends PrintFormat {
     @Getter @Setter public String rowSeparator = ",\n";
     @Getter @Setter public String rowPrefix = "{";
     @Getter @Setter public String rowSuffix = "}";
-    @Getter @Setter public String prefix = "{";
-    @Getter @Setter public String suffix = "}";
+    @Getter @Setter public String prefix = "[";
+    @Getter @Setter public String suffix = "]";
 
     public MatrixPrintFormat() {}
 
