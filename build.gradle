@@ -19,17 +19,6 @@
 import net.ltgt.gradle.errorprone.CheckSeverity
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-// Helper to pass the agent jar as -javaagent at JVM startup
-abstract class JavaAgentArgumentProvider implements CommandLineArgumentProvider {
-    @Classpath
-    abstract ConfigurableFileCollection getClasspath()
-
-    @Override
-    Iterable<String> asArguments() {
-        return classpath.files.collect { "-javaagent:${it.absolutePath}" }
-    }
-}
-
 plugins {
     id "com.peterabeles.gversion" version "1.10.3" apply false
     id "net.ltgt.errorprone" version "4.0.1" apply false
@@ -52,7 +41,7 @@ allprojects {
     project.ext.junit_version = '5.11.4'
     project.ext.errorprone_version = '2.41.0'
     project.ext.nullaway_version = '0.12.10'
-    project.ext.auto64to32_version = '3.3.0-SNAPSHOT'
+    project.ext.auto64to32_version = '3.3.0'
     project.ext.jmh_version = '1.36'
     project.ext.jetnull_version = '23.0.0'
     project.ext.jsr250_version = '1.0'
