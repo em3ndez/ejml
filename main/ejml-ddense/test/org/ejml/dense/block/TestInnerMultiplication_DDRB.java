@@ -75,7 +75,7 @@ public class TestInnerMultiplication_DDRB extends EjmlStandardJUnit {
         }
 
         // make sure all the functions were in fact tested
-        assertEquals(15, numFound);
+        assertEquals(16, numFound);
     }
 
     /// The inner block multiplication is in a row major format. Test it against
