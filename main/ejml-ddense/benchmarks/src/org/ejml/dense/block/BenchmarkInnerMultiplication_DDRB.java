@@ -66,6 +66,10 @@ public class BenchmarkInnerMultiplication_DDRB {
         InnerMultiplication_DDRB.blockMultPlus(A, B, C, 0, 0, 0, m, m, m);
     }
 
+    @Benchmark public void blockMultPlus_branch() {
+        InnerMultiplication_DDRB.blockMultPlus_branch(A, B, C, 0, 0, 0, m, m, m);
+    }
+
     @Benchmark public void blockMultPlusTransA() {
         InnerMultiplication_DDRB.blockMultPlusTransA(A, B, C, 0, 0, 0, m, m, m);
     }

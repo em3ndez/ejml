@@ -66,8 +66,12 @@ public class BenchmarkMultPlusExperiments_DDRB {
         System.arraycopy(C_template, 0, C, 0, C.length);
     }
 
-    @Benchmark public void baseline() {
+    @Benchmark public void production() {
         InnerMultiplication_DDRB.blockMultPlus(A, B, C, 0, 0, 0, m, m, m);
+    }
+
+    @Benchmark public void historical() {
+        BlockMultPlusExperiments_DDRB.blockMultPlus_ikj_historical(A, B, C, 0, 0, 0, m, m, m);
     }
 
     @Benchmark public void ikj_for() {
@@ -82,12 +86,20 @@ public class BenchmarkMultPlusExperiments_DDRB {
         BlockMultPlusExperiments_DDRB.blockMultPlus_ikj_K4(A, B, C, 0, 0, 0, m, m, m);
     }
 
+    @Benchmark public void ikj_K4_pinc() {
+        BlockMultPlusExperiments_DDRB.blockMultPlus_ikj_K4_pinc(A, B, C, 0, 0, 0, m, m, m);
+    }
+
     @Benchmark public void ikj() {
         BlockMultPlusExperiments_DDRB.blockMultPlus_ikj(A, B, C, 0, 0, 0, m, m, m);
     }
 
     @Benchmark public void jik() {
         BlockMultPlusExperiments_DDRB.blockMultPlus_jik(A, B, C, 0, 0, 0, m, m, m);
+    }
+
+    @Benchmark public void jik_I4_pinc() {
+        BlockMultPlusExperiments_DDRB.blockMultPlus_jik_I4_pinc(A, B, C, 0, 0, 0, m, m, m);
     }
 
     @Benchmark public void jik_I4() {

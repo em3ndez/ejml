@@ -39,41 +39,72 @@ package org.ejml.dense.row.mult;
 /// To simulate older hardware add the following flags:
 /// -XX:UseSSE=4 -XX:UseAVX=0
 ///
+/// Total floating-point ops per call: 128,000 (m=40), 432,000 (m=60), 1,024,000 (m=80).
+/// GFLOPS = 2·m³ / time. Higher is better.
+///
 /// | Variant                  |  m=40 |  m=60 |  m=80 |
 /// |--------------------------|------:|------:|------:|
-/// | packed_tile4x4_scratch   |  9.41 |  9.91 | 10.06 |
-/// | packed                   |  9.16 |  9.70 | 10.09 |
-/// | packed_scratch           |  8.03 |  8.82 |  8.49 |
-/// | jik_I4                   |  8.23 |  8.63 |  8.79 |
-/// | ikj_K4                   |  8.42 |  8.72 |  8.79 |
-/// | packed_jik_I4_scratch    |  7.87 |  8.57 |  8.73 |
-/// | tile4x4                  |  7.94 |  8.04 |  8.13 |
-/// | ijk                      |  6.57 |  6.79 |  6.97 |
-/// | baseline                 |  6.41 |  6.78 |  6.91 |
-/// | ikj                      |  5.88 |  6.41 |  6.69 |
-/// | kij                      |  5.68 |  6.21 |  6.31 |
-/// | jik                      |  5.68 |  6.11 |  6.40 |
-/// | ikj_for                  |  5.81 |  6.22 |  5.87 |
-/// | kij_I4                   |  5.72 |  5.74 |  5.77 |
-/// | kji                      |  2.78 |  2.83 |  2.92 |
-/// | jki                      |  2.81 |  2.82 |  2.18 |
+/// | packed                   |  9.09 |  9.69 | 10.10 |
+/// | packed_tile4x4_scratch   |  9.35 |  9.92 |  9.86 |
+/// | ikj_K4_pinc              |  8.59 |  9.10 |  9.11 |
+/// | production               |  8.38 |  8.81 |  8.66 |
+/// | packed_scratch           |  8.05 |  8.75 |  8.62 |
+/// | jik_I4                   |  8.18 |  8.67 |  8.81 |
+/// | packed_jik_I4_scratch    |  8.10 |  8.62 |  8.68 |
+/// | ikj_K4                   |  8.54 |  8.10 |  8.88 |
+/// | tile4x4                  |  7.96 |  7.98 |  8.03 |
+/// | jik_I4_pinc              |  7.18 |  7.76 |  7.90 |
+/// | historical               |  6.37 |  6.71 |  6.81 |
+/// | ijk                      |  6.57 |  6.65 |  6.92 |
+/// | ikj                      |  5.86 |  6.45 |  6.64 |
+/// | kij                      |  5.68 |  6.18 |  6.36 |
+/// | jik                      |  5.70 |  6.13 |  6.29 |
+/// | ikj_for                  |  5.85 |  6.08 |  5.83 |
+/// | kij_I4                   |  5.72 |  5.73 |  5.76 |
+/// | kji                      |  2.81 |  2.82 |  2.93 |
+/// | jki                      |  2.83 |  2.84 |  2.11 |
 ///
-/// Units: GFLOPS. Higher is better. Computed as 2·m³ / time.
+/// Comparison to GCC + C. ikj_K4 is 30 GLOPS with m=60
 ///
 /// See BenchmarkMultPlusExperiments_DDRB
 public class BlockMultPlusExperiments_DDRB {
 
-    /// Plain for loop with no inlining
+    /// Plain for loop with no inlining. This similar to what the original code was, but without
+    /// hand tuning of inner for loop.
+    public static void blockMultPlus_ikj_historical( final double[] dataA, final double[] dataB, final double[] dataC,
+                                                     int indexA, int indexB, int indexC,
+                                                     final int heightA, final int widthA, final int widthC ) {
+        int a = indexA;
+        int rowC = indexC;
+        for (int i = 0; i < heightA; i++, rowC += widthC) {
+            int b = indexB;
+
+            final int endC = rowC + widthC;
+            final int endA = a + widthA;
+            while (a != endA) {//for( int k = 0; k < widthA; k++ ) {
+                double valA = dataA[a++];
+
+                int c = rowC;
+
+                while (c != endC) {//for( int j = 0; j < widthC; j++ ) {
+                    dataC[c++] += valA*dataB[b++];
+                }
+            }
+        }
+    }
+
+    /// Plain for loop with no inlining. Similar to IKJ historical, but lets us see how well
+    /// the JVM optimizes regular for loops
     public static void blockMultPlus_ikj_for( final double[] dataA, final double[] dataB, final double[] dataC,
-                                               int indexA, int indexB, int indexC,
-                                               final int heightA, final int widthA, final int widthC ) {
-        for( int i = 0; i < heightA; i++ ) {
-            for( int k = 0; k < widthA; k++ ) {
+                                              int indexA, int indexB, int indexC,
+                                              final int heightA, final int widthA, final int widthC ) {
+        for (int i = 0; i < heightA; i++) {
+            for (int k = 0; k < widthA; k++) {
                 double valA = dataA[i*widthA + k + indexA];
                 int iterC = i*widthC + indexC;
                 int iterB = k*widthC + indexB;
-                for( int j = 0; j < widthC; j++ ) {
-                    dataC[iterC++] += valA * dataB[iterB++];
+                for (int j = 0; j < widthC; j++) {
+                    dataC[iterC++] += valA*dataB[iterB++];
                 }
             }
         }
@@ -271,11 +302,11 @@ public class BlockMultPlusExperiments_DDRB {
             final int rowC = indexC + i*widthC;
             int k = 0;
             for (; k < kEnd4; k += 4) {
-                double a0 = dataA[aRow + k    ];
+                double a0 = dataA[aRow + k];
                 double a1 = dataA[aRow + k + 1];
                 double a2 = dataA[aRow + k + 2];
                 double a3 = dataA[aRow + k + 3];
-                final int b0 = indexB + (k    )*widthC;
+                final int b0 = indexB + (k)*widthC;
                 final int b1 = indexB + (k + 1)*widthC;
                 final int b2 = indexB + (k + 2)*widthC;
                 final int b3 = indexB + (k + 3)*widthC;
@@ -284,6 +315,41 @@ public class BlockMultPlusExperiments_DDRB {
                             + a1*dataB[b1 + j]
                             + a2*dataB[b2 + j]
                             + a3*dataB[b3 + j];
+                }
+            }
+            // k tail
+            for (; k < widthA; k++) {
+                double valA = dataA[aRow + k];
+                final int b = indexB + k*widthC;
+                for (int j = 0; j < widthC; j++) {
+                    dataC[rowC + j] += valA*dataB[b + j];
+                }
+            }
+        }
+    }
+
+    public static void blockMultPlus_ikj_K4_pinc( final double[] dataA, final double[] dataB, final double[] dataC,
+                                                  int indexA, int indexB, int indexC,
+                                                  final int heightA, final int widthA, final int widthC ) {
+        final int kEnd4 = widthA & ~3;
+
+        for (int i = 0; i < heightA; i++) {
+            final int aRow = indexA + i*widthA;
+            final int rowC = indexC + i*widthC;
+            int k = 0;
+            for (; k < kEnd4; k += 4) {
+                final double a0 = dataA[aRow + k];
+                final double a1 = dataA[aRow + k + 1];
+                final double a2 = dataA[aRow + k + 2];
+                final double a3 = dataA[aRow + k + 3];
+                int b0 = indexB + k*widthC;
+                int b1 = b0 + widthC;
+                int b2 = b1 + widthC;
+                int b3 = b2 + widthC;
+                int idxC = rowC;
+                int endJ = idxC + widthC;
+                while (idxC < endJ) { // for (int j = 0; j < widthC; j++) {
+                    dataC[idxC++] += a0*dataB[b0++] + a1*dataB[b1++] + a2*dataB[b2++] + a3*dataB[b3++];
                 }
             }
             // k tail
@@ -309,11 +375,11 @@ public class BlockMultPlusExperiments_DDRB {
             final int bRow = indexB + k*widthC;
             int i = 0;
             for (; i < iEnd4; i += 4) {
-                double a0 = dataA[indexA + (i    )*widthA + k];
+                double a0 = dataA[indexA + (i)*widthA + k];
                 double a1 = dataA[indexA + (i + 1)*widthA + k];
                 double a2 = dataA[indexA + (i + 2)*widthA + k];
                 double a3 = dataA[indexA + (i + 3)*widthA + k];
-                final int rowC0 = indexC + (i    )*widthC;
+                final int rowC0 = indexC + (i)*widthC;
                 final int rowC1 = indexC + (i + 1)*widthC;
                 final int rowC2 = indexC + (i + 2)*widthC;
                 final int rowC3 = indexC + (i + 3)*widthC;
@@ -348,7 +414,7 @@ public class BlockMultPlusExperiments_DDRB {
             int i = 0;
             for (; i < iEnd4; i += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
-                final int a0 = indexA + (i    )*widthA;
+                final int a0 = indexA + (i)*widthA;
                 final int a1 = indexA + (i + 1)*widthA;
                 final int a2 = indexA + (i + 2)*widthA;
                 final int a3 = indexA + (i + 3)*widthA;
@@ -361,7 +427,49 @@ public class BlockMultPlusExperiments_DDRB {
                     s3 += dataA[a3 + k]*bv;
                     bIdx += widthC;
                 }
-                dataC[indexC + (i    )*widthC + j] += s0;
+                dataC[indexC + (i)*widthC + j] += s0;
+                dataC[indexC + (i + 1)*widthC + j] += s1;
+                dataC[indexC + (i + 2)*widthC + j] += s2;
+                dataC[indexC + (i + 3)*widthC + j] += s3;
+            }
+            // i tail
+            for (; i < heightA; i++) {
+                double s = 0.0;
+                final int a = indexA + i*widthA;
+                int bIdx = indexB + j;
+                for (int k = 0; k < widthA; k++) {
+                    s += dataA[a + k]*dataB[bIdx];
+                    bIdx += widthC;
+                }
+                dataC[indexC + i*widthC + j] += s;
+            }
+        }
+    }
+
+    public static void blockMultPlus_jik_I4_pinc( final double[] dataA, final double[] dataB, final double[] dataC,
+                                                  int indexA, int indexB, int indexC,
+                                                  final int heightA, final int widthA, final int widthC ) {
+        final int iEnd4 = heightA & ~3;
+
+        for (int j = 0; j < widthC; j++) {
+            int i = 0;
+            for (; i < iEnd4; i += 4) {
+                double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
+                int a0 = indexA + (i)*widthA;
+                int a1 = indexA + (i + 1)*widthA;
+                int a2 = indexA + (i + 2)*widthA;
+                int a3 = indexA + (i + 3)*widthA;
+                int bIdx = indexB + j;
+                int endK = a0 + widthA;
+                while (a0 < endK) { // for (int k = 0; k < widthA; k++) {
+                    double bv = dataB[bIdx];
+                    s0 += dataA[a0++]*bv;
+                    s1 += dataA[a1++]*bv;
+                    s2 += dataA[a2++]*bv;
+                    s3 += dataA[a3++]*bv;
+                    bIdx += widthC;
+                }
+                dataC[indexC + (i)*widthC + j] += s0;
                 dataC[indexC + (i + 1)*widthC + j] += s1;
                 dataC[indexC + (i + 2)*widthC + j] += s2;
                 dataC[indexC + (i + 3)*widthC + j] += s3;
@@ -391,32 +499,56 @@ public class BlockMultPlusExperiments_DDRB {
 
         for (int i = 0; i < iEnd; i += 4) {
             for (int j = 0; j < jEnd; j += 4) {
-                final int c0 = indexC + (i    )*widthC + j;
+                final int c0 = indexC + (i)*widthC + j;
                 final int c1 = indexC + (i + 1)*widthC + j;
                 final int c2 = indexC + (i + 2)*widthC + j;
                 final int c3 = indexC + (i + 3)*widthC + j;
-                double t00 = dataC[c0    ], t01 = dataC[c0 + 1], t02 = dataC[c0 + 2], t03 = dataC[c0 + 3];
-                double t10 = dataC[c1    ], t11 = dataC[c1 + 1], t12 = dataC[c1 + 2], t13 = dataC[c1 + 3];
-                double t20 = dataC[c2    ], t21 = dataC[c2 + 1], t22 = dataC[c2 + 2], t23 = dataC[c2 + 3];
-                double t30 = dataC[c3    ], t31 = dataC[c3 + 1], t32 = dataC[c3 + 2], t33 = dataC[c3 + 3];
+                double t00 = dataC[c0], t01 = dataC[c0 + 1], t02 = dataC[c0 + 2], t03 = dataC[c0 + 3];
+                double t10 = dataC[c1], t11 = dataC[c1 + 1], t12 = dataC[c1 + 2], t13 = dataC[c1 + 3];
+                double t20 = dataC[c2], t21 = dataC[c2 + 1], t22 = dataC[c2 + 2], t23 = dataC[c2 + 3];
+                double t30 = dataC[c3], t31 = dataC[c3 + 1], t32 = dataC[c3 + 2], t33 = dataC[c3 + 3];
 
                 for (int k = 0; k < widthA; k++) {
-                    double a0 = dataA[indexA + (i    )*widthA + k];
+                    double a0 = dataA[indexA + (i)*widthA + k];
                     double a1 = dataA[indexA + (i + 1)*widthA + k];
                     double a2 = dataA[indexA + (i + 2)*widthA + k];
                     double a3 = dataA[indexA + (i + 3)*widthA + k];
                     final int b = indexB + k*widthC + j;
                     double b0 = dataB[b], b1 = dataB[b + 1], b2 = dataB[b + 2], b3 = dataB[b + 3];
-                    t00 += a0*b0; t01 += a0*b1; t02 += a0*b2; t03 += a0*b3;
-                    t10 += a1*b0; t11 += a1*b1; t12 += a1*b2; t13 += a1*b3;
-                    t20 += a2*b0; t21 += a2*b1; t22 += a2*b2; t23 += a2*b3;
-                    t30 += a3*b0; t31 += a3*b1; t32 += a3*b2; t33 += a3*b3;
+                    t00 += a0*b0;
+                    t01 += a0*b1;
+                    t02 += a0*b2;
+                    t03 += a0*b3;
+                    t10 += a1*b0;
+                    t11 += a1*b1;
+                    t12 += a1*b2;
+                    t13 += a1*b3;
+                    t20 += a2*b0;
+                    t21 += a2*b1;
+                    t22 += a2*b2;
+                    t23 += a2*b3;
+                    t30 += a3*b0;
+                    t31 += a3*b1;
+                    t32 += a3*b2;
+                    t33 += a3*b3;
                 }
 
-                dataC[c0    ] = t00; dataC[c0 + 1] = t01; dataC[c0 + 2] = t02; dataC[c0 + 3] = t03;
-                dataC[c1    ] = t10; dataC[c1 + 1] = t11; dataC[c1 + 2] = t12; dataC[c1 + 3] = t13;
-                dataC[c2    ] = t20; dataC[c2 + 1] = t21; dataC[c2 + 2] = t22; dataC[c2 + 3] = t23;
-                dataC[c3    ] = t30; dataC[c3 + 1] = t31; dataC[c3 + 2] = t32; dataC[c3 + 3] = t33;
+                dataC[c0] = t00;
+                dataC[c0 + 1] = t01;
+                dataC[c0 + 2] = t02;
+                dataC[c0 + 3] = t03;
+                dataC[c1] = t10;
+                dataC[c1 + 1] = t11;
+                dataC[c1 + 2] = t12;
+                dataC[c1 + 3] = t13;
+                dataC[c2] = t20;
+                dataC[c2 + 1] = t21;
+                dataC[c2 + 2] = t22;
+                dataC[c2 + 3] = t23;
+                dataC[c3] = t30;
+                dataC[c3 + 1] = t31;
+                dataC[c3 + 2] = t32;
+                dataC[c3 + 3] = t33;
             }
             // j tail
             for (int j = jEnd; j < widthC; j++) {
@@ -467,7 +599,7 @@ public class BlockMultPlusExperiments_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = (j    )*widthA;
+                int b0 = (j)*widthA;
                 int b1 = (j + 1)*widthA;
                 int b2 = (j + 2)*widthA;
                 int b3 = (j + 3)*widthA;
@@ -479,7 +611,7 @@ public class BlockMultPlusExperiments_DDRB {
                     s3 += valA*B_pack[b3++];
                 }
                 int c = indexC + i*widthC + j;
-                dataC[c    ] += s0;
+                dataC[c] += s0;
                 dataC[c + 1] += s1;
                 dataC[c + 2] += s2;
                 dataC[c + 3] += s3;
@@ -520,7 +652,7 @@ public class BlockMultPlusExperiments_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = (j    )*widthA;
+                int b0 = (j)*widthA;
                 int b1 = (j + 1)*widthA;
                 int b2 = (j + 2)*widthA;
                 int b3 = (j + 3)*widthA;
@@ -532,7 +664,7 @@ public class BlockMultPlusExperiments_DDRB {
                     s3 += valA*scratch[b3++];
                 }
                 int c = indexC + i*widthC + j;
-                dataC[c    ] += s0;
+                dataC[c] += s0;
                 dataC[c + 1] += s1;
                 dataC[c + 2] += s2;
                 dataC[c + 3] += s3;
@@ -568,7 +700,7 @@ public class BlockMultPlusExperiments_DDRB {
         final int jEnd = widthC & ~3;
 
         for (int i = 0; i < iEnd; i += 4) {
-            final int a0Row = indexA + (i    )*widthA;
+            final int a0Row = indexA + (i)*widthA;
             final int a1Row = indexA + (i + 1)*widthA;
             final int a2Row = indexA + (i + 2)*widthA;
             final int a3Row = indexA + (i + 3)*widthA;
@@ -577,7 +709,7 @@ public class BlockMultPlusExperiments_DDRB {
                 double t10 = 0.0, t11 = 0.0, t12 = 0.0, t13 = 0.0;
                 double t20 = 0.0, t21 = 0.0, t22 = 0.0, t23 = 0.0;
                 double t30 = 0.0, t31 = 0.0, t32 = 0.0, t33 = 0.0;
-                final int b0Row = (j    )*widthA;
+                final int b0Row = (j)*widthA;
                 final int b1Row = (j + 1)*widthA;
                 final int b2Row = (j + 2)*widthA;
                 final int b3Row = (j + 3)*widthA;
@@ -591,19 +723,43 @@ public class BlockMultPlusExperiments_DDRB {
                     double b1 = scratch[b1Row + k];
                     double b2 = scratch[b2Row + k];
                     double b3 = scratch[b3Row + k];
-                    t00 += a0*b0; t01 += a0*b1; t02 += a0*b2; t03 += a0*b3;
-                    t10 += a1*b0; t11 += a1*b1; t12 += a1*b2; t13 += a1*b3;
-                    t20 += a2*b0; t21 += a2*b1; t22 += a2*b2; t23 += a2*b3;
-                    t30 += a3*b0; t31 += a3*b1; t32 += a3*b2; t33 += a3*b3;
+                    t00 += a0*b0;
+                    t01 += a0*b1;
+                    t02 += a0*b2;
+                    t03 += a0*b3;
+                    t10 += a1*b0;
+                    t11 += a1*b1;
+                    t12 += a1*b2;
+                    t13 += a1*b3;
+                    t20 += a2*b0;
+                    t21 += a2*b1;
+                    t22 += a2*b2;
+                    t23 += a2*b3;
+                    t30 += a3*b0;
+                    t31 += a3*b1;
+                    t32 += a3*b2;
+                    t33 += a3*b3;
                 }
-                final int c0 = indexC + (i    )*widthC + j;
+                final int c0 = indexC + (i)*widthC + j;
                 final int c1 = indexC + (i + 1)*widthC + j;
                 final int c2 = indexC + (i + 2)*widthC + j;
                 final int c3 = indexC + (i + 3)*widthC + j;
-                dataC[c0    ] += t00; dataC[c0 + 1] += t01; dataC[c0 + 2] += t02; dataC[c0 + 3] += t03;
-                dataC[c1    ] += t10; dataC[c1 + 1] += t11; dataC[c1 + 2] += t12; dataC[c1 + 3] += t13;
-                dataC[c2    ] += t20; dataC[c2 + 1] += t21; dataC[c2 + 2] += t22; dataC[c2 + 3] += t23;
-                dataC[c3    ] += t30; dataC[c3 + 1] += t31; dataC[c3 + 2] += t32; dataC[c3 + 3] += t33;
+                dataC[c0] += t00;
+                dataC[c0 + 1] += t01;
+                dataC[c0 + 2] += t02;
+                dataC[c0 + 3] += t03;
+                dataC[c1] += t10;
+                dataC[c1 + 1] += t11;
+                dataC[c1 + 2] += t12;
+                dataC[c1 + 3] += t13;
+                dataC[c2] += t20;
+                dataC[c2 + 1] += t21;
+                dataC[c2 + 2] += t22;
+                dataC[c2 + 3] += t23;
+                dataC[c3] += t30;
+                dataC[c3 + 1] += t31;
+                dataC[c3 + 2] += t32;
+                dataC[c3 + 3] += t33;
             }
             // j tail for the 4 i rows
             for (int j = jEnd; j < widthC; j++) {
@@ -616,7 +772,7 @@ public class BlockMultPlusExperiments_DDRB {
                     s2 += dataA[a2Row + k]*bv;
                     s3 += dataA[a3Row + k]*bv;
                 }
-                dataC[indexC + (i    )*widthC + j] += s0;
+                dataC[indexC + (i)*widthC + j] += s0;
                 dataC[indexC + (i + 1)*widthC + j] += s1;
                 dataC[indexC + (i + 2)*widthC + j] += s2;
                 dataC[indexC + (i + 3)*widthC + j] += s3;
@@ -658,7 +814,7 @@ public class BlockMultPlusExperiments_DDRB {
             int i = 0;
             for (; i < iEnd4; i += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
-                final int a0 = indexA + (i    )*widthA;
+                final int a0 = indexA + (i)*widthA;
                 final int a1 = indexA + (i + 1)*widthA;
                 final int a2 = indexA + (i + 2)*widthA;
                 final int a3 = indexA + (i + 3)*widthA;
@@ -669,7 +825,7 @@ public class BlockMultPlusExperiments_DDRB {
                     s2 += dataA[a2 + k]*bv;
                     s3 += dataA[a3 + k]*bv;
                 }
-                dataC[indexC + (i    )*widthC + j] += s0;
+                dataC[indexC + (i)*widthC + j] += s0;
                 dataC[indexC + (i + 1)*widthC + j] += s1;
                 dataC[indexC + (i + 2)*widthC + j] += s2;
                 dataC[indexC + (i + 3)*widthC + j] += s3;

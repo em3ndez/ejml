@@ -27,7 +27,7 @@ public class InnerMultiplication_DDRB {
     /// C = C + A \* B
     public static void blockMultPlus( final double[] dataA, final double[] dataB, final double[] dataC,
                                       int indexA, int indexB, int indexC,
-                                      final int heightA, final int widthA, final int widthC) {
+                                      final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < heightA; i++ ) {
 //            for( int k = 0; k < widthA; k++ ) {
 //                for( int j = 0; j < widthC; j++ ) {
@@ -43,11 +43,11 @@ public class InnerMultiplication_DDRB {
             final int rowC = indexC + i*widthC;
             int k = 0;
             for (; k < kEnd4; k += 4) {
-                double a0 = dataA[aRow + k    ];
+                double a0 = dataA[aRow + k];
                 double a1 = dataA[aRow + k + 1];
                 double a2 = dataA[aRow + k + 2];
                 double a3 = dataA[aRow + k + 3];
-                final int b0 = indexB + (k    )*widthC;
+                final int b0 = indexB + (k)*widthC;
                 final int b1 = indexB + (k + 1)*widthC;
                 final int b2 = indexB + (k + 2)*widthC;
                 final int b3 = indexB + (k + 3)*widthC;
@@ -69,12 +69,55 @@ public class InnerMultiplication_DDRB {
         }
     }
 
+    public static void blockMultPlus_branch( final double[] dataA, final double[] dataB, final double[] dataC,
+                                             int indexA, int indexB, int indexC,
+                                             final int heightA, final int widthA, final int widthC ) {
+//        for( int i = 0; i < heightA; i++ ) {
+//            for( int k = 0; k < widthA; k++ ) {
+//                for( int j = 0; j < widthC; j++ ) {
+//                    dataC[ i*widthC + j + indexC ] += dataA[i*widthA + k + indexA] * dataB[k*widthC + j + indexB];
+//                }
+//            }
+//        }
+
+        final int kEnd4 = widthA & ~3;
+
+        for (int i = 0; i < heightA; i++) {
+            final int aRow = indexA + i*widthA;
+            final int rowC = indexC + i*widthC;
+            int k = 0;
+            for (; k < kEnd4; k += 4) {
+                final double a0 = dataA[aRow + k];
+                final double a1 = dataA[aRow + k + 1];
+                final double a2 = dataA[aRow + k + 2];
+                final double a3 = dataA[aRow + k + 3];
+                int b0 = indexB + (k)*widthC;
+                int b1 = indexB + (k + 1)*widthC;
+                int b2 = indexB + (k + 2)*widthC;
+                int b3 = indexB + (k + 3)*widthC;
+                int idxC = rowC;
+                final int endJ = rowC + widthC;
+                while (idxC < endJ) { //  for (int j = 0; j < widthC; j++) {
+                    dataC[idxC++] += a0*dataB[b0++] + a1*dataB[b1++] + a2*dataB[b2++] + a3*dataB[b3++];
+                }
+            }
+            // k tail
+            for (; k < widthA; k++) {
+                double valA = dataA[aRow + k];
+                final int b = indexB + k*widthC;
+                for (int j = 0; j < widthC; j++) {
+                    dataC[rowC + j] += valA*dataB[b + j];
+                }
+            }
+        }
+    }
+
     /// Performs the follow operation on individual inner blocks:
     ///
     /// C = C + A<sup>T</sup> \* B
     public static void blockMultPlusTransA( final double[] dataA, final double[] dataB, final double[] dataC,
                                             int indexA, int indexB, int indexC,
-                                            final int heightA, final int widthA, final int widthC) {
+                                            final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < widthA; i++ ) {
 //            for( int k = 0; k < heightA; k++ ) {
 //                double valA = dataA[k*widthA + i + indexA];
@@ -103,7 +146,7 @@ public class InnerMultiplication_DDRB {
                     bIdx += widthC;
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] += s0;
+                dataC[cIdx] += s0;
                 dataC[cIdx + 1] += s1;
                 dataC[cIdx + 2] += s2;
                 dataC[cIdx + 3] += s3;
@@ -128,7 +171,7 @@ public class InnerMultiplication_DDRB {
     /// C = C + A \* B<sup>T</sup>
     public static void blockMultPlusTransB( final double[] dataA, final double[] dataB, final double[] dataC,
                                             int indexA, int indexB, int indexC,
-                                            final int heightA, final int widthA, final int widthC) {
+                                            final int heightA, final int widthA, final int widthC ) {
 //        for (int i = 0; i < heightA; i++) {
 //            for (int j = 0; j < widthC; j++) {
 //                double val = 0;
@@ -148,7 +191,7 @@ public class InnerMultiplication_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = indexB + (j    )*widthA;
+                int b0 = indexB + (j)*widthA;
                 int b1 = indexB + (j + 1)*widthA;
                 int b2 = indexB + (j + 2)*widthA;
                 int b3 = indexB + (j + 3)*widthA;
@@ -160,7 +203,7 @@ public class InnerMultiplication_DDRB {
                     s3 += valA*dataB[b3++];
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] += s0;
+                dataC[cIdx] += s0;
                 dataC[cIdx + 1] += s1;
                 dataC[cIdx + 2] += s2;
                 dataC[cIdx + 3] += s3;
@@ -182,7 +225,7 @@ public class InnerMultiplication_DDRB {
     /// C = C - A \* B
     public static void blockMultMinus( final double[] dataA, final double[] dataB, final double[] dataC,
                                        int indexA, int indexB, int indexC,
-                                       final int heightA, final int widthA, final int widthC) {
+                                       final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < heightA; i++ ) {
 //            for( int k = 0; k < widthA; k++ ) {
 //                for( int j = 0; j < widthC; j++ ) {
@@ -198,11 +241,11 @@ public class InnerMultiplication_DDRB {
             final int rowC = indexC + i*widthC;
             int k = 0;
             for (; k < kEnd4; k += 4) {
-                double a0 = dataA[aRow + k    ];
+                double a0 = dataA[aRow + k];
                 double a1 = dataA[aRow + k + 1];
                 double a2 = dataA[aRow + k + 2];
                 double a3 = dataA[aRow + k + 3];
-                final int b0 = indexB + (k    )*widthC;
+                final int b0 = indexB + (k)*widthC;
                 final int b1 = indexB + (k + 1)*widthC;
                 final int b2 = indexB + (k + 2)*widthC;
                 final int b3 = indexB + (k + 3)*widthC;
@@ -229,7 +272,7 @@ public class InnerMultiplication_DDRB {
     /// C = C - A<sup>T</sup> \* B
     public static void blockMultMinusTransA( final double[] dataA, final double[] dataB, final double[] dataC,
                                              int indexA, int indexB, int indexC,
-                                             final int heightA, final int widthA, final int widthC) {
+                                             final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < widthA; i++ ) {
 //            for( int k = 0; k < heightA; k++ ) {
 //                double valA = dataA[k*widthA + i + indexA];
@@ -258,7 +301,7 @@ public class InnerMultiplication_DDRB {
                     bIdx += widthC;
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] -= s0;
+                dataC[cIdx] -= s0;
                 dataC[cIdx + 1] -= s1;
                 dataC[cIdx + 2] -= s2;
                 dataC[cIdx + 3] -= s3;
@@ -283,7 +326,7 @@ public class InnerMultiplication_DDRB {
     /// C = C - A \* B<sup>T</sup>
     public static void blockMultMinusTransB( final double[] dataA, final double[] dataB, final double[] dataC,
                                              int indexA, int indexB, int indexC,
-                                             final int heightA, final int widthA, final int widthC) {
+                                             final int heightA, final int widthA, final int widthC ) {
 //        for (int i = 0; i < heightA; i++) {
 //            for (int j = 0; j < widthC; j++) {
 //                double val = 0;
@@ -303,7 +346,7 @@ public class InnerMultiplication_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = indexB + (j    )*widthA;
+                int b0 = indexB + (j)*widthA;
                 int b1 = indexB + (j + 1)*widthA;
                 int b2 = indexB + (j + 2)*widthA;
                 int b3 = indexB + (j + 3)*widthA;
@@ -315,7 +358,7 @@ public class InnerMultiplication_DDRB {
                     s3 += valA*dataB[b3++];
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] -= s0;
+                dataC[cIdx] -= s0;
                 dataC[cIdx + 1] -= s1;
                 dataC[cIdx + 2] -= s2;
                 dataC[cIdx + 3] -= s3;
@@ -337,7 +380,7 @@ public class InnerMultiplication_DDRB {
     /// C = A \* B
     public static void blockMultSet( final double[] dataA, final double[] dataB, final double[] dataC,
                                      int indexA, int indexB, int indexC,
-                                     final int heightA, final int widthA, final int widthC) {
+                                     final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < heightA; i++ ) {
 //            for( int k = 0; k < widthA; k++ ) {
 //                for( int j = 0; j < widthC; j++ ) {
@@ -357,11 +400,11 @@ public class InnerMultiplication_DDRB {
             }
             int k = 0;
             for (; k < kEnd4; k += 4) {
-                double a0 = dataA[aRow + k    ];
+                double a0 = dataA[aRow + k];
                 double a1 = dataA[aRow + k + 1];
                 double a2 = dataA[aRow + k + 2];
                 double a3 = dataA[aRow + k + 3];
-                final int b0 = indexB + (k    )*widthC;
+                final int b0 = indexB + (k)*widthC;
                 final int b1 = indexB + (k + 1)*widthC;
                 final int b2 = indexB + (k + 2)*widthC;
                 final int b3 = indexB + (k + 3)*widthC;
@@ -388,7 +431,7 @@ public class InnerMultiplication_DDRB {
     /// C = A<sup>T</sup> \* B
     public static void blockMultSetTransA( final double[] dataA, final double[] dataB, final double[] dataC,
                                            int indexA, int indexB, int indexC,
-                                           final int heightA, final int widthA, final int widthC) {
+                                           final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < widthA; i++ ) {
 //            for( int k = 0; k < heightA; k++ ) {
 //                double valA = dataA[k*widthA + i + indexA];
@@ -417,7 +460,7 @@ public class InnerMultiplication_DDRB {
                     bIdx += widthC;
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] = s0;
+                dataC[cIdx] = s0;
                 dataC[cIdx + 1] = s1;
                 dataC[cIdx + 2] = s2;
                 dataC[cIdx + 3] = s3;
@@ -442,7 +485,7 @@ public class InnerMultiplication_DDRB {
     /// C = A \* B<sup>T</sup>
     public static void blockMultSetTransB( final double[] dataA, final double[] dataB, final double[] dataC,
                                            int indexA, int indexB, int indexC,
-                                           final int heightA, final int widthA, final int widthC) {
+                                           final int heightA, final int widthA, final int widthC ) {
 //        for (int i = 0; i < heightA; i++) {
 //            for (int j = 0; j < widthC; j++) {
 //                double val = 0;
@@ -462,7 +505,7 @@ public class InnerMultiplication_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = indexB + (j    )*widthA;
+                int b0 = indexB + (j)*widthA;
                 int b1 = indexB + (j + 1)*widthA;
                 int b2 = indexB + (j + 2)*widthA;
                 int b3 = indexB + (j + 3)*widthA;
@@ -474,7 +517,7 @@ public class InnerMultiplication_DDRB {
                     s3 += valA*dataB[b3++];
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] = s0;
+                dataC[cIdx] = s0;
                 dataC[cIdx + 1] = s1;
                 dataC[cIdx + 2] = s2;
                 dataC[cIdx + 3] = s3;
@@ -494,9 +537,9 @@ public class InnerMultiplication_DDRB {
     /// Performs the follow operation on individual inner blocks:
     ///
     /// C = C +  &alpha; A \* B
-    public static void blockMultPlus( double alpha , final double[] dataA, final double[] dataB, final double[] dataC,
+    public static void blockMultPlus( double alpha, final double[] dataA, final double[] dataB, final double[] dataC,
                                       int indexA, int indexB, int indexC,
-                                      final int heightA, final int widthA, final int widthC) {
+                                      final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < heightA; i++ ) {
 //            for( int k = 0; k < widthA; k++ ) {
 //                for( int j = 0; j < widthC; j++ ) {
@@ -512,11 +555,11 @@ public class InnerMultiplication_DDRB {
             final int rowC = indexC + i*widthC;
             int k = 0;
             for (; k < kEnd4; k += 4) {
-                double a0 = alpha*dataA[aRow + k    ];
+                double a0 = alpha*dataA[aRow + k];
                 double a1 = alpha*dataA[aRow + k + 1];
                 double a2 = alpha*dataA[aRow + k + 2];
                 double a3 = alpha*dataA[aRow + k + 3];
-                final int b0 = indexB + (k    )*widthC;
+                final int b0 = indexB + (k)*widthC;
                 final int b1 = indexB + (k + 1)*widthC;
                 final int b2 = indexB + (k + 2)*widthC;
                 final int b3 = indexB + (k + 3)*widthC;
@@ -541,9 +584,9 @@ public class InnerMultiplication_DDRB {
     /// Performs the follow operation on individual inner blocks:
     ///
     /// C = C +  &alpha; A<sup>T</sup> \* B
-    public static void blockMultPlusTransA( double alpha , final double[] dataA, final double[] dataB, final double[] dataC,
+    public static void blockMultPlusTransA( double alpha, final double[] dataA, final double[] dataB, final double[] dataC,
                                             int indexA, int indexB, int indexC,
-                                            final int heightA, final int widthA, final int widthC) {
+                                            final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < widthA; i++ ) {
 //            for( int k = 0; k < heightA; k++ ) {
 //                double valA = alpha*dataA[k*widthA + i + indexA];
@@ -572,7 +615,7 @@ public class InnerMultiplication_DDRB {
                     bIdx += widthC;
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] += s0;
+                dataC[cIdx] += s0;
                 dataC[cIdx + 1] += s1;
                 dataC[cIdx + 2] += s2;
                 dataC[cIdx + 3] += s3;
@@ -595,9 +638,9 @@ public class InnerMultiplication_DDRB {
     /// Performs the follow operation on individual inner blocks:
     ///
     /// C = C +  &alpha; A \* B<sup>T</sup>
-    public static void blockMultPlusTransB( double alpha , final double[] dataA, final double[] dataB, final double[] dataC,
+    public static void blockMultPlusTransB( double alpha, final double[] dataA, final double[] dataB, final double[] dataC,
                                             int indexA, int indexB, int indexC,
-                                            final int heightA, final int widthA, final int widthC) {
+                                            final int heightA, final int widthA, final int widthC ) {
 //        for (int i = 0; i < heightA; i++) {
 //            for (int j = 0; j < widthC; j++) {
 //                double val = 0;
@@ -617,7 +660,7 @@ public class InnerMultiplication_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = indexB + (j    )*widthA;
+                int b0 = indexB + (j)*widthA;
                 int b1 = indexB + (j + 1)*widthA;
                 int b2 = indexB + (j + 2)*widthA;
                 int b3 = indexB + (j + 3)*widthA;
@@ -629,7 +672,7 @@ public class InnerMultiplication_DDRB {
                     s3 += valA*dataB[b3++];
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] += alpha*s0;
+                dataC[cIdx] += alpha*s0;
                 dataC[cIdx + 1] += alpha*s1;
                 dataC[cIdx + 2] += alpha*s2;
                 dataC[cIdx + 3] += alpha*s3;
@@ -649,9 +692,9 @@ public class InnerMultiplication_DDRB {
     /// Performs the follow operation on individual inner blocks:
     ///
     /// C =  &alpha; A \* B
-    public static void blockMultSet( double alpha , final double[] dataA, final double[] dataB, final double[] dataC,
+    public static void blockMultSet( double alpha, final double[] dataA, final double[] dataB, final double[] dataC,
                                      int indexA, int indexB, int indexC,
-                                     final int heightA, final int widthA, final int widthC) {
+                                     final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < heightA; i++ ) {
 //            for( int k = 0; k < widthA; k++ ) {
 //                for( int j = 0; j < widthC; j++ ) {
@@ -671,11 +714,11 @@ public class InnerMultiplication_DDRB {
             }
             int k = 0;
             for (; k < kEnd4; k += 4) {
-                double a0 = alpha*dataA[aRow + k    ];
+                double a0 = alpha*dataA[aRow + k];
                 double a1 = alpha*dataA[aRow + k + 1];
                 double a2 = alpha*dataA[aRow + k + 2];
                 double a3 = alpha*dataA[aRow + k + 3];
-                final int b0 = indexB + (k    )*widthC;
+                final int b0 = indexB + (k)*widthC;
                 final int b1 = indexB + (k + 1)*widthC;
                 final int b2 = indexB + (k + 2)*widthC;
                 final int b3 = indexB + (k + 3)*widthC;
@@ -700,9 +743,9 @@ public class InnerMultiplication_DDRB {
     /// Performs the follow operation on individual inner blocks:
     ///
     /// C =  &alpha; A<sup>T</sup> \* B
-    public static void blockMultSetTransA( double alpha , final double[] dataA, final double[] dataB, final double[] dataC,
+    public static void blockMultSetTransA( double alpha, final double[] dataA, final double[] dataB, final double[] dataC,
                                            int indexA, int indexB, int indexC,
-                                           final int heightA, final int widthA, final int widthC) {
+                                           final int heightA, final int widthA, final int widthC ) {
 //        for( int i = 0; i < widthA; i++ ) {
 //            for( int k = 0; k < heightA; k++ ) {
 //                double valA = alpha*dataA[k*widthA + i + indexA];
@@ -731,7 +774,7 @@ public class InnerMultiplication_DDRB {
                     bIdx += widthC;
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] = s0;
+                dataC[cIdx] = s0;
                 dataC[cIdx + 1] = s1;
                 dataC[cIdx + 2] = s2;
                 dataC[cIdx + 3] = s3;
@@ -754,9 +797,9 @@ public class InnerMultiplication_DDRB {
     /// Performs the follow operation on individual inner blocks:
     ///
     /// C =  &alpha; A \* B<sup>T</sup>
-    public static void blockMultSetTransB( double alpha , final double[] dataA, final double[] dataB, final double[] dataC,
+    public static void blockMultSetTransB( double alpha, final double[] dataA, final double[] dataB, final double[] dataC,
                                            int indexA, int indexB, int indexC,
-                                           final int heightA, final int widthA, final int widthC) {
+                                           final int heightA, final int widthA, final int widthC ) {
 //        for (int i = 0; i < heightA; i++) {
 //            for (int j = 0; j < widthC; j++) {
 //                double val = 0;
@@ -776,7 +819,7 @@ public class InnerMultiplication_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = indexB + (j    )*widthA;
+                int b0 = indexB + (j)*widthA;
                 int b1 = indexB + (j + 1)*widthA;
                 int b2 = indexB + (j + 2)*widthA;
                 int b3 = indexB + (j + 3)*widthA;
@@ -788,7 +831,7 @@ public class InnerMultiplication_DDRB {
                     s3 += valA*dataB[b3++];
                 }
                 int cIdx = indexC + i*widthC + j;
-                dataC[cIdx    ] = alpha*s0;
+                dataC[cIdx] = alpha*s0;
                 dataC[cIdx + 1] = alpha*s1;
                 dataC[cIdx + 2] = alpha*s2;
                 dataC[cIdx + 3] = alpha*s3;
