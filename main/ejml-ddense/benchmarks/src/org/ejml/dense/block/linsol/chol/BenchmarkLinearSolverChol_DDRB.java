@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @Fork(value = 1)
 public class BenchmarkLinearSolverChol_DDRB {
-    @Param({"1000", "2000"})
+    @Param({"200", "3000"})
     public int size;
 
     @Param({"true", "false"})

@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @Fork(value = 1)
 public class BenchmarkDecompositionCholesky_MT_DDRB {
+    @Param({"200", "4000"})
     public int size;
 
     @Param({"true", "false"})
