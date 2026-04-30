@@ -45,6 +45,8 @@ public class TestMatrixPrintFormat extends EjmlStandardJUnit {
         assertEquals("WorkObj foo", found);
     }
 
+    @Test void setTo() {checkSetTo(MatrixPrintFormat.class);}
+
     private static class WorkObj implements MatrixFormattable {
         @Override public String format( MatrixPrintFormat format ) {
             return "foo";

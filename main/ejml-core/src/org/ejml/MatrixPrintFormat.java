@@ -138,6 +138,11 @@ public class MatrixPrintFormat extends PrintFormat {
         return this;
     }
 
+    public MatrixPrintFormat withDecimal( char decimal ) {
+        this.decimal = decimal;
+        return this;
+    }
+
     public MatrixPrintFormat withColSeparator( String colSeparator ) {
         this.colSeparator = colSeparator;
         return this;
@@ -182,6 +187,7 @@ public class MatrixPrintFormat extends PrintFormat {
         this.prefix = src.prefix;
         this.suffix = src.suffix;
         this.decimal = src.decimal;
+        this.aligned = src.aligned;
         return this;
     }
 

@@ -187,6 +187,21 @@ public class MapPrintFormat extends PrintFormat {
         return this;
     }
 
+    public MapPrintFormat withDecimal( char decimal ) {
+        this.decimal = decimal;
+        return this;
+    }
+
+    public MapPrintFormat withValueSeparator( String txt ) {
+        this.valueSeparator = txt;
+        return this;
+    }
+
+    public MapPrintFormat withPairSeparator( String txt ) {
+        this.pairSeparator = txt;
+        return this;
+    }
+
     public MapPrintFormat withItemPrefix( String txt ) {
         this.itemPrefix = txt;
         return this;
@@ -194,6 +209,21 @@ public class MapPrintFormat extends PrintFormat {
 
     public MapPrintFormat withItemSuffix( String txt ) {
         this.itemSuffix = txt;
+        return this;
+    }
+
+    public MapPrintFormat withItemSeparator( String txt ) {
+        this.itemSeparator = txt;
+        return this;
+    }
+
+    public MapPrintFormat withListPrefix( String txt ) {
+        this.listPrefix = txt;
+        return this;
+    }
+
+    public MapPrintFormat withListSuffix( String txt ) {
+        this.listSuffix = txt;
         return this;
     }
 

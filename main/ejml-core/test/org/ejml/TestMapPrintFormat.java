@@ -77,6 +77,8 @@ public class TestMapPrintFormat extends EjmlStandardJUnit {
         assertEquals("WorkObj foo", found);
     }
 
+    @Test void setTo() {checkSetTo(MatrixPrintFormat.class);}
+
     private static class WorkObj implements MapFormattable {
         @Override public String formatMap( MapPrintFormat format ) {
             return "foo";
