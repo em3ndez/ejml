@@ -19,6 +19,7 @@ package org.ejml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
 /// Base class for print formatting
 public abstract class PrintFormat {
@@ -41,14 +42,14 @@ public abstract class PrintFormat {
         return UtilEjml.fancyStringFill2(value, count, decimal);
     }
 
-    public String f( String separator, double... values ) {
+    public String f( String separator, double @Nullable ... values ) {
         var builder = new StringBuilder();
         f(builder, separator, values);
         return builder.toString();
     }
 
-    public void f( StringBuilder builder, String separator, double... values ) {
-        if (values.length == 0)
+    public void f( StringBuilder builder, String separator, double @Nullable ... values ) {
+        if (values == null || values.length == 0)
             return;
         for (int i = 0; i < values.length - 1; i++) {
             builder.append(f(values[i]));
@@ -57,14 +58,14 @@ public abstract class PrintFormat {
         builder.append(f(values[values.length - 1]));
     }
 
-    public String f( String separator, float... values ) {
+    public String f( String separator, float @Nullable ... values ) {
         var builder = new StringBuilder();
         f(builder, separator, values);
         return builder.toString();
     }
 
-    public void f( StringBuilder builder, String separator, float... values ) {
-        if (values.length == 0)
+    public void f( StringBuilder builder, String separator, float @Nullable ... values ) {
+        if (values == null || values.length == 0)
             return;
         for (int i = 0; i < values.length - 1; i++) {
             builder.append(f(values[i]));

@@ -19,6 +19,7 @@ package org.ejml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
 /// Describes how to format an object when it's converted into a map style string.
 public class MapPrintFormat extends PrintFormat {
@@ -136,7 +137,7 @@ public class MapPrintFormat extends PrintFormat {
         return txt + (isMore ? pairSeparator : "");
     }
 
-    public void pair( StringBuilder builder, String name, double[] values, boolean isMore ) {
+    public void pair( StringBuilder builder, String name, double @Nullable [] values, boolean isMore ) {
         builder.append(keyPrefix).append(name).append(keySuffix);
         builder.append(valueSeparator);
         builder.append(itemPrefix);
@@ -146,7 +147,7 @@ public class MapPrintFormat extends PrintFormat {
             builder.append(pairSeparator);
     }
 
-    public void pair( StringBuilder builder, String name, float[] values, boolean isMore ) {
+    public void pair( StringBuilder builder, String name, float @Nullable [] values, boolean isMore ) {
         builder.append(keyPrefix).append(name).append(keySuffix);
         builder.append(valueSeparator);
         builder.append(itemPrefix);
