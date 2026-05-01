@@ -37,7 +37,7 @@ public class LinearSolverFactory_DDRM {
     /// designed to handle most systems of all sizes well. If you need to for a specific application or
     /// have to deal with very small matrices, or need a low memory variant, or other application specific
     /// variant then you need to not use this high level API.
-    public static LinearSolverDense<DMatrixRMaj> create( LinearSolverType type ) {
+    public static LinearSolverDense<DMatrixRMaj> create( org.ejml.LinearSolverType type ) {
         return switch (type) {
             case CHOLESKY -> {
                 // Degrades in performance gracefully as matrix size increases, but block is

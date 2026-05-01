@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.ejml.dense.row.factory;
+package org.ejml;
 
 /// Set of different linear solvers.
 public enum LinearSolverType {
