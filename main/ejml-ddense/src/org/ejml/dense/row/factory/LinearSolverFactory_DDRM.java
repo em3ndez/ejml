@@ -33,6 +33,28 @@ import org.ejml.interfaces.linsol.LinearSolverDense;
 
 /// A factory for generating solvers for systems of the form A\*x=b, where A and B are known and x is unknown.
 public class LinearSolverFactory_DDRM {
+    /// High level interface. Unless specified otherwise, it will create a generic version solver
+    /// designed to handle most systems of all sizes well. If you need to for a specific application or
+    /// have to deal with very small matrices, or need a low memory variant, or other application specific
+    /// variant then you need to not use this high level API.
+    public static LinearSolverDense<DMatrixRMaj> create( LinearSolverType type ) {
+        return switch (type) {
+            case CHOLESKY -> {
+                // Degrades in performance gracefully as matrix size increases, but block is
+                // better for large systems
+                var decomp = new CholeskyDecompositionInner_DDRM(true);
+                yield new LinearSolverChol_DDRM(decomp);
+            }
+            case CHOLESKY_BLOCK -> new LinearSolverChol_DDRB();
+            case LDL -> cholLdl();
+            case DEFAULT, QR -> new LinearSolverQrHouseCol_DDRM();
+            case QRP -> {
+                var decomposition = new QRColPivDecompositionHouseholderColumn_DDRM();
+                yield new LinearSolverQrpHouseCol_DDRM(decomposition, true);
+            }
+            case SVD -> new SolvePseudoInverseSvd_DDRM();
+        };
+    }
 
     /// Creates a linear solver using LU decomposition
     public static LinearSolverDense<DMatrixRMaj> lu( int numRows ) {
@@ -146,8 +168,7 @@ public class LinearSolverFactory_DDRM {
     /// @param computeQ Should it precompute Q or use householder. Try false;
     /// @return Pseudo inverse type solver using QR with column pivots.
     public static LinearSolverDense<DMatrixRMaj> leastSquaresQrPivot( boolean computeNorm2, boolean computeQ ) {
-        QRColPivDecompositionHouseholderColumn_DDRM decomposition =
-                new QRColPivDecompositionHouseholderColumn_DDRM();
+        var decomposition = new QRColPivDecompositionHouseholderColumn_DDRM();
 
         if (computeQ)
             return new SolvePseudoInverseQrp_DDRM(decomposition, computeNorm2);
