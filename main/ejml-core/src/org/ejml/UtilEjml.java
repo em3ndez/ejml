@@ -608,9 +608,13 @@ public class UtilEjml {
     /// @param precision How many significant digits should it maintain
     /// @param decimalSep How decimals are split off from integer values. Period in English.
     public static String fancyString2( double value, int precision, char decimalSep ) {
+        // Precision of zero means no decimal
+        if (precision == 0) {
+            value = value > 0 ? Math.floor(value) : Math.ceil(value);
+        }
+
         // %g prefers to use exp format, but we don't. So if there's no space
         // benefit, don't use it
-
         double vabs = Math.abs(value);
 
         // The number of characters to encode it in exp format is known
@@ -629,6 +633,7 @@ public class UtilEjml {
             if (countInt > lengthExp) {
                 useFloat = false;
             } else {
+
                 // Can
                 double decimalScaled = Math.pow(10, Math.max(1, precision))*decimal;
                 if (decimalScaled >= 1.0) {
@@ -641,6 +646,10 @@ public class UtilEjml {
                 }
             }
         }
+
+        // if x = 800 and "%.0f" is used then it will print 8. This is a work around
+        if (useFloat && precision == 0)
+            precision = 1;
 
         String txt = useFloat ? String.format("%." + precision + "f", value) : String.format("%." + (precision + 1) + "g", value);
 
@@ -699,7 +708,7 @@ public class UtilEjml {
             // see if there's enough precision to show a non-zero value
             if (charCount > 1 && floored == 0.0 && remainder > 0.0 && remainder*Math.pow(10, floatPrecision) < 1.0) {
                 useFloat = false;
-            } else if (remainder == 0.0 && countInt <= actualCharsExp ) {
+            } else if (remainder == 0.0 && countInt <= actualCharsExp) {
                 // if it's just an integer, only consider integer counts
                 useFloat = true;
             } else if (floatChars <= actualCharsExp) {
