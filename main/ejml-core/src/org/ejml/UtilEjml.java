@@ -591,10 +591,15 @@ public class UtilEjml {
 
     /// Returns how many characters writing the number in exp format will take up
     public static int fancy2LengthExp( int precision ) {
-        return 1 + precision + 4 + (precision > 0 ? 1 : 0);
+        return precision > 0 ? 1 + precision + 5 : 5;
     }
 
-    /// Prints numbers to minimize how much space they take up
+    /// Prints numbers to minimize how much space they take up. Specifically, it looks at how many characters
+    /// it will take to print the number in exp format. If it takes equal or less than that many characters
+    /// to print it in float it will use float format instead.
+    ///
+    /// Rounding: Round Half To Even (Banker's Rounding).
+    /// - Examples: 2.5 -> 2.0, 3.5 -> 4.0, -2.5 -> -2.0, -3.5 -> -4.0
     ///
     /// Examples with precision of 2
     /// ```
@@ -605,12 +610,12 @@ public class UtilEjml {
     /// ```
     ///
     /// @param value The value that you wish to convert into a string
-    /// @param precision How many significant digits should it maintain
+    /// @param precision How many significant digits should it maintain. 0 = integer only.
     /// @param decimalSep How decimals are split off from integer values. Period in English.
     public static String fancyString2( double value, int precision, char decimalSep ) {
         // Precision of zero means no decimal
         if (precision == 0) {
-            value = value > 0 ? Math.floor(value) : Math.ceil(value);
+            value = Math.rint(value);
         }
 
         // %g prefers to use exp format, but we don't. So if there's no space
@@ -678,9 +683,13 @@ public class UtilEjml {
         return txt.substring(0, i + 1) + suffix;
     }
 
-    /// Given a fixed amount of room, pick the string formal which will most effectively take up that space
+    /// Given a fixed amount of room, pick the string formal which will most effectively take up that space. If
+    /// a float format is selected it will adjust the precision to take full advantage of the available space.
+    ///
+    /// Rounding: Round Half To Even (Banker's Rounding).
+    /// - Examples: 2.5 -> 2.0, 3.5 -> 4.0, -2.5 -> -2.0, -3.5 -> -4.0
     public static String fancyStringFill2( double value, int charCount, char decimalSep ) {
-        // precision it have in exp format and fill in these characters
+        // Determine the precision that exp format requires to use up all available space.
         int expPrecision = Math.max(0, charCount - 6);
 
         double vabs = Math.abs(value);
@@ -722,6 +731,13 @@ public class UtilEjml {
 //                double decimal = vabs - floored;
 //                useFloat = decimal > 0.0 || decimal*Math.pow(10.0, floatPrecision) >= 1.0;
 //            }
+        }
+
+        // if x = 800 and "%.0f" is used then it will print 8. This is a work around
+        if (useFloat && floatPrecision == 0) {
+            floatPrecision = 1;
+            // Ensure only the integer component remains
+            value = Math.rint(value);
         }
 
         String txt = useFloat ? String.format("%." + floatPrecision + "f", value) : String.format("%." + expPrecision + "e", value);
