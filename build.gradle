@@ -23,6 +23,7 @@ plugins {
     id "com.peterabeles.gversion" version "1.10.3" apply false
     id "net.ltgt.errorprone" version "4.0.1" apply false
     id "com.diffplug.spotless" version "8.4.0" apply false
+    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
 }
 
 allprojects {
@@ -31,21 +32,39 @@ allprojects {
 
     group = 'org.ejml'
     version = '0.45.0'
+}
 
-    project.ext.bytebuddy_version = '1.17.7'
-    project.ext.commons_io_version = '2.16.1'
-    project.ext.kotlin_version = '2.3.0'
-    project.ext.lombok_version = '1.18.42'
-    project.ext.jabel_version = '1.0.1-1'
-    project.ext.guava_version = '33.2.1-jre'
-    project.ext.junit_version = '5.11.4'
-    project.ext.errorprone_version = '2.41.0'
-    project.ext.nullaway_version = '0.12.10'
-    project.ext.auto64to32_version = '3.3.0'
-    project.ext.jmh_version = '1.36'
-    project.ext.jetnull_version = '23.0.0'
-    project.ext.jsr250_version = '1.0'
-    project.ext.jsr305_version = '3.0.2'
+project.ext.bytebuddy_version = '1.17.7'
+project.ext.commons_io_version = '2.16.1'
+project.ext.kotlin_version = '2.3.0'
+project.ext.lombok_version = '1.18.42'
+project.ext.jabel_version = '1.0.1-1'
+project.ext.guava_version = '33.2.1-jre'
+project.ext.junit_version = '5.11.4'
+project.ext.errorprone_version = '2.41.0'
+project.ext.nullaway_version = '0.12.10'
+project.ext.auto64to32_version = '3.3.0'
+project.ext.jmh_version = '1.36'
+project.ext.jetnull_version = '23.0.0'
+project.ext.jsr250_version = '1.0'
+project.ext.jsr305_version = '3.0.2'
+
+// if Maven central isn't setup in ~/.gradle/gradle.properties fill in these variables to make it happy
+if (project.hasProperty('ossrhUsername')) {
+    nexusPublishing {
+        repositories {
+            sonatype {
+                nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+                snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
+    }
+} else {
+    ext.ossrhUsername = "dummy"
+    ext.ossrhPassword = "dummy"
 }
 
 subprojects {
@@ -250,12 +269,6 @@ subprojects {
     if (!project.tasks.publish.enabled)
         return
 
-    // if Maven central isn't setup in ~/.gradle/gradle.properties fill in these variables to make it happy
-    if (!project.hasProperty('ossrhUsername')) {
-        ext.ossrhUsername = "dummy"
-        ext.ossrhPassword = "dummy"
-    }
-
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -263,12 +276,12 @@ subprojects {
                 pom {
                     name = 'EJML'
                     description = 'A fast and easy to use dense and sparse matrix linear algebra library written in Java.'
-                    url = 'http://ejml.org/'
+                    url = 'https://ejml.org/'
 
                     licenses {
                         license {
                             name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
                     }
                     developers {
@@ -289,7 +302,7 @@ subprojects {
 
         repositories {
             maven {
-                def releasesRepoUrl = "https://central.sonatype.com/api/v1/publish/"
+                def releasesRepoUrl = "https://ossrh-staging-api.central.sonatype.com/service/local/"
                 def snapshotsRepoUrl = "https://central.sonatype.com/repository/maven-snapshots/"
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
                 credentials {
