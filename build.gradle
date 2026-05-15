@@ -313,7 +313,7 @@ subprojects {
         }
     }
 
-    if (ext.ossrhPassword != "dummy") {
+    if (rootProject.ext.ossrhPassword != "dummy") {
         signing { sign publishing.publications.mavenJava }
     }
 }
