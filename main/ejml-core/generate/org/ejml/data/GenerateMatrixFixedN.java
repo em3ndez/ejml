@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -43,11 +43,10 @@ public class GenerateMatrixFixedN extends CodeGeneratorBase {
 
         out.print("import org.ejml.ops.MatrixIO;\n" +
                 "\n" +
-                "/**\n" +
-                " * Fixed sized vector with " + dimen + " elements. Can represent a " + dimen + " x 1 or 1 x " + dimen + " matrix, context dependent.\n" +
-                standardClassDocClosing("Peter Abeles") +
+                "/// Fixed sized vector with " + dimen + " elements. Can represent a " + dimen + " x 1 or 1 x " + dimen + " matrix, context dependent.\n" +
+                standardClassDocClosing2() +
                 "public class " + className + " implements DMatrixFixed {\n");
-        printClassParam(dimen);
+        printClassFields(dimen);
         out.print("\n" +
                 "    public " + className + "() {}\n" +
                 "\n" +
@@ -62,18 +61,20 @@ public class GenerateMatrixFixedN extends CodeGeneratorBase {
         out.print("    }\n" +
                 "\n");
         printZero(dimen);
-        out.print("    public void setTo( ");
+        out.print("    public " + className + " setTo( ");
         printFunctionParam(dimen);
         out.print(" ) {\n");
         printSetFromParam(dimen, "");
-        out.print("    }\n\n");
-        out.print("    public void setTo( int offset , double[] array ) {\n");
+        out.print("        return this;\n"+
+                "    }\n\n");
+        out.print("    public " + className + " setTo( int offset, double[] array ) {\n");
         for (int i = 0; i < dimen; i++) {
-            out.print("        this.a" + (i + 1) + " = array[offset+" + i + "];\n");
+            out.print("        this.a" + (i + 1) + " = array[offset + " + i + "];\n");
         }
-        out.print("    }\n");
-        out.print("\n" +
-                "    @Override public double get( int row, int col ) {return unsafe_get(row,col);}\n" +
+        out.print("        return this;\n" +
+                "    }\n" +
+                "\n" +
+                "    @Override public double get( int row, int col ) {return unsafe_get(row, col);}\n" +
                 "\n" +
                 "    @Override public double unsafe_get( int row, int col ) {\n" +
                 "        if (row != 0 && col != 0)\n" +
@@ -87,9 +88,7 @@ public class GenerateMatrixFixedN extends CodeGeneratorBase {
                 "        }\n" +
                 "    }\n" +
                 "\n" +
-                "    @Override public void set( int row, int col, double val ) {\n" +
-                "        unsafe_set(row,col,val);\n" +
-                "    }\n" +
+                "    @Override public void set( int row, int col, double val ) {unsafe_set(row, col, val);}\n" +
                 "\n" +
                 "    @Override public void unsafe_set( int row, int col, double val ) {\n" +
                 "        if (row != 0 && col != 0)\n" +
@@ -103,7 +102,8 @@ public class GenerateMatrixFixedN extends CodeGeneratorBase {
                 "        }\n" +
                 "    }\n" +
                 "\n");
-        printSetMatrix(dimen);
+        printSetTo_MatrixN(dimen, className);
+        printSetTo_Matrix(dimen);
         out.print("    @Override public int getNumRows() {return " + dimen + ";}\n" +
                 "\n" +
                 "    @Override public int getNumCols() {return 1;}\n" +
@@ -128,12 +128,12 @@ public class GenerateMatrixFixedN extends CodeGeneratorBase {
                 "}\n\n");
     }
 
-    private void printClassParam( int dimen ) {
+    private void printClassFields( int dimen ) {
         out.print("    public double ");
         for (int i = 1; i <= dimen; i++) {
             out.print("a" + i);
             if (i < dimen)
-                out.print(",");
+                out.print(", ");
             else
                 out.print(";\n");
         }
@@ -153,17 +153,27 @@ public class GenerateMatrixFixedN extends CodeGeneratorBase {
         }
     }
 
-    private void printSetMatrix( int dimen ) {
+    private void printSetTo_MatrixN( int dimen, String className ) {
+        out.print("    public " + className + " setTo( " + className + " src ) {\n");
+
+        for (int i = 0; i < dimen; i++) {
+            out.print("        a" + (i + 1) + " = src.a" + (i + 1) + ";\n");
+        }
+        out.print("        return this;\n" +
+                "    }\n\n");
+    }
+
+    private void printSetTo_Matrix( int dimen ) {
         out.print("    @Override public void setTo( Matrix original ) {\n" +
                 "        DMatrix m = (DMatrix)original;\n" +
                 "\n" +
                 "        if (m.getNumCols() == 1 && m.getNumRows() == " + dimen + ") {\n");
         for (int i = 0; i < dimen; i++) {
-            out.print("            a" + (i + 1) + " = m.get(" + i + ",0);\n");
+            out.print("            a" + (i + 1) + " = m.get(" + i + ", 0);\n");
         }
         out.print("        } else if (m.getNumRows() == 1 && m.getNumCols() == " + dimen + ") {\n");
         for (int i = 0; i < dimen; i++) {
-            out.print("            a" + (i + 1) + " = m.get(0," + i + ");\n");
+            out.print("            a" + (i + 1) + " = m.get(0, " + i + ");\n");
         }
         out.print("        } else {\n" +
                 "            throw new IllegalArgumentException(\"Incompatible shape\");\n" +

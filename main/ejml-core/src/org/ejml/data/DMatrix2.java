@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,23 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
 import org.ejml.ops.MatrixIO;
 
 import javax.annotation.Generated;
 
-/**
- * Fixed sized vector with 2 elements. Can represent a 2 x 1 or 1 x 2 matrix, context dependent.
- *
- * <p>DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedN</p>
- *
- * @author Peter Abeles
- */
+/// Fixed sized vector with 2 elements. Can represent a 2 x 1 or 1 x 2 matrix, context dependent.
+///
+/// DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedN
 @Generated("org.ejml.data.GenerateMatrixFixedN")
 public class DMatrix2 implements DMatrixFixed {
-    public double a1,a2;
+    public double a1, a2;
 
     public DMatrix2() {}
 
@@ -50,17 +45,19 @@ public class DMatrix2 implements DMatrixFixed {
         a2 = 0.0;
     }
 
-    public void setTo( double a1, double a2 ) {
+    public DMatrix2 setTo( double a1, double a2 ) {
         this.a1 = a1;
         this.a2 = a2;
+        return this;
     }
 
-    public void setTo( int offset , double[] array ) {
-        this.a1 = array[offset+0];
-        this.a2 = array[offset+1];
+    public DMatrix2 setTo( int offset, double[] array ) {
+        this.a1 = array[offset + 0];
+        this.a2 = array[offset + 1];
+        return this;
     }
 
-    @Override public double get( int row, int col ) {return unsafe_get(row,col);}
+    @Override public double get( int row, int col ) {return unsafe_get(row, col);}
 
     @Override public double unsafe_get( int row, int col ) {
         if (row != 0 && col != 0)
@@ -77,9 +74,7 @@ public class DMatrix2 implements DMatrixFixed {
         }
     }
 
-    @Override public void set( int row, int col, double val ) {
-        unsafe_set(row,col,val);
-    }
+    @Override public void set( int row, int col, double val ) {unsafe_set(row, col, val);}
 
     @Override public void unsafe_set( int row, int col, double val ) {
         if (row != 0 && col != 0)
@@ -96,15 +91,21 @@ public class DMatrix2 implements DMatrixFixed {
         }
     }
 
+    public DMatrix2 setTo( DMatrix2 src ) {
+        a1 = src.a1;
+        a2 = src.a2;
+        return this;
+    }
+
     @Override public void setTo( Matrix original ) {
         DMatrix m = (DMatrix)original;
 
         if (m.getNumCols() == 1 && m.getNumRows() == 2) {
-            a1 = m.get(0,0);
-            a2 = m.get(1,0);
+            a1 = m.get(0, 0);
+            a2 = m.get(1, 0);
         } else if (m.getNumRows() == 1 && m.getNumCols() == 2) {
-            a1 = m.get(0,0);
-            a2 = m.get(0,1);
+            a1 = m.get(0, 0);
+            a2 = m.get(0, 1);
         } else {
             throw new IllegalArgumentException("Incompatible shape");
         }
@@ -132,4 +133,3 @@ public class DMatrix2 implements DMatrixFixed {
 
     @Override public MatrixType getType() {return MatrixType.UNSPECIFIED;}
 }
-

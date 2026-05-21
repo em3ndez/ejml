@@ -61,6 +61,13 @@ public abstract class CodeGeneratorBase {
                 "@Generated(\""+getClass().getCanonicalName()+"\")\n";
     }
 
+    /// Creates the more modern class Javadoc closing using Markdown
+    protected String standardClassDocClosing2() {
+        return  "///\n" +
+                "/// DO NOT MODIFY. Automatically generated code created by "+getClass().getSimpleName()+"\n" +
+                "@Generated(\""+getClass().getCanonicalName()+"\")\n";
+    }
+
     public void setOutputFile( String className ) throws FileNotFoundException {
         this.className = className;
         out = new PrintStream(new FileOutputStream(className + ".java"));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,21 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
 import org.ejml.ops.MatrixIO;
 
 import javax.annotation.Generated;
 
-/**
- * Fixed sized 2 by DMatrix2x2 matrix. The matrix is stored as class variables for very fast read/write. aXY is the
- * value of row = X and column = Y.
- *
- * <p>DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedNxN</p>
- *
- * @author Peter Abeles
- */
+/// Fixed sized 2 by DMatrix2x2 matrix. Elements are stored as class fields for very fast read/write. aXY is the
+/// value of row = X and column = Y.
+///
+/// DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedNxN
 @Generated("org.ejml.data.GenerateMatrixFixedNxN")
 public class DMatrix2x2 implements DMatrixFixed {
 
@@ -54,15 +49,17 @@ public class DMatrix2x2 implements DMatrixFixed {
         a21 = 0.0; a22 = 0.0;
     }
 
-    public void setTo( double a11, double a12,
-                       double a21, double a22 ) {
+    public DMatrix2x2 setTo( double a11, double a12,
+                             double a21, double a22 ) {
         this.a11 = a11; this.a12 = a12;
         this.a21 = a21; this.a22 = a22;
+        return this;
     }
 
-    public void setTo( int offset , double[] a ) {
+    public DMatrix2x2 setTo( int offset, double[] a ) {
         this.a11 = a[offset + 0]; this.a12 = a[offset + 1];
         this.a21 = a[offset + 2]; this.a22 = a[offset + 3];
+        return this;
     }
 
     @Override public double get( int row, int col ) {
@@ -86,9 +83,7 @@ public class DMatrix2x2 implements DMatrixFixed {
         throw new IllegalArgumentException("Row and/or column out of range. "+row+" "+col);
     }
 
-    @Override public void set( int row, int col, double val ) {
-        unsafe_set(row,col,val);
-    }
+    @Override public void set( int row, int col, double val ) {unsafe_set(row, col, val);}
 
     @Override public void unsafe_set( int row, int col, double val ) {
         if (row == 0) {
@@ -105,6 +100,14 @@ public class DMatrix2x2 implements DMatrixFixed {
             }
         }
         throw new IllegalArgumentException("Row and/or column out of range. "+row+" "+col);
+    }
+
+    public DMatrix2x2 setTo( DMatrix2x2 src ) {
+        a11 = src.a11;
+        a12 = src.a12;
+        a21 = src.a21;
+        a22 = src.a22;
+        return this;
     }
 
     @Override public void setTo( Matrix original ) {
@@ -139,4 +142,3 @@ public class DMatrix2x2 implements DMatrixFixed {
     @Override public <T extends Matrix> T createLike() {return (T)new DMatrix2x2();}
 
     @Override public MatrixType getType() {return MatrixType.UNSPECIFIED;}}
-

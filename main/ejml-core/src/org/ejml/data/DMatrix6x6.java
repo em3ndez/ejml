@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,21 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
 import org.ejml.ops.MatrixIO;
 
 import javax.annotation.Generated;
 
-/**
- * Fixed sized 6 by DMatrix6x6 matrix. The matrix is stored as class variables for very fast read/write. aXY is the
- * value of row = X and column = Y.
- *
- * <p>DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedNxN</p>
- *
- * @author Peter Abeles
- */
+/// Fixed sized 6 by DMatrix6x6 matrix. Elements are stored as class fields for very fast read/write. aXY is the
+/// value of row = X and column = Y.
+///
+/// DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedNxN
 @Generated("org.ejml.data.GenerateMatrixFixedNxN")
 public class DMatrix6x6 implements DMatrixFixed {
 
@@ -74,27 +69,29 @@ public class DMatrix6x6 implements DMatrixFixed {
         a61 = 0.0; a62 = 0.0; a63 = 0.0; a64 = 0.0; a65 = 0.0; a66 = 0.0;
     }
 
-    public void setTo( double a11, double a12, double a13, double a14, double a15, double a16,
-                       double a21, double a22, double a23, double a24, double a25, double a26,
-                       double a31, double a32, double a33, double a34, double a35, double a36,
-                       double a41, double a42, double a43, double a44, double a45, double a46,
-                       double a51, double a52, double a53, double a54, double a55, double a56,
-                       double a61, double a62, double a63, double a64, double a65, double a66 ) {
+    public DMatrix6x6 setTo( double a11, double a12, double a13, double a14, double a15, double a16,
+                             double a21, double a22, double a23, double a24, double a25, double a26,
+                             double a31, double a32, double a33, double a34, double a35, double a36,
+                             double a41, double a42, double a43, double a44, double a45, double a46,
+                             double a51, double a52, double a53, double a54, double a55, double a56,
+                             double a61, double a62, double a63, double a64, double a65, double a66 ) {
         this.a11 = a11; this.a12 = a12; this.a13 = a13; this.a14 = a14; this.a15 = a15; this.a16 = a16;
         this.a21 = a21; this.a22 = a22; this.a23 = a23; this.a24 = a24; this.a25 = a25; this.a26 = a26;
         this.a31 = a31; this.a32 = a32; this.a33 = a33; this.a34 = a34; this.a35 = a35; this.a36 = a36;
         this.a41 = a41; this.a42 = a42; this.a43 = a43; this.a44 = a44; this.a45 = a45; this.a46 = a46;
         this.a51 = a51; this.a52 = a52; this.a53 = a53; this.a54 = a54; this.a55 = a55; this.a56 = a56;
         this.a61 = a61; this.a62 = a62; this.a63 = a63; this.a64 = a64; this.a65 = a65; this.a66 = a66;
+        return this;
     }
 
-    public void setTo( int offset , double[] a ) {
+    public DMatrix6x6 setTo( int offset, double[] a ) {
         this.a11 = a[offset + 0]; this.a12 = a[offset + 1]; this.a13 = a[offset + 2]; this.a14 = a[offset + 3]; this.a15 = a[offset + 4]; this.a16 = a[offset + 5];
         this.a21 = a[offset + 6]; this.a22 = a[offset + 7]; this.a23 = a[offset + 8]; this.a24 = a[offset + 9]; this.a25 = a[offset + 10]; this.a26 = a[offset + 11];
         this.a31 = a[offset + 12]; this.a32 = a[offset + 13]; this.a33 = a[offset + 14]; this.a34 = a[offset + 15]; this.a35 = a[offset + 16]; this.a36 = a[offset + 17];
         this.a41 = a[offset + 18]; this.a42 = a[offset + 19]; this.a43 = a[offset + 20]; this.a44 = a[offset + 21]; this.a45 = a[offset + 22]; this.a46 = a[offset + 23];
         this.a51 = a[offset + 24]; this.a52 = a[offset + 25]; this.a53 = a[offset + 26]; this.a54 = a[offset + 27]; this.a55 = a[offset + 28]; this.a56 = a[offset + 29];
         this.a61 = a[offset + 30]; this.a62 = a[offset + 31]; this.a63 = a[offset + 32]; this.a64 = a[offset + 33]; this.a65 = a[offset + 34]; this.a66 = a[offset + 35];
+        return this;
     }
 
     @Override public double get( int row, int col ) {
@@ -190,9 +187,7 @@ public class DMatrix6x6 implements DMatrixFixed {
         throw new IllegalArgumentException("Row and/or column out of range. "+row+" "+col);
     }
 
-    @Override public void set( int row, int col, double val ) {
-        unsafe_set(row,col,val);
-    }
+    @Override public void set( int row, int col, double val ) {unsafe_set(row, col, val);}
 
     @Override public void unsafe_set( int row, int col, double val ) {
         if (row == 0) {
@@ -283,6 +278,46 @@ public class DMatrix6x6 implements DMatrixFixed {
         throw new IllegalArgumentException("Row and/or column out of range. "+row+" "+col);
     }
 
+    public DMatrix6x6 setTo( DMatrix6x6 src ) {
+        a11 = src.a11;
+        a12 = src.a12;
+        a13 = src.a13;
+        a14 = src.a14;
+        a15 = src.a15;
+        a16 = src.a16;
+        a21 = src.a21;
+        a22 = src.a22;
+        a23 = src.a23;
+        a24 = src.a24;
+        a25 = src.a25;
+        a26 = src.a26;
+        a31 = src.a31;
+        a32 = src.a32;
+        a33 = src.a33;
+        a34 = src.a34;
+        a35 = src.a35;
+        a36 = src.a36;
+        a41 = src.a41;
+        a42 = src.a42;
+        a43 = src.a43;
+        a44 = src.a44;
+        a45 = src.a45;
+        a46 = src.a46;
+        a51 = src.a51;
+        a52 = src.a52;
+        a53 = src.a53;
+        a54 = src.a54;
+        a55 = src.a55;
+        a56 = src.a56;
+        a61 = src.a61;
+        a62 = src.a62;
+        a63 = src.a63;
+        a64 = src.a64;
+        a65 = src.a65;
+        a66 = src.a66;
+        return this;
+    }
+
     @Override public void setTo( Matrix original ) {
         if (original.getNumCols() != 6 || original.getNumRows() != 6)
             throw new IllegalArgumentException("Rows and/or columns do not match");
@@ -347,4 +382,3 @@ public class DMatrix6x6 implements DMatrixFixed {
     @Override public <T extends Matrix> T createLike() {return (T)new DMatrix6x6();}
 
     @Override public MatrixType getType() {return MatrixType.UNSPECIFIED;}}
-
