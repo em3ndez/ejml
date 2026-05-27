@@ -36,46 +36,25 @@ if (project.hasProperty("ossrhUsername")) {
 }
 
 // Modules whose compiled output should be packaged into the all-jars directory and the fat jar
-val publishedModules = listOf(
-    ":main:ejml-core",
-    ":main:ejml-cdense",
-    ":main:ejml-ddense",
-    ":main:ejml-dsparse",
-    ":main:ejml-fdense",
-    ":main:ejml-fsparse",
-    ":main:ejml-zdense",
-    ":main:ejml-simple",
-    ":main:ejml-experimental",
-)
-
-// Modules whose javadoc should be combined into the aggregate javadoc
-val javadocModules = listOf(
-    ":main:ejml-core",
-    ":main:ejml-ddense",
-    ":main:ejml-dsparse",
-    ":main:ejml-fdense",
-    ":main:ejml-fsparse",
-    ":main:ejml-zdense",
-    ":main:ejml-cdense",
-    ":main:ejml-simple",
-)
+val publishedModules: List<Project>
+    get() = subprojects.filter { it.plugins.hasPlugin("ejml.libs-conventions") }
 
 // Copies every published module's jar and sources jar into a single `libraries/` directory
 tasks.register("createLibraryDirectory") {
-    publishedModules.forEach { evaluationDependsOn(it) }
-    dependsOn(publishedModules.map { "$it:jar" })
-    dependsOn(publishedModules.map { "$it:sourcesJar" })
+    publishedModules.forEach { evaluationDependsOn(it.path) }
+    dependsOn(publishedModules.map { it.tasks.named("jar") })
+    dependsOn(publishedModules.map { it.tasks.named("sourcesJar") })
 
     doLast {
         val outputDir = layout.projectDirectory.dir("libraries").asFile
         outputDir.deleteRecursively()
         outputDir.mkdirs()
 
-        val jars = publishedModules.map { path ->
-            project(path).tasks.named<Jar>("jar").get().archiveFile.get().asFile
+        val jars = publishedModules.map { proj ->
+            proj.tasks.named<Jar>("jar").get().archiveFile.get().asFile
         }
-        val sourceJars = publishedModules.map { path ->
-            project(path).tasks.named<Jar>("sourcesJar").get().archiveFile.get().asFile
+        val sourceJars = publishedModules.map { proj ->
+            proj.tasks.named<Jar>("sourcesJar").get().archiveFile.get().asFile
         }
 
         copy {
@@ -87,13 +66,14 @@ tasks.register("createLibraryDirectory") {
 }
 
 // Aggregate Javadoc across the published modules.
-// Only includes source under `src/` to avoid pulling in third-party code that some modules vendor.
+// Only includes source under `src/` to avoid pulling in third-party code.
+// NOTE: You need to do --no-parallel when invoking it because of some Gradle 9 thing
 tasks.register<Javadoc>("alljavadoc") {
-    javadocModules.forEach { evaluationDependsOn(it) }
+    publishedModules.forEach { evaluationDependsOn(it.path) }
 
-    source(javadocModules.map { project(it).fileTree("src").include("**/*.java") })
-    classpath = files(javadocModules.map {
-        project(it).extensions.getByType<SourceSetContainer>()["main"].compileClasspath
+    source(publishedModules.map { it.fileTree("src").include("**/*.java") })
+    classpath = files(publishedModules.map {
+        it.extensions.getByType<SourceSetContainer>()["main"].compileClasspath
     })
 
     setDestinationDir(layout.buildDirectory.dir("docs/javadoc").get().asFile)
@@ -115,13 +95,14 @@ tasks.register<Javadoc>("alljavadoc") {
 
 // Single fat-jar of all class output across the javadoc-covered modules
 tasks.register<Jar>("oneJarBin") {
-    javadocModules.forEach { evaluationDependsOn(it) }
-    dependsOn(javadocModules.map { "$it:compileJava" })
+    publishedModules.forEach { evaluationDependsOn(it.path) }
+    dependsOn(publishedModules.map { it.tasks.named("compileJava") })
 
     archiveFileName.set("ejml-v${project.version}.jar")
+    destinationDirectory.set(layout.projectDirectory)
 
-    from(javadocModules.map {
-        project(it).extensions.getByType<SourceSetContainer>()["main"].output.classesDirs
+    from(publishedModules.map {
+        it.extensions.getByType<SourceSetContainer>()["main"].output.classesDirs
     }) {
         exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
     }
