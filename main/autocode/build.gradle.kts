@@ -32,7 +32,7 @@ gversion {
     className = "EjmlVersion"
     language = "java"
     indent = "    "
-    annotate = true
+    annotate = "javax.annotation.Generated"
 }
 
 val autogenerate by tasks.registering(JavaExec::class) {

@@ -32,7 +32,7 @@ repositories {
 kotlin {jvmToolchain(17)}
 
 dependencies {
-    implementation("com.peterabeles.gversion:com.peterabeles.gversion.gradle.plugin:1.10.3")
+    implementation("com.peterabeles.gversion:com.peterabeles.gversion.gradle.plugin:1.11.0")
     implementation("net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin:4.0.1")
     implementation("com.diffplug.spotless:com.diffplug.spotless.gradle.plugin:8.4.0")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.0")
