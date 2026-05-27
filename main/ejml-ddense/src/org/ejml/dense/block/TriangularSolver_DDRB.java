@@ -1062,8 +1062,8 @@ public class TriangularSolver_DDRB {
     }
 
     // Workspace storage for concurrent
-    private static class WorkViews {
-        DSubmatrixD1 a = new DSubmatrixD1();
-        DSubmatrixD1 b = new DSubmatrixD1();
-    }
+    //CONCURRENT_INLINE private static class WorkViews {
+    //CONCURRENT_INLINE     DSubmatrixD1 a = new DSubmatrixD1();
+    //CONCURRENT_INLINE     DSubmatrixD1 b = new DSubmatrixD1();
+    //CONCURRENT_INLINE }
 }

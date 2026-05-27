@@ -223,7 +223,7 @@ public class BlockMultPlusExperiments_DDRB {
                 double bVal = dataB[indexB + k*widthC + j];
                 int i = 0;
                 for (; i < iEnd4; i += 4) {
-                    dataC[indexC + (i)*widthC + j] += dataA[indexA + (i)*widthA + k]*bVal;
+                    dataC[indexC + i*widthC + j] += dataA[indexA + i*widthA + k]*bVal;
                     dataC[indexC + (i + 1)*widthC + j] += dataA[indexA + (i + 1)*widthA + k]*bVal;
                     dataC[indexC + (i + 2)*widthC + j] += dataA[indexA + (i + 2)*widthA + k]*bVal;
                     dataC[indexC + (i + 3)*widthC + j] += dataA[indexA + (i + 3)*widthA + k]*bVal;
@@ -277,7 +277,7 @@ public class BlockMultPlusExperiments_DDRB {
                 double bVal = dataB[indexB + k*widthC + j];
                 int i = 0;
                 for (; i < iEnd4; i += 4) {
-                    dataC[indexC + (i)*widthC + j] += dataA[indexA + (i)*widthA + k]*bVal;
+                    dataC[indexC + i*widthC + j] += dataA[indexA + i*widthA + k]*bVal;
                     dataC[indexC + (i + 1)*widthC + j] += dataA[indexA + (i + 1)*widthA + k]*bVal;
                     dataC[indexC + (i + 2)*widthC + j] += dataA[indexA + (i + 2)*widthA + k]*bVal;
                     dataC[indexC + (i + 3)*widthC + j] += dataA[indexA + (i + 3)*widthA + k]*bVal;
@@ -306,7 +306,7 @@ public class BlockMultPlusExperiments_DDRB {
                 double a1 = dataA[aRow + k + 1];
                 double a2 = dataA[aRow + k + 2];
                 double a3 = dataA[aRow + k + 3];
-                final int b0 = indexB + (k)*widthC;
+                final int b0 = indexB + k*widthC;
                 final int b1 = indexB + (k + 1)*widthC;
                 final int b2 = indexB + (k + 2)*widthC;
                 final int b3 = indexB + (k + 3)*widthC;
@@ -375,11 +375,11 @@ public class BlockMultPlusExperiments_DDRB {
             final int bRow = indexB + k*widthC;
             int i = 0;
             for (; i < iEnd4; i += 4) {
-                double a0 = dataA[indexA + (i)*widthA + k];
+                double a0 = dataA[indexA + i*widthA + k];
                 double a1 = dataA[indexA + (i + 1)*widthA + k];
                 double a2 = dataA[indexA + (i + 2)*widthA + k];
                 double a3 = dataA[indexA + (i + 3)*widthA + k];
-                final int rowC0 = indexC + (i)*widthC;
+                final int rowC0 = indexC + i*widthC;
                 final int rowC1 = indexC + (i + 1)*widthC;
                 final int rowC2 = indexC + (i + 2)*widthC;
                 final int rowC3 = indexC + (i + 3)*widthC;
@@ -414,7 +414,7 @@ public class BlockMultPlusExperiments_DDRB {
             int i = 0;
             for (; i < iEnd4; i += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
-                final int a0 = indexA + (i)*widthA;
+                final int a0 = indexA + i*widthA;
                 final int a1 = indexA + (i + 1)*widthA;
                 final int a2 = indexA + (i + 2)*widthA;
                 final int a3 = indexA + (i + 3)*widthA;
@@ -427,7 +427,7 @@ public class BlockMultPlusExperiments_DDRB {
                     s3 += dataA[a3 + k]*bv;
                     bIdx += widthC;
                 }
-                dataC[indexC + (i)*widthC + j] += s0;
+                dataC[indexC + i*widthC + j] += s0;
                 dataC[indexC + (i + 1)*widthC + j] += s1;
                 dataC[indexC + (i + 2)*widthC + j] += s2;
                 dataC[indexC + (i + 3)*widthC + j] += s3;
@@ -455,7 +455,7 @@ public class BlockMultPlusExperiments_DDRB {
             int i = 0;
             for (; i < iEnd4; i += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
-                int a0 = indexA + (i)*widthA;
+                int a0 = indexA + i*widthA;
                 int a1 = indexA + (i + 1)*widthA;
                 int a2 = indexA + (i + 2)*widthA;
                 int a3 = indexA + (i + 3)*widthA;
@@ -469,7 +469,7 @@ public class BlockMultPlusExperiments_DDRB {
                     s3 += dataA[a3++]*bv;
                     bIdx += widthC;
                 }
-                dataC[indexC + (i)*widthC + j] += s0;
+                dataC[indexC + i*widthC + j] += s0;
                 dataC[indexC + (i + 1)*widthC + j] += s1;
                 dataC[indexC + (i + 2)*widthC + j] += s2;
                 dataC[indexC + (i + 3)*widthC + j] += s3;
@@ -499,7 +499,7 @@ public class BlockMultPlusExperiments_DDRB {
 
         for (int i = 0; i < iEnd; i += 4) {
             for (int j = 0; j < jEnd; j += 4) {
-                final int c0 = indexC + (i)*widthC + j;
+                final int c0 = indexC + i*widthC + j;
                 final int c1 = indexC + (i + 1)*widthC + j;
                 final int c2 = indexC + (i + 2)*widthC + j;
                 final int c3 = indexC + (i + 3)*widthC + j;
@@ -509,7 +509,7 @@ public class BlockMultPlusExperiments_DDRB {
                 double t30 = dataC[c3], t31 = dataC[c3 + 1], t32 = dataC[c3 + 2], t33 = dataC[c3 + 3];
 
                 for (int k = 0; k < widthA; k++) {
-                    double a0 = dataA[indexA + (i)*widthA + k];
+                    double a0 = dataA[indexA + i*widthA + k];
                     double a1 = dataA[indexA + (i + 1)*widthA + k];
                     double a2 = dataA[indexA + (i + 2)*widthA + k];
                     double a3 = dataA[indexA + (i + 3)*widthA + k];
@@ -599,7 +599,7 @@ public class BlockMultPlusExperiments_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = (j)*widthA;
+                int b0 = j*widthA;
                 int b1 = (j + 1)*widthA;
                 int b2 = (j + 2)*widthA;
                 int b3 = (j + 3)*widthA;
@@ -652,7 +652,7 @@ public class BlockMultPlusExperiments_DDRB {
             for (; j < jEnd4; j += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
                 int a = aRow;
-                int b0 = (j)*widthA;
+                int b0 = j*widthA;
                 int b1 = (j + 1)*widthA;
                 int b2 = (j + 2)*widthA;
                 int b3 = (j + 3)*widthA;
@@ -700,7 +700,7 @@ public class BlockMultPlusExperiments_DDRB {
         final int jEnd = widthC & ~3;
 
         for (int i = 0; i < iEnd; i += 4) {
-            final int a0Row = indexA + (i)*widthA;
+            final int a0Row = indexA + i*widthA;
             final int a1Row = indexA + (i + 1)*widthA;
             final int a2Row = indexA + (i + 2)*widthA;
             final int a3Row = indexA + (i + 3)*widthA;
@@ -709,7 +709,7 @@ public class BlockMultPlusExperiments_DDRB {
                 double t10 = 0.0, t11 = 0.0, t12 = 0.0, t13 = 0.0;
                 double t20 = 0.0, t21 = 0.0, t22 = 0.0, t23 = 0.0;
                 double t30 = 0.0, t31 = 0.0, t32 = 0.0, t33 = 0.0;
-                final int b0Row = (j)*widthA;
+                final int b0Row = j*widthA;
                 final int b1Row = (j + 1)*widthA;
                 final int b2Row = (j + 2)*widthA;
                 final int b3Row = (j + 3)*widthA;
@@ -740,7 +740,7 @@ public class BlockMultPlusExperiments_DDRB {
                     t32 += a3*b2;
                     t33 += a3*b3;
                 }
-                final int c0 = indexC + (i)*widthC + j;
+                final int c0 = indexC + i*widthC + j;
                 final int c1 = indexC + (i + 1)*widthC + j;
                 final int c2 = indexC + (i + 2)*widthC + j;
                 final int c3 = indexC + (i + 3)*widthC + j;
@@ -772,7 +772,7 @@ public class BlockMultPlusExperiments_DDRB {
                     s2 += dataA[a2Row + k]*bv;
                     s3 += dataA[a3Row + k]*bv;
                 }
-                dataC[indexC + (i)*widthC + j] += s0;
+                dataC[indexC + i*widthC + j] += s0;
                 dataC[indexC + (i + 1)*widthC + j] += s1;
                 dataC[indexC + (i + 2)*widthC + j] += s2;
                 dataC[indexC + (i + 3)*widthC + j] += s3;
@@ -814,7 +814,7 @@ public class BlockMultPlusExperiments_DDRB {
             int i = 0;
             for (; i < iEnd4; i += 4) {
                 double s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
-                final int a0 = indexA + (i)*widthA;
+                final int a0 = indexA + i*widthA;
                 final int a1 = indexA + (i + 1)*widthA;
                 final int a2 = indexA + (i + 2)*widthA;
                 final int a3 = indexA + (i + 3)*widthA;
@@ -825,7 +825,7 @@ public class BlockMultPlusExperiments_DDRB {
                     s2 += dataA[a2 + k]*bv;
                     s3 += dataA[a3 + k]*bv;
                 }
-                dataC[indexC + (i)*widthC + j] += s0;
+                dataC[indexC + i*widthC + j] += s0;
                 dataC[indexC + (i + 1)*widthC + j] += s1;
                 dataC[indexC + (i + 2)*widthC + j] += s2;
                 dataC[indexC + (i + 3)*widthC + j] += s3;
