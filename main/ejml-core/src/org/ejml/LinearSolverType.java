@@ -22,6 +22,8 @@ package org.ejml;
 public enum LinearSolverType {
 	/// Application specific default
 	DEFAULT,
+	/// LU decomposition. Ideal for square systems.
+	LU,
 	/// Square positive definite. Fast solver.
 	CHOLESKY,
 	/// Faster variant of Cholesky when dealing with large matrices

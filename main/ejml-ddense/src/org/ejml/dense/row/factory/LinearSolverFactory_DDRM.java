@@ -39,6 +39,7 @@ public class LinearSolverFactory_DDRM {
     /// variant then you need to not use this high level API.
     public static LinearSolverDense<DMatrixRMaj> create( org.ejml.LinearSolverType type ) {
         return switch (type) {
+            case LU -> new LinearSolverLu_DDRM(new LUDecompositionAlt_DDRM());
             case CHOLESKY -> {
                 // Degrades in performance gracefully as matrix size increases, but block is
                 // better for large systems
