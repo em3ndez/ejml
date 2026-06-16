@@ -60,8 +60,6 @@ tasks.register<JavaExec>("runtimeRegression") {
 	dependsOn(tasks.named("build"))
 	group = "execution"
 	description = "Runs the JMH runtime regression (org.ejml.EjmlRuntimeRegressionApp)"
-	// Run from the repository root so the app's project-root for consistency
-	workingDir = rootProject.projectDir
 	classpath = sourceSets.main.get().runtimeClasspath
 	mainClass.set("org.ejml.EjmlRuntimeRegressionApp")
 	// Arguments come from Gradle's built-in --args option (handles quoting/splitting).
