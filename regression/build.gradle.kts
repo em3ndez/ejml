@@ -52,18 +52,17 @@ dependencies {
 	api(Libs.JMH_CORE)
 }
 
-// Run the regression using a gradle command
-// Currently this is the only way to get paths set up for benchmarks. See comment below.
+// Run the JMH runtime regression using a gradle command.
 //
-// Example: ./gradlew runtimeRegression run --console=plain -Dexec.args="--SummaryOnly"
+// Pass arguments to EjmlRuntimeRegressionApp with Gradle's standard --args option, e.g.:
+//   ./gradlew runtimeRegression --console=plain --args="--SummaryOnly"
 tasks.register<JavaExec>("runtimeRegression") {
 	dependsOn(tasks.named("build"))
 	group = "execution"
-	description = "Run the mainClass from the output jar in classpath with ExecTask"
+	description = "Runs the JMH runtime regression (org.ejml.EjmlRuntimeRegressionApp)"
+	// Run from the repository root so the app's project-root for consistency
+	workingDir = rootProject.projectDir
 	classpath = sourceSets.main.get().runtimeClasspath
 	mainClass.set("org.ejml.EjmlRuntimeRegressionApp")
-	args = System.getProperty("exec.args", "").split(" ")
+	// Arguments come from Gradle's built-in --args option (handles quoting/splitting).
 }
-
-// Creating a jar would be easier to pass in arguments with, but it seems like only the first
-// META-INF/BenchmarkList it sees is used. This limited the benchmarks to one module
