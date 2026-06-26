@@ -28,9 +28,6 @@ plugins {
     id("com.diffplug.spotless")
 }
 
-group = "org.ejml"
-version = "0.46.0"
-
 java {
     withJavadocJar()
     withSourcesJar()
