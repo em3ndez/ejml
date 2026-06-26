@@ -2,6 +2,15 @@ Change log for EJML
 
 Date format: year/month/day
 
+----- Version 0.46.0
+2026/Jun/26
+
+- Java 9 Module Support via `ejml-java9module` package. Thanks @SamCarlberg
+- build: Modernized, uses Gradle conventions
+- Cleaned up block Householder code
+- JMH benchmarks have better coverage
+- SimpleMatrix - SVD/EVD now check to see if they modify their inputs. Thanks @kasparthommen for the bug report
+
 ----- Version 0.45.1
 2026/May/25
 

@@ -29,7 +29,7 @@ plugins {
 }
 
 group = "org.ejml"
-version = "0.45.2-SNAPSHOT"
+version = "0.46.0"
 
 java {
     withJavadocJar()
