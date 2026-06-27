@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
+
+import org.ejml.MapPrintFormat;
 
 import java.util.Iterator;
 
@@ -28,14 +29,14 @@ import java.util.Iterator;
 public interface DMatrixSparse extends DMatrix, MatrixSparse {
 
     /**
-     * Returns the value of value of the specified matrix element.
+     * Value of a grid coordinate in the matrix.
      *
-     * @param row           Matrix element's row index..
-     * @param col           Matrix element's column index.
+     * @param row Matrix element's row index.
+     * @param col Matrix element's column index.
      * @param fallBackValue Value to return, if the matrix element is not assigned
      * @return The specified element's value.
      */
-    double get(int row, int col, double fallBackValue);
+    double get( int row, int col, double fallBackValue );
 
     /**
      * Same as {@link #get} but does not perform bounds check on input parameters. This results in about a 25%
@@ -43,12 +44,32 @@ public interface DMatrixSparse extends DMatrix, MatrixSparse {
      * It is not recommended that this function be used, except in highly optimized code where the bounds are
      * implicitly being checked.
      *
-     * @param row           Matrix element's row index..
-     * @param col           Matrix element's column index.
+     * @param row Matrix element's row index.
+     * @param col Matrix element's column index.
      * @param fallBackValue Value to return, if the matrix element is not assigned
      * @return The specified element's value or the fallBackValue, if the element is not assigned.
      */
-    double unsafe_get(int row, int col, double fallBackValue);
+    double unsafe_get( int row, int col, double fallBackValue );
+
+    /// Customizable way of printing the sparse matrix as a map type data structure.
+    /// Only non-zero values are put into a list for row, col, value.
+    @Override default String formatMap( MapPrintFormat format ) {
+        var builder = new StringBuilder();
+        builder.append(format.listPrefix);
+        Iterator<CoordinateRealValue> iter = createCoordinateIterator();
+        while (iter.hasNext()) {
+            CoordinateRealValue cell = iter.next();
+            builder.append(format.itemPrefix);
+            format.pair(builder, "row", cell.row, true);
+            format.pair(builder, "col", cell.col, true);
+            format.pair(builder, "value", cell.value, false);
+            builder.append(format.itemSuffix);
+            if (iter.hasNext())
+                builder.append(format.itemSeparator);
+        }
+        builder.append(format.listSuffix);
+        return builder.toString();
+    }
 
     /**
      * Creates an iterator which will go through each non-zero value in the sparse matrix. Order is not defined
@@ -61,7 +82,7 @@ public interface DMatrixSparse extends DMatrix, MatrixSparse {
      */
     class CoordinateRealValue {
         /** The coordinate */
-        public int row,col;
+        public int row, col;
         /** The value of the coordinate */
         public double value;
     }

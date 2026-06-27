@@ -2,6 +2,35 @@ Change log for EJML
 
 Date format: year/month/day
 
+----- Version 0.46.0
+2026/Jun/26
+
+- Java 9 Module Support via `ejml-java9module` package. Thanks @SamCarlberg
+- build: Modernized, uses Gradle conventions
+- Cleaned up block Householder code
+- JMH benchmarks have better coverage
+- SimpleMatrix - SVD/EVD now check to see if they modify their inputs. Thanks @kasparthommen for the bug report
+
+----- Version 0.45.1
+2026/May/25
+
+- MatrixFixed - Most set() return 'this' now
+- Cleaned up block Householder API
+
+----- Version 0.45.0
+2026/May/15
+
+- Cholesky solver supports upper triangle mode, row-major and block
+- New format() for converting matrices and other data structures to Strings with lots of flexibility
+  * MatrixPrintFormat and MapPrintFormat
+  * Designed to be used by down stream libraries too
+- Equations supports more functions and is more capable in general
+- Start of changing API to allow selection of specific decompositions
+- Low level BLAS-1 style optimizations for block matrices
+- More SimpleMatrix functions
+- MatrixMultInernalHarness_DDRB
+  * Selects matrix ijk order dynamically avoiding sever performance hits
+
 ----- Version 0.44.0
 2025/Mar/21
 

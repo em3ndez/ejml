@@ -19,19 +19,15 @@ package org.ejml.data;
 
 import org.ejml.MatrixPrintFormat;
 
-import static org.ejml.UtilEjml.fancyString2;
-
 /**
  * Interface for all 64F real matrices.
- *
- * @author Peter Abeles
  */
 public interface DMatrix extends Matrix {
 
     /**
-     * Returns the value of value of the specified matrix element.
+     * Returns the value of the specified matrix element.
      *
-     * @param row Matrix element's row index..
+     * @param row Matrix element's row index.
      * @param col Matrix element's column index.
      * @return The specified element's value.
      */
@@ -43,7 +39,7 @@ public interface DMatrix extends Matrix {
      * It is not recommended that this function be used, except in highly optimized code where the bounds are
      * implicitly being checked.
      *
-     * @param row Matrix element's row index..
+     * @param row Matrix element's row index.
      * @param col Matrix element's column index.
      * @return The specified element's value.
      */
@@ -80,23 +76,15 @@ public interface DMatrix extends Matrix {
         return getNumRows()*getNumCols();
     }
 
-    /// Customizable formatting for converting a Matrix into a string
-    default String format( MatrixPrintFormat format ) {
-        int precision = format.getPrecision();
+    @Override default String format( MatrixPrintFormat format ) {
         int numRows = getNumRows();
         int numCols = getNumCols();
-        char decimal = format.getDecimal();
         var builder = new StringBuilder();
         builder.append(format.getPrefix());
         for (int row = 0; row < numRows; row++) {
-            builder.append(format.getRowPrefix());
-            for (int col = 0; col < numCols - 1; col++) {
-                builder.append(fancyString2(get(row, col), precision, decimal));
-                builder.append(format.getColSeparator());
-            }
-            if (numCols > 0)
-                builder.append(fancyString2(get(row, numCols - 1), precision, decimal));
-            builder.append(format.getRowSuffix());
+            format.rowPadding(row == 0, builder);
+            int _row = row;
+            format.row(builder, numCols, ( i ) -> get(_row, i));
             if (row < numRows - 1)
                 builder.append(format.getRowSeparator());
         }

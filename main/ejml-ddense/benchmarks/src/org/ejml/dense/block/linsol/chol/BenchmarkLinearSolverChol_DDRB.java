@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -30,41 +30,46 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Peter Abeles
- */
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(iterations = 2)
-@Measurement(iterations = 5)
+@Measurement(iterations = 3)
 @State(Scope.Benchmark)
-@Fork(value = 2)
+@Fork(value = 1)
 public class BenchmarkLinearSolverChol_DDRB {
-    //    @Param({"100", "500", "1000", "5000", "10000"})
-    @Param({"1000", "2000"})
+    @Param({"200", "3000"})
     public int size;
 
-    public DMatrixRBlock A;
+    @Param({"true", "false"})
+    public boolean lower;
+
+    public DMatrixRBlock A,A_inv;
     public DMatrixRBlock X, B;
 
-    CholeskyOuterSolver_DDRB outer = new CholeskyOuterSolver_DDRB();
+    CholeskyOuterSolver_DDRB outer;
 
-    @Setup
-    public void setup() {
-        Random rand = new Random(234);
+    @Setup public void setup() {
+        var rand = new Random(234);
 
+        outer = new CholeskyOuterSolver_DDRB(lower);
         A = MatrixOps_DDRB.convert(RandomMatrices_DDRM.symmetricPosDef(size, rand));
+        A_inv = A.copy();
         B = MatrixOps_DDRB.createRandom(A.numRows, 20, -1, 1, rand);
         X = A.create(1, 1);
     }
 
-    @Benchmark
-    public void outer() {
+    @Setup(Level.Invocation)
+    public void reset() {
+        A_inv.setTo(A);
+    }
+
+    @Benchmark public void outer() {
         DMatrixRBlock A = outer.modifiesA() ? this.A.copy() : this.A;
         DMatrixRBlock B = outer.modifiesB() ? this.B.copy() : this.B;
         if (!outer.setA(A))
             throw new RuntimeException("Bad");
         outer.solve(B, X);
+        outer.invert(A_inv);
     }
 
     public static void main( String[] args ) throws RunnerException {

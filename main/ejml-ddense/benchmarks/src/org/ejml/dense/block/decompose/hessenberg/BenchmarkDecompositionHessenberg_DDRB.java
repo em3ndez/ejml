@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -21,6 +21,7 @@ package org.ejml.dense.block.decompose.hessenberg;
 import org.ejml.data.DMatrixRBlock;
 import org.ejml.dense.block.MatrixOps_DDRB;
 import org.ejml.dense.block.decomposition.hessenberg.TridiagonalDecompositionHouseholder_DDRB;
+import org.ejml.dense.block.decomposition.hessenberg.TridiagonalDecompositionHouseholder_MT_DDRB;
 import org.ejml.dense.row.RandomMatrices_DDRM;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
@@ -34,29 +35,47 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(iterations = 2)
-@Measurement(iterations = 5)
+@Measurement(iterations = 3)
 @State(Scope.Benchmark)
-@Fork(value = 2)
+@Fork(value = 1)
 public class BenchmarkDecompositionHessenberg_DDRB {
     //    @Param({"100", "500", "1000", "5000", "10000"})
-    @Param({"2000"})
+    @Param({"500", "2000"})
     public int size;
 
-    public DMatrixRBlock S, A;
+    public DMatrixRBlock S, S_template,Q, R;
 
-    TridiagonalDecompositionHouseholder_DDRB tridiagonal = new TridiagonalDecompositionHouseholder_DDRB();
+    TridiagonalDecompositionHouseholder_DDRB house = new TridiagonalDecompositionHouseholder_DDRB();
+    TridiagonalDecompositionHouseholder_MT_DDRB houseMT = new TridiagonalDecompositionHouseholder_MT_DDRB();
 
-    @Setup
-    public void setup() {
+    @Setup public void setup() {
         Random rand = new Random(234);
 
         S = MatrixOps_DDRB.convert(RandomMatrices_DDRM.symmetric(size, -1, 1, rand));
+        S_template = S.copy();
+        Q = new DMatrixRBlock(1, 1);
+        R = new DMatrixRBlock(1, 1);
     }
 
-    @Benchmark
-    public void tridiagonal() {
-        DMatrixRBlock A = tridiagonal.inputModified() ? S.copy() : S;
-        tridiagonal.decompose(A);
+    @Setup(Level.Invocation) public void reset() {
+        S.setTo(S_template);
+    }
+
+    @Benchmark public void tridiagonal() {
+        if (!house.decompose(S))
+            throw new RuntimeException("Decomposition failed?");
+        // transposed and not exercise different paths
+        house.getQ(Q, false);
+        house.getQ(Q, true);
+        house.getT(R);
+    }
+
+    @Benchmark public void tridiagonal_MT() {
+        if (!houseMT.decompose(S))
+            throw new RuntimeException("Decomposition failed?");
+        houseMT.getQ(Q, false);
+        houseMT.getQ(Q, true);
+        houseMT.getT(R);
     }
 
     public static void main( String[] args ) throws RunnerException {

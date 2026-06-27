@@ -160,7 +160,7 @@ public class MatrixConstructor {
             endRow = true;
         }
 
-        public int getRows() {
+        private int getRows() {
             if (matrix) {
                 return ((VariableMatrix)variable).matrix.numRows;
             } else {
@@ -168,7 +168,7 @@ public class MatrixConstructor {
             }
         }
 
-        public int getColumns() {
+        private int getColumns() {
             if (matrix) {
                 return ((VariableMatrix)variable).matrix.numCols;
             } else if (variable.getType() == VariableType.SCALAR) {
@@ -180,15 +180,15 @@ public class MatrixConstructor {
             }
         }
 
-        public DMatrixRMaj getMatrix() {
+        private DMatrixRMaj getMatrix() {
             return ((VariableMatrix)variable).matrix;
         }
 
-        public double getValue() {
+        private double getValue() {
             return ((VariableScalar)variable).getDouble();
         }
 
-        public void initialize() {
+        private void initialize() {
             if (variable != null && !matrix && variable.getType() == VariableType.INTEGER_SEQUENCE) {
                 ((VariableIntegerSequence)variable).sequence.initialize(-1);
             }

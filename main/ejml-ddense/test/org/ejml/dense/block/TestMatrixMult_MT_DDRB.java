@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -27,33 +27,29 @@ import org.ejml.data.Submatrix;
 
 import java.util.Random;
 
+@SuppressWarnings("rawtypes")
 class TestMatrixMult_MT_DDRB extends CheckMultiThreadAgainstSingleThread {
 	int blockLength = 21;
 
 	public TestMatrixMult_MT_DDRB() {
-		super(MatrixMult_DDRB.class, MatrixMult_MT_DDRB.class, 7);
+		super(MatrixMult_DDRB.class, MatrixMult_MT_DDRB.class, 9);
 		size = 121;
 	}
 
-	@Override
-	protected Submatrix createSubmatrix(long seed) {
+	@Override protected Submatrix createSubmatrix(long seed) {
 		Random rand = new Random(seed);
 		DMatrixRBlock mat = MatrixOps_DDRB.createRandom(size,size,-1,1, rand, blockLength);
 		return new DSubmatrixD1(mat,0,size,0,size);
 	}
 
-	@Override
-	protected void compareSubmatrices(Submatrix subA, Submatrix subB) {
+	@Override protected void compareSubmatrices(Submatrix subA, Submatrix subB) {
 		DMatrixRBlock A = (DMatrixRBlock)subA.original;
 		DMatrixRBlock B = (DMatrixRBlock)subB.original;
 		EjmlUnitTests.assertEquals(A,B, UtilEjml.TEST_F64);
 	}
 
-	/**
-	 * Correctly configure block length for all functions
-	 */
-	@Override
-	protected void declareParamStandard(Class[] typesThreaded, Object[] inputsThreaded, Object[] inputsSingle) {
+	/// Correctly configure block length for all functions
+	@Override protected void declareParamStandard(Class[] typesThreaded, Object[] inputsThreaded, Object[] inputsSingle) {
 		super.declareParamStandard(typesThreaded, inputsThreaded, inputsSingle);
 		inputsThreaded[0] = blockLength;
 		inputsSingle[0] = blockLength;

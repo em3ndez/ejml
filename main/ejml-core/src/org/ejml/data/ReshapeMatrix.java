@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2017, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,20 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
-/**
- * Matrix which can be reshaped
- *
- * @author Peter Abeles
- */
-public interface ReshapeMatrix extends Matrix{
-    /**
-     * Equivalent to invoking reshape(numRows,numCols,false);
-     *
-     * @param numRows The new number of rows in the matrix.
-     * @param numCols The new number of columns in the matrix.
-     */
-    void reshape( int numRows , int numCols );
+/// Matrix which can be reshaped
+public interface ReshapeMatrix extends Matrix {
+    /// Equivalent to invoking reshape(numRows,numCols,false);
+    ///
+    /// @param numRows The new number of rows in the matrix.
+    /// @param numCols The new number of columns in the matrix.
+    void reshape( int numRows, int numCols );
 }

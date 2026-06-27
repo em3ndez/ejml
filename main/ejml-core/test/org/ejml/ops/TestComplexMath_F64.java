@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -19,6 +19,8 @@
 package org.ejml.ops;
 
 import org.ejml.EjmlStandardJUnit;
+import org.ejml.MapPrintFormat;
+import org.ejml.MatrixPrintFormat;
 import org.ejml.UtilEjml;
 import org.ejml.data.ComplexPolar_F64;
 import org.ejml.data.Complex_F64;
@@ -26,14 +28,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * @author Peter Abeles
- */
 public class TestComplexMath_F64 extends EjmlStandardJUnit {
-    @Test
-    public void conj() {
-        Complex_F64 a = new Complex_F64(2, 3);
-        Complex_F64 b = new Complex_F64(-3, 6);
+    @Test void conj() {
+        var a = new Complex_F64(2, 3);
+        var b = new Complex_F64(-3, 6);
 
         ComplexMath_F64.conj(a, b);
 
@@ -41,11 +39,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         assertEquals(-a.imaginary, b.imaginary, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void plus() {
-        Complex_F64 a = new Complex_F64(2, 3);
-        Complex_F64 b = new Complex_F64(-3, 6);
-        Complex_F64 c = new Complex_F64();
+    @Test void plus() {
+        var a = new Complex_F64(2, 3);
+        var b = new Complex_F64(-3, 6);
+        var c = new Complex_F64();
 
         ComplexMath_F64.plus(a, b, c);
 
@@ -53,11 +50,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         assertEquals(9, c.imaginary, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void minus() {
-        Complex_F64 a = new Complex_F64(2, 3);
-        Complex_F64 b = new Complex_F64(-3, 6);
-        Complex_F64 c = new Complex_F64();
+    @Test void minus() {
+        var a = new Complex_F64(2, 3);
+        var b = new Complex_F64(-3, 6);
+        var c = new Complex_F64();
 
         ComplexMath_F64.minus(a, b, c);
 
@@ -65,11 +61,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         assertEquals(-3, c.imaginary, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void multiply() {
-        Complex_F64 a = new Complex_F64(2, 3);
-        Complex_F64 b = new Complex_F64(-3, 6);
-        Complex_F64 c = new Complex_F64();
+    @Test void multiply() {
+        var a = new Complex_F64(2, 3);
+        var b = new Complex_F64(-3, 6);
+        var c = new Complex_F64();
 
         ComplexMath_F64.multiply(a, b, c);
 
@@ -77,11 +72,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         assertEquals(3, c.imaginary, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void divide() {
-        Complex_F64 a = new Complex_F64(2, 3);
-        Complex_F64 b = new Complex_F64(-3, 6);
-        Complex_F64 c = new Complex_F64();
+    @Test void divide() {
+        var a = new Complex_F64(2, 3);
+        var b = new Complex_F64(-3, 6);
+        var c = new Complex_F64();
 
         ComplexMath_F64.divide(a, b, c);
 
@@ -92,11 +86,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
     /**
      * Test conversion to and from polar form by doing just that and see if it gets the original answer again
      */
-    @Test
-    public void convert() {
-        Complex_F64 a = new Complex_F64(2, 3);
+    @Test void convert() {
+        var a = new Complex_F64(2, 3);
         ComplexPolar_F64 b = new ComplexPolar_F64();
-        Complex_F64 c = new Complex_F64();
+        var c = new Complex_F64();
 
         ComplexMath_F64.convert(a, b);
         ComplexMath_F64.convert(b, c);
@@ -105,10 +98,9 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         assertEquals(a.imaginary, c.imaginary, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void mult_polar() {
-        Complex_F64 a = new Complex_F64(2, 3);
-        Complex_F64 b = new Complex_F64(-3, 6);
+    @Test void mult_polar() {
+        var a = new Complex_F64(2, 3);
+        var b = new Complex_F64(-3, 6);
         Complex_F64 expected = new Complex_F64();
 
         ComplexMath_F64.multiply(a, b, expected);
@@ -125,17 +117,16 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         assertEquals(expected.imaginary, found.imaginary, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void div_polar() {
-        Complex_F64 a = new Complex_F64(2, 3);
-        Complex_F64 b = new Complex_F64(-3, 6);
+    @Test void div_polar() {
+        var a = new Complex_F64(2, 3);
+        var b = new Complex_F64(-3, 6);
         Complex_F64 expected = new Complex_F64();
 
         ComplexMath_F64.divide(a, b, expected);
 
-        ComplexPolar_F64 pa = new ComplexPolar_F64(a);
-        ComplexPolar_F64 pb = new ComplexPolar_F64(b);
-        ComplexPolar_F64 pc = new ComplexPolar_F64();
+        var pa = new ComplexPolar_F64(a);
+        var pb = new ComplexPolar_F64(b);
+        var pc = new ComplexPolar_F64();
 
         ComplexMath_F64.divide(pa, pb, pc);
 
@@ -145,11 +136,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         assertEquals(expected.imaginary, found.imaginary, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void pow() {
-        ComplexPolar_F64 a = new ComplexPolar_F64(2, 0.2);
-        ComplexPolar_F64 expected = new ComplexPolar_F64();
-        ComplexPolar_F64 found = new ComplexPolar_F64();
+    @Test void pow() {
+        var a = new ComplexPolar_F64(2, 0.2);
+        var expected = new ComplexPolar_F64();
+        var found = new ComplexPolar_F64();
 
         ComplexMath_F64.multiply(a, a, expected);
         ComplexMath_F64.multiply(a, expected, expected);
@@ -160,11 +150,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         assertEquals(expected.theta, found.theta, UtilEjml.TEST_F64);
     }
 
-    @Test
-    public void root_polar() {
-        ComplexPolar_F64 expected = new ComplexPolar_F64(2, 0.2);
-        ComplexPolar_F64 root = new ComplexPolar_F64();
-        ComplexPolar_F64 found = new ComplexPolar_F64();
+    @Test void root_polar() {
+        var expected = new ComplexPolar_F64(2, 0.2);
+        var root = new ComplexPolar_F64();
+        var found = new ComplexPolar_F64();
 
         // compute the square root of a complex number then see if the
         // roots equal the output
@@ -181,11 +170,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void root_standard() {
-        Complex_F64 expected = new Complex_F64(2, 0.2);
-        Complex_F64 root = new Complex_F64();
-        Complex_F64 found = new Complex_F64();
+    @Test void root_standard() {
+        var expected = new Complex_F64(2, 0.2);
+        var root = new Complex_F64();
+        var found = new Complex_F64();
 
         // compute the square root of a complex number then see if the
         // roots equal the output
@@ -199,11 +187,10 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
         }
     }
 
-    @Test
-    public void sqrt_standard() {
-        Complex_F64 input = new Complex_F64(2, 0.2);
-        Complex_F64 root = new Complex_F64();
-        Complex_F64 found = new Complex_F64();
+    @Test void sqrt_standard() {
+        var input = new Complex_F64(2, 0.2);
+        var root = new Complex_F64();
+        var found = new Complex_F64();
 
         ComplexMath_F64.sqrt(input, root);
         ComplexMath_F64.multiply(root, root, found);
@@ -218,5 +205,17 @@ public class TestComplexMath_F64 extends EjmlStandardJUnit {
 
         assertEquals(input.real, found.real, UtilEjml.TEST_F64);
         assertEquals(input.imaginary, found.imaginary, UtilEjml.TEST_F64);
+    }
+
+    @Test void format_Matrix() {
+        var a = new Complex_F64(2, 0.1234);
+        String found = a.format(new MatrixPrintFormat().withPrecision(2));
+        assertEquals("{2, 0.12}", found);
+    }
+
+    @Test void formatMap() {
+        var a = new Complex_F64(2, 0.1234);
+        String found = a.format(new MapPrintFormat().withPrecision(2));
+        assertEquals("{real: 2, imaginary: 0.12}", found);
     }
 }

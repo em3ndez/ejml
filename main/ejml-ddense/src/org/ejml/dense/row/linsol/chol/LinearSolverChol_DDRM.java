@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.dense.row.linsol.chol;
 
 import org.ejml.UtilEjml;
@@ -26,9 +25,6 @@ import org.ejml.dense.row.decomposition.chol.CholeskyDecompositionCommon_DDRM;
 import org.ejml.dense.row.linsol.LinearSolverAbstract_DDRM;
 import org.ejml.interfaces.decomposition.CholeskyDecomposition_F64;
 
-/**
- * @author Peter Abeles
- */
 @SuppressWarnings("NullAway.Init")
 public class LinearSolverChol_DDRM extends LinearSolverAbstract_DDRM {
 
@@ -74,7 +70,7 @@ public class LinearSolverChol_DDRM extends LinearSolverAbstract_DDRM {
      * </p>
      *
      * @param B A matrix that is n by m. Not modified.
-     * @param X An n by m matrix where the solution is writen to. Modified.
+     * @param X An n by m matrix where the solution is written to. Modified.
      */
     @Override
     public void solve( DMatrixRMaj B, DMatrixRMaj X ) {
@@ -86,7 +82,7 @@ public class LinearSolverChol_DDRM extends LinearSolverAbstract_DDRM {
         if (decomposer.isLower()) {
             solveLower(A, B, X, vv);
         } else {
-            throw new RuntimeException("Implement");
+            solveUpper(A, B, X, vv);
         }
     }
 
@@ -100,6 +96,20 @@ public class LinearSolverChol_DDRM extends LinearSolverAbstract_DDRM {
 
             // solve L^T*x=y
             TriangularSolver_DDRM.solveTranL(L.data, vv, N);
+            for (int i = 0; i < N; i++) X.data[i*numCols + j] = vv[i];
+        }
+    }
+
+    public static void solveUpper( DMatrixRMaj R, DMatrixRMaj B, DMatrixRMaj X, double[] vv ) {
+        final int numCols = B.numCols;
+        final int N = R.numCols;
+        for (int j = 0; j < numCols; j++) {
+            for (int i = 0; i < N; i++) vv[i] = B.data[i*numCols + j];
+            // solve R^T*y=b storing y in x
+            TriangularSolver_DDRM.solveTranU(R.data, vv, N);
+
+            // solve R*x=y
+            TriangularSolver_DDRM.solveU(R.data, vv, N);
             for (int i = 0; i < N; i++) X.data[i*numCols + j] = vv[i];
         }
     }
@@ -123,7 +133,7 @@ public class LinearSolverChol_DDRM extends LinearSolverAbstract_DDRM {
         if (decomposer.isLower()) {
             setToInverseL(a);
         } else {
-            throw new RuntimeException("Implement");
+            setToInverseU(a);
         }
     }
 
@@ -155,6 +165,40 @@ public class LinearSolverChol_DDRM extends LinearSolverAbstract_DDRM {
                 double sum = (i < j) ? 0 : a[j*n + i];
                 for (int k = i + 1; k < n; k++) {
                     sum -= t[k*n + i]*a[j*n + k];
+                }
+                a[i*n + j] = a[j*n + i] = sum/el_ii;
+            }
+        }
+    }
+
+    /**
+     * Sets the matrix to the inverse using an upper triangular matrix.
+     */
+    public void setToInverseU( double[] a ) {
+        final int n = numCols;
+        // TODO reorder these operations to avoid cache misses
+
+        // inverts the upper triangular system and saves the result
+        // in the lower triangle to minimize cache misses
+        for (int i = n - 1; i >= 0; i--) {
+            double el_ii = t[i*n + i];
+            for (int j = i; j < n; j++) {
+                double sum = (i == j) ? 1.0 : 0;
+                for (int k = i + 1; k <= j; k++) {
+                    sum -= t[i*n + k]*a[j*n + k];
+                }
+                a[j*n + i] = sum/el_ii;
+            }
+        }
+        // solve the system and handle the previous solution being in the lower triangle
+        // takes advantage of symmetry
+        for (int i = n - 1; i >= 0; i--) {
+            double el_ii = t[i*n + i];
+
+            for (int j = 0; j <= i; j++) {
+                double sum = (j > i) ? 0 : a[i*n + j];
+                for (int k = i + 1; k < n; k++) {
+                    sum -= t[i*n + k]*a[k*n + j];
                 }
                 a[i*n + j] = a[j*n + i] = sum/el_ii;
             }

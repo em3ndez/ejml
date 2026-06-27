@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,14 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.dense.block.decomposition.chol;
 
 import org.ejml.data.Complex_F64;
 import org.ejml.data.DMatrixRBlock;
 import org.ejml.data.DSubmatrixD1;
-import org.ejml.dense.block.InnerRankUpdate_DDRB;
 import org.ejml.dense.block.MatrixOps_DDRB;
+import org.ejml.dense.block.RankUpdate_DDRB;
 import org.ejml.dense.block.TriangularSolver_DDRB;
 import org.ejml.interfaces.decomposition.CholeskyDecomposition_F64;
 import org.jetbrains.annotations.Nullable;
@@ -117,10 +116,10 @@ public class CholeskyOuterForm_DDRB implements CholeskyDecomposition_F64<DMatrix
             // on the last block these operations are not needed.
             if (widthA == blockLength) {
                 // B = L^-1 B
-                TriangularSolver_DDRB.solveBlock(blockLength, false, subA, subB, false, true);
+                TriangularSolver_DDRB.lsolveBlock(blockLength, false, subA, subB, false, true);
 
                 // C = C - B * B^T
-                InnerRankUpdate_DDRB.symmRankNMinus_L(blockLength, subC, subB);
+                RankUpdate_DDRB.symmRankNMinus_L(blockLength, subC, subB);
             }
         }
 
@@ -157,10 +156,10 @@ public class CholeskyOuterForm_DDRB implements CholeskyDecomposition_F64<DMatrix
             // on the last block these operations are not needed.
             if (widthA == blockLength) {
                 // B = U^-1 B
-                TriangularSolver_DDRB.solveBlock(blockLength, true, subA, subB, true, false);
+                TriangularSolver_DDRB.lsolveBlock(blockLength, true, subA, subB, true, false);
 
                 // C = C - B^T * B
-                InnerRankUpdate_DDRB.symmRankNMinus_U(blockLength, subC, subB);
+                RankUpdate_DDRB.symmRankNMinus_U(blockLength, subC, subB);
             }
         }
 

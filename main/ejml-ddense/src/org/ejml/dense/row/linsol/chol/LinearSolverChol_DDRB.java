@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.dense.row.linsol.chol;
 
 import org.ejml.data.DMatrixRBlock;
@@ -36,6 +35,10 @@ public class LinearSolverChol_DDRB extends LinearSolver_DDRB_to_DDRM {
 
     public LinearSolverChol_DDRB() {
         super(new CholeskyOuterSolver_DDRB());
+    }
+
+    public LinearSolverChol_DDRB( boolean lower ) {
+        super(new CholeskyOuterSolver_DDRB(lower));
     }
 
     public LinearSolverChol_DDRB( LinearSolverDense<DMatrixRBlock> alg ) {
