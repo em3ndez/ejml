@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -25,9 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings({"NullAway"})
 public class TestLinearSolverToSparse extends EjmlStandardJUnit {
-    @Test
-    public void locking() {
-        LinearSolverToSparse alg = new LinearSolverToSparse(null);
+    @Test void locking() {
+        var alg = new LinearSolverToSparse<>(null);
 
         assertFalse(alg.isStructureLocked());
         alg.setStructureLocked(true);

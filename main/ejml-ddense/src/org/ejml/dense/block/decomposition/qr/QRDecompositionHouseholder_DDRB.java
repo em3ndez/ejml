@@ -20,6 +20,7 @@ package org.ejml.dense.block.decomposition.qr;
 import org.ejml.data.DGrowArray;
 import org.ejml.data.DMatrixRBlock;
 import org.ejml.data.DSubmatrixD1;
+import org.ejml.dense.block.Householder_DDRB;
 import org.ejml.dense.block.MatrixMult_DDRB;
 import org.ejml.dense.block.MatrixOps_DDRB;
 import org.ejml.interfaces.decomposition.QRDecomposition;
@@ -31,41 +32,33 @@ import pabeles.concurrency.GrowArray;
 
 //CONCURRENT_MACRO MatrixMult_DDRB MatrixMult_MT_DDRB
 //CONCURRENT_MACRO TriangularSolver_DDRB TriangularSolver_MT_DDRB
-//CONCURRENT_MACRO BlockHouseHolder_DDRB BlockHouseHolder_MT_DDRB
+//CONCURRENT_MACRO InnerHouseholder_DDRB InnerHouseholder_MT_DDRB
+//CONCURRENT_MACRO Householder_DDRB Householder_MT_DDRB
 
-/**
- * <p>
- * QR decomposition for {@link DMatrixRBlock} using householder reflectors. The decomposition is
- * performed by computing a QR decomposition for each block column as is normally done, see {@link org.ejml.dense.row.decomposition.qr.QRDecompositionHouseholder_DDRM}.
- * The reflectors are then combined and applied to the remainder of the matrix. This process is repeated
- * until all the block columns have been processed
- * </p>
- *
- * <p>
- * The input matrix is modified and used to store the decomposition. Reflectors are stored in the lower triangle
- * columns. The first element of the reflector is implicitly assumed to be one.
- * </p>
- *
- * Each iteration can be sketched as follows:
- * <pre>
- * QR_Decomposition( A(:,i-r to i) )
- * W=computeW( A(:,i-r to i) )
- * A(:,i:n) = (I + W*Y^T)^T*A(:,i:n)
- * </pre>
- * Where r is the block size, i is the submatrix being considered, A is the input matrix,
- * Y is a matrix containing the reflectors just computed,
- * and W is computed using {@link BlockHouseHolder_DDRB#computeW_Column}.
- *
- * <p>
- * Based upon "Block Householder QR Factorization" pg 255 in "Matrix Computations"
- * 3rd Ed. 1996 by Gene H. Golub and Charles F. Van Loan.
- * </p>
- *
- * @author Peter Abeles
- */
+/// QR decomposition for [DMatrixRBlock] using householder reflectors. The decomposition is
+/// performed by computing a QR decomposition for each block column as is normally done, see
+/// [org.ejml.dense.row.decomposition.qr.QRDecompositionHouseholder_DDRM].
+/// The reflectors are then combined and applied to the remainder of the matrix. This process is repeated
+/// until all the block columns have been processed
+///
+/// The input matrix is modified and used to store the decomposition. Reflectors are stored in the lower triangle
+/// columns. The first element of the reflector is implicitly assumed to be one.
+///
+/// Each iteration can be sketched as follows:
+/// ```
+/// QR_Decomposition( A(:,i-r to i) )
+/// W=computeW( A(:,i-r to i) )
+/// A(:,i:n) = (I + W*Y^T)^T*A(:,i:n)
+/// ```
+///
+/// Where r is the block size, i is the submatrix being considered, A is the input matrix,
+/// Y is a matrix containing the reflectors just computed,
+/// and W is computed using [Householder_DDRB#computeWCol].
+///
+/// Based upon "Block Householder QR Factorization" pg 255 in "Matrix Computations"
+/// 3rd Ed. 1996 by Gene H. Golub and Charles F. Van Loan.
 @SuppressWarnings("NullAway.Init")
-public class QRDecompositionHouseholder_DDRB
-        implements QRDecomposition<DMatrixRBlock> {
+public class QRDecompositionHouseholder_DDRB implements QRDecomposition<DMatrixRBlock> {
 
     // the input matrix which is overwritten with the decomposition.
     // Reflectors are stored in the lower triangular portion. The R matrix is stored
@@ -92,87 +85,47 @@ public class QRDecompositionHouseholder_DDRB
     // save the W matrix the first time it is computed in the decomposition
     private boolean saveW = false;
 
-    /**
-     * This is the input matrix after it has been overwritten with the decomposition.
-     *
-     * @return Internal matrix used to store decomposition.
-     */
+    /// This is the input matrix after it has been overwritten with the decomposition.
+    ///
+    /// @return Internal matrix used to store decomposition.
     public DMatrixRBlock getQR() {
         return dataA;
     }
 
-    /**
-     * <p>
-     * Sets if it should internally save the W matrix before performing the decomposition. Must
-     * be set before decomposition the matrix.
-     * </p>
-     *
-     * <p>
-     * Saving W can result in about a 5% savings when solving systems around a height of 5k. The
-     * price is that it needs to save a matrix the size of the input matrix.
-     * </p>
-     *
-     * @param saveW If the W matrix should be saved or not.
-     */
+    /// Sets if it should internally save the W matrix before performing the decomposition. Must
+    /// be set before decomposing the matrix.
+    ///
+    /// Saving W can result in about a 5% savings when solving systems around a height of 5k. The
+    /// price is that it needs to save a matrix the size of the input matrix.
+    ///
+    /// @param saveW If the W matrix should be saved or not.
     public void setSaveW( boolean saveW ) {
         this.saveW = saveW;
     }
 
     @Override
     public DMatrixRBlock getQ( @Nullable DMatrixRBlock Q, boolean compact ) {
-        Q = initializeQ(Q, dataA.numRows, dataA.numCols, blockLength, compact);
+        Q = MatrixOps_DDRB.initializeQ(Q, dataA.numRows, dataA.numCols, blockLength, compact);
 
         applyQ(Q, true);
 
         return Q;
     }
 
-    /**
-     * Sanity checks the input or declares a new matrix. Return matrix is an identity matrix.
-     */
-    public static DMatrixRBlock initializeQ( @Nullable DMatrixRBlock Q,
-                                             int numRows, int numCols, int blockLength,
-                                             boolean compact ) {
-        int minLength = Math.min(numRows, numCols);
-        if (compact) {
-            if (Q == null) {
-                Q = new DMatrixRBlock(numRows, minLength, blockLength);
-            } else {
-                Q.reshape(numRows, minLength);
-            }
-        } else {
-            if (Q == null) {
-                Q = new DMatrixRBlock(numRows, numRows, blockLength);
-            } else {
-                Q.reshape(numRows, numRows);
-            }
-        }
-        MatrixOps_DDRB.setIdentity(Q);
-        return Q;
-    }
-
-    /**
-     * <p>
-     * Multiplies the provided matrix by Q using householder reflectors. This is more
-     * efficient that computing Q then applying it to the matrix.
-     * </p>
-     *
-     * <p>
-     * B = Q * B
-     * </p>
-     *
-     * @param B Matrix which Q is applied to. Modified.
-     */
+    /// Multiplies the provided matrix by Q using householder reflectors. This is more
+    /// efficient than computing Q then applying it to the matrix.
+    ///
+    /// B = Q \* B
+    ///
+    /// @param B Matrix which Q is applied to. Modified.
     public void applyQ( DMatrixRBlock B ) {
         applyQ(B, false);
     }
 
-    /**
-     * Specialized version of applyQ() that allows the zeros in an identity matrix
-     * to be taken advantage of depending on if isIdentity is true or not.
-     *
-     * @param isIdentity If B is an identity matrix.
-     */
+    /// Specialized version of applyQ() that allows the zeros in an identity matrix
+    /// to be taken advantage of depending on if isIdentity is true or not.
+    ///
+    /// @param isIdentity If B is an identity matrix.
     public void applyQ( DMatrixRBlock B, boolean isIdentity ) {
         int minDimen = Math.min(dataA.numCols, dataA.numRows);
 
@@ -182,11 +135,7 @@ public class QRDecompositionHouseholder_DDRB
         Y.row1 = W.row1 = dataA.numRows;
         WTA.row0 = WTA.col0 = 0;
 
-        int start = minDimen - minDimen%blockLength;
-        if (start == minDimen)
-            start -= blockLength;
-        if (start < 0)
-            start = 0;
+        int start = MatrixOps_DDRB.lastBlockStart(minDimen, blockLength);
 
         // (Q1^T * (Q2^T * (Q3^t * A)))
         for (int i = start; i >= 0; i -= blockLength) {
@@ -199,33 +148,32 @@ public class QRDecompositionHouseholder_DDRB
             subB.row0 = i;
 
             setW();
-            WTA.row1 = Y.col1 - Y.col0;
+            // Width of the WY representation is the reflector count, not the panel width: a wide panel
+            // carries fewer reflectors, so W/WTA are r wide and no phantom rows are produced.
+            int r = Math.min(Y.row1 - Y.row0, Y.col1 - Y.col0);
+            W.col1 = W.col0 + r;
+            WTA.row1 = r;
             WTA.col1 = subB.col1 - subB.col0;
             WTA.original.reshape(WTA.row1, WTA.col1, false);
 
             // Compute W matrix from reflectors stored in Y
             if (!saveW)
-                BlockHouseHolder_DDRB.computeW_Column(blockLength, Y, W, workspace, gammas, Y.col0);
+                Householder_DDRB.computeWCol(blockLength, Y, W, workspace, gammas, Y.col0);
 
             // Apply the Qi to Q
-            BlockHouseHolder_DDRB.multTransA_vecCol(blockLength, Y, subB, WTA);
+            Householder_DDRB.multTransA_TriLL0(blockLength, Y, subB, WTA);
             MatrixMult_DDRB.multPlus(blockLength, W, WTA, subB);
         }
     }
 
-    /**
-     * <p>
-     * Multiplies the provided matrix by Q<sup>T</sup> using householder reflectors. This is more
-     * efficient that computing Q then applying it to the matrix.
-     * </p>
-     *
-     * <p>
-     * Q = Q*(I - &gamma; W*Y^T)<br>
-     * QR = A &ge; R = Q^T*A  = (Q3^T * (Q2^T * (Q1^t * A)))
-     * </p>
-     *
-     * @param B Matrix which Q is applied to. Modified.
-     */
+    /// Multiplies the provided matrix by Q<sup>T</sup> using householder reflectors. This is more
+    /// efficient than computing Q then applying it to the matrix.
+    ///
+    /// Q = Q\*(I - γ W\*Y<sup>T</sup>)
+    ///
+    /// QR = A ⇒ R = Q<sup>T</sup>\*A  = (Q3<sup>T</sup> \* (Q2<sup>T</sup> \* (Q1<sup>t</sup> \* A)))
+    ///
+    /// @param B Matrix which Q is applied to. Modified.
     public void applyQTran( DMatrixRBlock B ) {
         int minDimen = Math.min(dataA.numCols, dataA.numRows);
 
@@ -243,12 +191,10 @@ public class QRDecompositionHouseholder_DDRB
             Y.row0 = i;
 
             subB.row0 = i;
-//            subB.row1 = B.numRows;
-//            subB.col0 = 0;
-//            subB.col1 = B.numCols;
 
             setW();
-//            W.original.reshape(W.row1,W.col1,false);
+            // W/WTA are r wide (the reflector count), so a wide panel produces no phantom rows.
+            W.col1 = W.col0 + Math.min(Y.row1 - Y.row0, Y.col1 - Y.col0);
             WTA.row0 = 0;
             WTA.col0 = 0;
             WTA.row1 = W.col1 - W.col0;
@@ -257,11 +203,11 @@ public class QRDecompositionHouseholder_DDRB
 
             // Compute W matrix from reflectors stored in Y
             if (!saveW)
-                BlockHouseHolder_DDRB.computeW_Column(blockLength, Y, W, workspace, gammas, Y.col0);
+                Householder_DDRB.computeWCol(blockLength, Y, W, workspace, gammas, Y.col0);
 
             // Apply the Qi to Q
             MatrixMult_DDRB.multTransA(blockLength, W, subB, WTA);
-            BlockHouseHolder_DDRB.multAdd_zeros(blockLength, Y, WTA, subB);
+            Householder_DDRB.multPlus_TriLL0(blockLength, Y, WTA, subB);
         }
     }
 
@@ -276,12 +222,12 @@ public class QRDecompositionHouseholder_DDRB
                 R = new DMatrixRBlock(dataA.numRows, dataA.numCols, blockLength);
             }
         } else {
+            if (R.blockLength != dataA.blockLength)
+                throw new RuntimeException("Block lengths don't match");
             if (compact) {
-                if (R.numCols != dataA.numCols || R.numRows != min) {
-                    throw new IllegalArgumentException("Unexpected dimension.");
-                }
-            } else if (R.numCols != dataA.numCols || R.numRows != dataA.numRows) {
-                throw new IllegalArgumentException("Unexpected dimension.");
+                R.reshape(min, dataA.numCols);
+            } else {
+                R.reshape(dataA.numRows, dataA.numCols);
             }
         }
 
@@ -289,6 +235,26 @@ public class QRDecompositionHouseholder_DDRB
         MatrixOps_DDRB.copyTriangle(true, dataA, R);
 
         return R;
+    }
+
+    /// Performs a standard QR decomposition on the specified submatrix that is one block wide.
+    public static boolean decomposeQR_block_col( final int blockLength,
+                                                 final DSubmatrixD1 Y,
+                                                 final double[] gamma ) {
+        int width = Y.col1 - Y.col0;
+        int height = Y.row1 - Y.row0;
+        int min = Math.min(width, height);
+
+        for (int i = 0; i < min; i++) {
+            // compute the householder vector
+            if (!Householder_DDRB.computeHouseholderCol(blockLength, Y, gamma, i))
+                return false;
+
+            // apply to rest of the columns in the block
+            Householder_DDRB.rank1UpdateMultR_Col(blockLength, Y, i, gamma[Y.col0 + i]);
+        }
+
+        return true;
     }
 
     @Override
@@ -305,7 +271,7 @@ public class QRDecompositionHouseholder_DDRB
 
             // compute the QR decomposition of the left most block column
             // this overwrites the original input matrix
-            if (!BlockHouseHolder_DDRB.decomposeQR_block_col(blockLength, Y, gammas)) {
+            if (!decomposeQR_block_col(blockLength, Y, gammas)) {
                 return false;
             }
 
@@ -316,10 +282,8 @@ public class QRDecompositionHouseholder_DDRB
         return true;
     }
 
-    /**
-     * Adjust submatrices and helper data structures for the input matrix. Must be called
-     * before the decomposition can be computed.
-     */
+    /// Adjust submatrices and helper data structures for the input matrix. Must be called
+    /// before the decomposition can be computed.
     private void setup( DMatrixRBlock orig ) {
         blockLength = orig.blockLength;
         dataW.blockLength = blockLength;
@@ -341,16 +305,16 @@ public class QRDecompositionHouseholder_DDRB
         }
     }
 
-    /**
-     * <p>
-     * A = (I + W Y<sup>T</sup>)<sup>T</sup>A<BR>
-     * A = A + Y (W<sup>T</sup>A)<BR>
-     * <br>
-     * where A is a submatrix of the input matrix.
-     * </p>
-     */
+    /// A = (I + W Y<sup>T</sup>)<sup>T</sup>A
+    ///
+    /// A = A + Y (W<sup>T</sup>A)
+    ///
+    /// where A is a submatrix of the input matrix.
+    ///
     protected void updateA( DSubmatrixD1 A ) {
         setW();
+        // W/WTA are r wide (the reflector count), so a wide panel produces no phantom rows.
+        W.col1 = W.col0 + Math.min(Y.row1 - Y.row0, Y.col1 - Y.col0);
 
         A.row0 = Y.row0;
         A.row1 = Y.row1;
@@ -364,18 +328,16 @@ public class QRDecompositionHouseholder_DDRB
         WTA.original.reshape(WTA.row1, WTA.col1, false);
 
         if (A.col1 > A.col0) {
-            BlockHouseHolder_DDRB.computeW_Column(blockLength, Y, W, workspace, gammas, Y.col0);
+            Householder_DDRB.computeWCol(blockLength, Y, W, workspace, gammas, Y.col0);
 
             MatrixMult_DDRB.multTransA(blockLength, W, A, WTA);
-            BlockHouseHolder_DDRB.multAdd_zeros(blockLength, Y, WTA, A);
+            Householder_DDRB.multPlus_TriLL0(blockLength, Y, WTA, A);
         } else if (saveW) {
-            BlockHouseHolder_DDRB.computeW_Column(blockLength, Y, W, workspace, gammas, Y.col0);
+            Householder_DDRB.computeWCol(blockLength, Y, W, workspace, gammas, Y.col0);
         }
     }
 
-    /**
-     * Sets the submatrix of W up give Y is already configured and if it is being cached or not.
-     */
+    /// Configures the W submatrix from the already-set Y, depending on whether W is being cached.
     private void setW() {
         if (saveW) {
             W.col0 = Y.col0;
@@ -388,11 +350,9 @@ public class QRDecompositionHouseholder_DDRB
         }
     }
 
-    /**
-     * The input matrix is always modified.
-     *
-     * @return Returns true since the input matrix is modified.
-     */
+    /// The input matrix is always modified.
+    ///
+    /// @return Returns true since the input matrix is modified.
     @Override
     public boolean inputModified() {
         return true;

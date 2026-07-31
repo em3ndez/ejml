@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -42,9 +42,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestEnforceCodeStandards {
 	// Only run this on performance critical code
-	String[] blacklistConfig = new String[]{"autocode", "ejml-all", "ejml-kotlin"};
+	String[] blacklistConfig = new String[]{"autocode", "ejml-all", "ejml-kotlin", "ejml-test"};
 	String[] blackListLanguage = new String[]{
-			"autocode", "ejml-all", "ejml-kotlin", "ejml-experimental", "ejml-simple"};
+			"autocode", "ejml-all", "ejml-kotlin", "ejml-experimental", "ejml-simple", "ejml-test"};
 
 	/**
 	 * This code needs to run fast and minimize memory usage. Lint check for certain illegal operations.
@@ -102,7 +102,7 @@ public class TestEnforceCodeStandards {
 	}
 
 	/**
-	 * Makes sure all unit tests extend BoofStandardJUnit
+	 * Makes sure all unit tests extend EjmlStandardJUnit
 	 */
 	@Test void unitTestsMustExtendEjmlStandardJUnit() {
 		String pathToMain = path("main");
@@ -145,7 +145,7 @@ public class TestEnforceCodeStandards {
 					continue;
 				}
 
-				// See if it extends BoofStandardJUnit
+				// See if it extends EjmlStandardJUnit
 				boolean found = false;
 				while (c != null) {
 					c = c.getSuperclass();
@@ -155,13 +155,13 @@ public class TestEnforceCodeStandards {
 					}
 				}
 				if (!found) {
-					System.err.println("Does not extend BoofStandardJUnit");
+					System.err.println("Does not extend EjmlStandardJUnit");
 					System.err.println(classFile.getAbsolutePath()+":1"); // todo real line number
 					failed = true;
 				}
 			}
 
-			assertFalse(failed, "All tests must extend BoofStandardJUnit. See stderr.");
+			assertFalse(failed, "All tests must extend EjmlStandardJUnit. See stderr.");
 		}
 	}
 	public static String getPathToBase() {
@@ -175,7 +175,7 @@ public class TestEnforceCodeStandards {
 			if (files == null)
 				break;
 
-			if (new File(f, "settings.gradle").exists() && new File(f, "LICENSE-2.0.txt").exists())
+			if (new File(f, "settings.gradle.kts").exists() && new File(f, "LICENSE-2.0.txt").exists())
 				break;
 
 			path = f.getParent();

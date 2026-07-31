@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -33,7 +33,7 @@ public class EjmlRuntimeRegressionApp {
         // Set up the environment
         ProjectUtils.pathBenchmarks = "benchmarks/src";
         ProjectUtils.checkRoot = ( f ) ->
-                new File(f, "README.md").exists() && new File(f, "settings.gradle").exists();
+                new File(f, "README.md").exists() && new File(f, "settings.gradle.kts").exists();
 
         ProjectUtils.libraryInfo.version = EjmlVersion.VERSION;
         ProjectUtils.libraryInfo.gitDate = EjmlVersion.GIT_DATE;

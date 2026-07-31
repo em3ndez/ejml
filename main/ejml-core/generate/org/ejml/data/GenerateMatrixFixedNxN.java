@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -42,12 +42,11 @@ public class GenerateMatrixFixedNxN extends CodeGeneratorBase {
         setOutputFile(className);
 
         out.println("import org.ejml.ops.MatrixIO;\n\n" +
-                "/**\n" +
-                " * Fixed sized " + dimen + " by " + className + " matrix. The matrix is stored as class variables for very fast read/write. aXY is the\n" +
-                " * value of row = X and column = Y.\n" +
-                standardClassDocClosing("Peter Abeles") +
+                "/// Fixed sized " + dimen + " by " + className + " matrix. Elements are stored as class fields for very fast read/write. aXY is the\n" +
+                "/// value of row = X and column = Y.\n" +
+                standardClassDocClosing2() +
                 "public class " + className + " implements DMatrixFixed {\n");
-        printClassParam(dimen);
+        printClassFields(dimen);
         out.print("\n" +
                 "    public " + className + "() {}\n" +
                 "\n" +
@@ -61,13 +60,15 @@ public class GenerateMatrixFixedNxN extends CodeGeneratorBase {
         out.print("    }\n" +
                 "\n");
         printZero(dimen);
-        out.print("    public void setTo");
-        printFunctionParam(23, dimen);
+        out.print("    public " + className + " setTo");
+        printFunctionParam(29, dimen);
         printSetFromParam(dimen, "");
-        out.print("    }\n\n");
-        out.print("    public void setTo( int offset , double[] a ) {\n");
+        out.print("        return this;\n" +
+                "    }\n\n");
+        out.print("    public " + className + " setTo( int offset, double[] a ) {\n");
         printSetFromArray(dimen);
-        out.print("    }\n\n");
+        out.print("        return this;\n" +
+                "    }\n\n");
         out.print("    @Override public double get( int row, int col ) {\n" +
                 "        return unsafe_get(row,col);\n" +
                 "    }\n" +
@@ -77,16 +78,15 @@ public class GenerateMatrixFixedNxN extends CodeGeneratorBase {
         out.print("        throw new IllegalArgumentException(\"Row and/or column out of range. \"+row+\" \"+col);\n" +
                 "    }\n" +
                 "\n" +
-                "    @Override public void set( int row, int col, double val ) {\n" +
-                "        unsafe_set(row,col,val);\n" +
-                "    }\n" +
+                "    @Override public void set( int row, int col, double val ) {unsafe_set(row, col, val);}\n" +
                 "\n" +
                 "    @Override public void unsafe_set( int row, int col, double val ) {\n");
         setSetter(dimen);
         out.print("        throw new IllegalArgumentException(\"Row and/or column out of range. \"+row+\" \"+col);\n" +
                 "    }\n" +
                 "\n");
-        printSetMatrix(dimen);
+        printSetTo_FixedNxN(dimen, className);
+        printSetTo_Matrix(dimen);
         out.print("    @Override public int getNumRows() {return " + dimen + ";}\n" +
                 "\n" +
                 "    @Override public int getNumCols() {return " + dimen + ";}\n" +
@@ -111,7 +111,7 @@ public class GenerateMatrixFixedNxN extends CodeGeneratorBase {
                 "}\n\n");
     }
 
-    private void printClassParam( int dimen ) {
+    private void printClassFields( int dimen ) {
         for (int y = 1; y <= dimen; y++) {
             out.print("    public double ");
             for (int x = 1; x <= dimen; x++) {
@@ -202,7 +202,18 @@ public class GenerateMatrixFixedNxN extends CodeGeneratorBase {
         out.print("        }\n");
     }
 
-    private void printSetMatrix( int dimen ) {
+    private void printSetTo_FixedNxN( int dimen, String className ) {
+        out.print("    public " + className + " setTo( " + className + " src ) {\n");
+        for (int y = 1; y <= dimen; y++) {
+            for (int x = 1; x <= dimen; x++) {
+                out.print("        a" + y + "" + x + " = src.a" + y + "" + x + ";\n");
+            }
+        }
+        out.print("        return this;\n"+
+                "    }\n\n");
+    }
+
+    private void printSetTo_Matrix( int dimen ) {
         out.print("    @Override public void setTo( Matrix original ) {\n" +
                 "        if (original.getNumCols() != " + dimen + " || original.getNumRows() != " + dimen + ")\n" +
                 "            throw new IllegalArgumentException(\"Rows and/or columns do not match\");\n" +

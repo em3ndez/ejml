@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,21 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
 import org.ejml.ops.MatrixIO;
 
 import javax.annotation.Generated;
 
-/**
- * Fixed sized 5 by DMatrix5x5 matrix. The matrix is stored as class variables for very fast read/write. aXY is the
- * value of row = X and column = Y.
- *
- * <p>DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedNxN</p>
- *
- * @author Peter Abeles
- */
+/// Fixed sized 5 by DMatrix5x5 matrix. Elements are stored as class fields for very fast read/write. aXY is the
+/// value of row = X and column = Y.
+///
+/// DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedNxN
 @Generated("org.ejml.data.GenerateMatrixFixedNxN")
 public class DMatrix5x5 implements DMatrixFixed {
 
@@ -69,24 +64,26 @@ public class DMatrix5x5 implements DMatrixFixed {
         a51 = 0.0; a52 = 0.0; a53 = 0.0; a54 = 0.0; a55 = 0.0;
     }
 
-    public void setTo( double a11, double a12, double a13, double a14, double a15,
-                       double a21, double a22, double a23, double a24, double a25,
-                       double a31, double a32, double a33, double a34, double a35,
-                       double a41, double a42, double a43, double a44, double a45,
-                       double a51, double a52, double a53, double a54, double a55 ) {
+    public DMatrix5x5 setTo( double a11, double a12, double a13, double a14, double a15,
+                             double a21, double a22, double a23, double a24, double a25,
+                             double a31, double a32, double a33, double a34, double a35,
+                             double a41, double a42, double a43, double a44, double a45,
+                             double a51, double a52, double a53, double a54, double a55 ) {
         this.a11 = a11; this.a12 = a12; this.a13 = a13; this.a14 = a14; this.a15 = a15;
         this.a21 = a21; this.a22 = a22; this.a23 = a23; this.a24 = a24; this.a25 = a25;
         this.a31 = a31; this.a32 = a32; this.a33 = a33; this.a34 = a34; this.a35 = a35;
         this.a41 = a41; this.a42 = a42; this.a43 = a43; this.a44 = a44; this.a45 = a45;
         this.a51 = a51; this.a52 = a52; this.a53 = a53; this.a54 = a54; this.a55 = a55;
+        return this;
     }
 
-    public void setTo( int offset , double[] a ) {
+    public DMatrix5x5 setTo( int offset, double[] a ) {
         this.a11 = a[offset + 0]; this.a12 = a[offset + 1]; this.a13 = a[offset + 2]; this.a14 = a[offset + 3]; this.a15 = a[offset + 4];
         this.a21 = a[offset + 5]; this.a22 = a[offset + 6]; this.a23 = a[offset + 7]; this.a24 = a[offset + 8]; this.a25 = a[offset + 9];
         this.a31 = a[offset + 10]; this.a32 = a[offset + 11]; this.a33 = a[offset + 12]; this.a34 = a[offset + 13]; this.a35 = a[offset + 14];
         this.a41 = a[offset + 15]; this.a42 = a[offset + 16]; this.a43 = a[offset + 17]; this.a44 = a[offset + 18]; this.a45 = a[offset + 19];
         this.a51 = a[offset + 20]; this.a52 = a[offset + 21]; this.a53 = a[offset + 22]; this.a54 = a[offset + 23]; this.a55 = a[offset + 24];
+        return this;
     }
 
     @Override public double get( int row, int col ) {
@@ -158,9 +155,7 @@ public class DMatrix5x5 implements DMatrixFixed {
         throw new IllegalArgumentException("Row and/or column out of range. "+row+" "+col);
     }
 
-    @Override public void set( int row, int col, double val ) {
-        unsafe_set(row,col,val);
-    }
+    @Override public void set( int row, int col, double val ) {unsafe_set(row, col, val);}
 
     @Override public void unsafe_set( int row, int col, double val ) {
         if (row == 0) {
@@ -227,6 +222,35 @@ public class DMatrix5x5 implements DMatrixFixed {
         throw new IllegalArgumentException("Row and/or column out of range. "+row+" "+col);
     }
 
+    public DMatrix5x5 setTo( DMatrix5x5 src ) {
+        a11 = src.a11;
+        a12 = src.a12;
+        a13 = src.a13;
+        a14 = src.a14;
+        a15 = src.a15;
+        a21 = src.a21;
+        a22 = src.a22;
+        a23 = src.a23;
+        a24 = src.a24;
+        a25 = src.a25;
+        a31 = src.a31;
+        a32 = src.a32;
+        a33 = src.a33;
+        a34 = src.a34;
+        a35 = src.a35;
+        a41 = src.a41;
+        a42 = src.a42;
+        a43 = src.a43;
+        a44 = src.a44;
+        a45 = src.a45;
+        a51 = src.a51;
+        a52 = src.a52;
+        a53 = src.a53;
+        a54 = src.a54;
+        a55 = src.a55;
+        return this;
+    }
+
     @Override public void setTo( Matrix original ) {
         if (original.getNumCols() != 5 || original.getNumRows() != 5)
             throw new IllegalArgumentException("Rows and/or columns do not match");
@@ -280,4 +304,3 @@ public class DMatrix5x5 implements DMatrixFixed {
     @Override public <T extends Matrix> T createLike() {return (T)new DMatrix5x5();}
 
     @Override public MatrixType getType() {return MatrixType.UNSPECIFIED;}}
-

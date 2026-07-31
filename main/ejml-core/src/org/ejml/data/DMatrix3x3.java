@@ -15,21 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
 import org.ejml.ops.MatrixIO;
 
 import javax.annotation.Generated;
 
-/**
- * Fixed sized 3 by DMatrix3x3 matrix. The matrix is stored as class variables for very fast read/write. aXY is the
- * value of row = X and column = Y.
- *
- * <p>DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedNxN</p>
- *
- * @author Peter Abeles
- */
+/// Fixed sized 3 by DMatrix3x3 matrix. Elements are stored as class fields for very fast read/write. aXY is the
+/// value of row = X and column = Y.
+///
+/// DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedNxN
 @Generated("org.ejml.data.GenerateMatrixFixedNxN")
 public class DMatrix3x3 implements DMatrixFixed {
 
@@ -59,18 +54,20 @@ public class DMatrix3x3 implements DMatrixFixed {
         a31 = 0.0; a32 = 0.0; a33 = 0.0;
     }
 
-    public void setTo( double a11, double a12, double a13,
-                       double a21, double a22, double a23,
-                       double a31, double a32, double a33 ) {
+    public DMatrix3x3 setTo( double a11, double a12, double a13,
+                             double a21, double a22, double a23,
+                             double a31, double a32, double a33 ) {
         this.a11 = a11; this.a12 = a12; this.a13 = a13;
         this.a21 = a21; this.a22 = a22; this.a23 = a23;
         this.a31 = a31; this.a32 = a32; this.a33 = a33;
+        return this;
     }
 
-    public void setTo( int offset , double[] a ) {
+    public DMatrix3x3 setTo( int offset, double[] a ) {
         this.a11 = a[offset + 0]; this.a12 = a[offset + 1]; this.a13 = a[offset + 2];
         this.a21 = a[offset + 3]; this.a22 = a[offset + 4]; this.a23 = a[offset + 5];
         this.a31 = a[offset + 6]; this.a32 = a[offset + 7]; this.a33 = a[offset + 8];
+        return this;
     }
 
     @Override public double get( int row, int col ) {
@@ -106,9 +103,7 @@ public class DMatrix3x3 implements DMatrixFixed {
         throw new IllegalArgumentException("Row and/or column out of range. "+row+" "+col);
     }
 
-    @Override public void set( int row, int col, double val ) {
-        unsafe_set(row,col,val);
-    }
+    @Override public void set( int row, int col, double val ) {unsafe_set(row, col, val);}
 
     @Override public void unsafe_set( int row, int col, double val ) {
         if (row == 0) {
@@ -137,6 +132,19 @@ public class DMatrix3x3 implements DMatrixFixed {
             }
         }
         throw new IllegalArgumentException("Row and/or column out of range. "+row+" "+col);
+    }
+
+    public DMatrix3x3 setTo( DMatrix3x3 src ) {
+        a11 = src.a11;
+        a12 = src.a12;
+        a13 = src.a13;
+        a21 = src.a21;
+        a22 = src.a22;
+        a23 = src.a23;
+        a31 = src.a31;
+        a32 = src.a32;
+        a33 = src.a33;
+        return this;
     }
 
     @Override public void setTo( Matrix original ) {
@@ -175,6 +183,4 @@ public class DMatrix3x3 implements DMatrixFixed {
 
     @Override public <T extends Matrix> T createLike() {return (T)new DMatrix3x3();}
 
-    @Override public MatrixType getType() {return MatrixType.UNSPECIFIED;}
-}
-
+    @Override public MatrixType getType() {return MatrixType.UNSPECIFIED;}}

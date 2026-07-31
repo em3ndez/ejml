@@ -1154,6 +1154,7 @@ public class Equation {
     /// sign with a variable to its right and no variable to its left
     /// Example:
     /// a = - b \* c
+    @SuppressWarnings("LabelledBreakTarget")
     protected void parseNegOp( TokenList tokens, Sequence sequence ) {
         if (tokens.size == 0)
             return;

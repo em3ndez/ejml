@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -18,6 +18,9 @@
 package org.ejml.data;
 
 import lombok.Data;
+import org.ejml.MapPrintFormat;
+import org.ejml.MatrixPrintFormat;
+import org.ejml.UtilEjml;
 import org.ejml.ops.ComplexMath_F64;
 
 /**
@@ -84,12 +87,20 @@ public class Complex_F64 {
         return ret;
     }
 
-    @Override
-    public String toString() {
-        if (imaginary == 0) {
-            return "" + real;
-        } else {
-            return real + " " + imaginary + "i";
-        }
+    public String format( MatrixPrintFormat format ) {
+        return format.rowPrefix +
+                UtilEjml.fancyString2(real, format.precision, format.decimal) + format.colSeparator +
+                UtilEjml.fancyString2(imaginary, format.precision, format.decimal) +
+                format.rowSuffix;
     }
+
+    public String format( MapPrintFormat format ) {
+        return format.itemPrefix +
+                "real" + format.valueSeparator + UtilEjml.fancyString2(real, format.precision, format.decimal) +
+                format.pairSeparator +
+                "imaginary" + format.valueSeparator + UtilEjml.fancyString2(imaginary, format.precision, format.decimal) +
+                format.itemSuffix;
+    }
+
+    @Override public String toString() {return format(MapPrintFormat.DEFAULT);}
 }

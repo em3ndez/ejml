@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -43,7 +43,7 @@ public abstract class CodeGeneratorBase {
             // The trim is to make we know how much white space (i.e. none) is at the end, which can be variable
             copyright = readFile(pathCopyright.getAbsolutePath(), StandardCharsets.UTF_8).trim() + "\n";
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -58,6 +58,13 @@ public abstract class CodeGeneratorBase {
                 " *\n" +
                 " * @author "+authors[0]+"\n" + // yes I was lazy here..
                 " */\n" +
+                "@Generated(\""+getClass().getCanonicalName()+"\")\n";
+    }
+
+    /// Creates the more modern class Javadoc closing using Markdown
+    protected String standardClassDocClosing2() {
+        return  "///\n" +
+                "/// DO NOT MODIFY. Automatically generated code created by "+getClass().getSimpleName()+"\n" +
                 "@Generated(\""+getClass().getCanonicalName()+"\")\n";
     }
 

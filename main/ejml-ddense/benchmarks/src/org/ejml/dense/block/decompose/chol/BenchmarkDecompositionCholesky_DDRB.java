@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -21,6 +21,7 @@ package org.ejml.dense.block.decompose.chol;
 import org.ejml.data.DMatrixRBlock;
 import org.ejml.dense.block.MatrixOps_DDRB;
 import org.ejml.dense.block.decomposition.chol.CholeskyOuterForm_DDRB;
+import org.ejml.dense.block.decomposition.chol.CholeskyOuterForm_MT_DDRB;
 import org.ejml.dense.row.RandomMatrices_DDRM;
 import org.ejml.interfaces.decomposition.CholeskyDecomposition_F64;
 import org.openjdk.jmh.annotations.*;
@@ -35,35 +36,47 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(iterations = 2)
-@Measurement(iterations = 5)
+@Measurement(iterations = 3)
 @State(Scope.Benchmark)
-@Fork(value = 2)
+@Fork(value = 1)
 public class BenchmarkDecompositionCholesky_DDRB {
-    //    @Param({"100", "500", "1000", "5000", "10000"})
-    @Param({"2000"})
+    @Param({"200", "4000"})
     public int size;
 
-    //    @Param({"true","false"})
-    @Param({"true"})
+    @Param({"true", "false"})
     public boolean lower;
 
-    public DMatrixRBlock A, L;
+    public DMatrixRBlock A, A_template, L;
 
     CholeskyDecomposition_F64<DMatrixRBlock> cholesky;
+    CholeskyDecomposition_F64<DMatrixRBlock> choleskyMT;
 
     @Setup
     public void setup() {
         Random rand = new Random(234);
 
         cholesky = new CholeskyOuterForm_DDRB(lower);
+        choleskyMT = new CholeskyOuterForm_MT_DDRB(lower);
         A = MatrixOps_DDRB.convert(RandomMatrices_DDRM.symmetricPosDef(size, rand));
+        A_template = A.copy();
         L = new DMatrixRBlock(1, 1);
     }
 
-    @Benchmark
-    public void decompose() {
-        if (!cholesky.decompose(A.copy()))
+    @Setup(Level.Invocation)
+    public void reset() {
+        A.setTo(A_template);
+    }
+
+    @Benchmark public void outer() {
+        if (!cholesky.decompose(A))
             throw new RuntimeException("FAILED?!");
+        cholesky.getT(L);
+    }
+
+    @Benchmark public void outer_MT() {
+        if (!choleskyMT.decompose(A))
+            throw new RuntimeException("FAILED?!");
+        choleskyMT.getT(L);
     }
 
     public static void main( String[] args ) throws RunnerException {

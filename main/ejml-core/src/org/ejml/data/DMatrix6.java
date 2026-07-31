@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,23 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
 import org.ejml.ops.MatrixIO;
 
 import javax.annotation.Generated;
 
-/**
- * Fixed sized vector with 6 elements. Can represent a 6 x 1 or 1 x 6 matrix, context dependent.
- *
- * <p>DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedN</p>
- *
- * @author Peter Abeles
- */
+/// Fixed sized vector with 6 elements. Can represent a 6 x 1 or 1 x 6 matrix, context dependent.
+///
+/// DO NOT MODIFY. Automatically generated code created by GenerateMatrixFixedN
 @Generated("org.ejml.data.GenerateMatrixFixedN")
 public class DMatrix6 implements DMatrixFixed {
-    public double a1,a2,a3,a4,a5,a6;
+    public double a1, a2, a3, a4, a5, a6;
 
     public DMatrix6() {}
 
@@ -62,25 +57,27 @@ public class DMatrix6 implements DMatrixFixed {
         a6 = 0.0;
     }
 
-    public void setTo( double a1, double a2, double a3, double a4, double a5, double a6 ) {
+    public DMatrix6 setTo( double a1, double a2, double a3, double a4, double a5, double a6 ) {
         this.a1 = a1;
         this.a2 = a2;
         this.a3 = a3;
         this.a4 = a4;
         this.a5 = a5;
         this.a6 = a6;
+        return this;
     }
 
-    public void setTo( int offset , double[] array ) {
-        this.a1 = array[offset+0];
-        this.a2 = array[offset+1];
-        this.a3 = array[offset+2];
-        this.a4 = array[offset+3];
-        this.a5 = array[offset+4];
-        this.a6 = array[offset+5];
+    public DMatrix6 setTo( int offset, double[] array ) {
+        this.a1 = array[offset + 0];
+        this.a2 = array[offset + 1];
+        this.a3 = array[offset + 2];
+        this.a4 = array[offset + 3];
+        this.a5 = array[offset + 4];
+        this.a6 = array[offset + 5];
+        return this;
     }
 
-    @Override public double get( int row, int col ) {return unsafe_get(row,col);}
+    @Override public double get( int row, int col ) {return unsafe_get(row, col);}
 
     @Override public double unsafe_get( int row, int col ) {
         if (row != 0 && col != 0)
@@ -105,9 +102,7 @@ public class DMatrix6 implements DMatrixFixed {
         }
     }
 
-    @Override public void set( int row, int col, double val ) {
-        unsafe_set(row,col,val);
-    }
+    @Override public void set( int row, int col, double val ) {unsafe_set(row, col, val);}
 
     @Override public void unsafe_set( int row, int col, double val ) {
         if (row != 0 && col != 0)
@@ -132,23 +127,33 @@ public class DMatrix6 implements DMatrixFixed {
         }
     }
 
+    public DMatrix6 setTo( DMatrix6 src ) {
+        a1 = src.a1;
+        a2 = src.a2;
+        a3 = src.a3;
+        a4 = src.a4;
+        a5 = src.a5;
+        a6 = src.a6;
+        return this;
+    }
+
     @Override public void setTo( Matrix original ) {
         DMatrix m = (DMatrix)original;
 
         if (m.getNumCols() == 1 && m.getNumRows() == 6) {
-            a1 = m.get(0,0);
-            a2 = m.get(1,0);
-            a3 = m.get(2,0);
-            a4 = m.get(3,0);
-            a5 = m.get(4,0);
-            a6 = m.get(5,0);
+            a1 = m.get(0, 0);
+            a2 = m.get(1, 0);
+            a3 = m.get(2, 0);
+            a4 = m.get(3, 0);
+            a5 = m.get(4, 0);
+            a6 = m.get(5, 0);
         } else if (m.getNumRows() == 1 && m.getNumCols() == 6) {
-            a1 = m.get(0,0);
-            a2 = m.get(0,1);
-            a3 = m.get(0,2);
-            a4 = m.get(0,3);
-            a5 = m.get(0,4);
-            a6 = m.get(0,5);
+            a1 = m.get(0, 0);
+            a2 = m.get(0, 1);
+            a3 = m.get(0, 2);
+            a4 = m.get(0, 3);
+            a5 = m.get(0, 4);
+            a6 = m.get(0, 5);
         } else {
             throw new IllegalArgumentException("Incompatible shape");
         }
@@ -176,4 +181,3 @@ public class DMatrix6 implements DMatrixFixed {
 
     @Override public MatrixType getType() {return MatrixType.UNSPECIFIED;}
 }
-

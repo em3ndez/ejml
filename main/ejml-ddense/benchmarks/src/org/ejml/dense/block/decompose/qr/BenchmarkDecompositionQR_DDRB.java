@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -21,6 +21,7 @@ package org.ejml.dense.block.decompose.qr;
 import org.ejml.data.DMatrixRBlock;
 import org.ejml.dense.block.MatrixOps_DDRB;
 import org.ejml.dense.block.decomposition.qr.QRDecompositionHouseholder_DDRB;
+import org.ejml.dense.block.decomposition.qr.QRDecompositionHouseholder_MT_DDRB;
 import org.ejml.interfaces.decomposition.QRDecomposition;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
@@ -34,29 +35,49 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(iterations = 2)
-@Measurement(iterations = 5)
+@Measurement(iterations = 3)
 @State(Scope.Benchmark)
-@Fork(value = 2)
+@Fork(value = 1)
 public class BenchmarkDecompositionQR_DDRB {
     //    @Param({"100", "500", "1000", "5000", "10000"})
     @Param({"1000", "2000"})
     public int size;
 
-    public DMatrixRBlock A;
+    public DMatrixRBlock A, A_template, Q, R;
 
-    QRDecomposition<DMatrixRBlock> qr = new QRDecompositionHouseholder_DDRB();
+    QRDecomposition<DMatrixRBlock> house = new QRDecompositionHouseholder_DDRB();
+    QRDecomposition<DMatrixRBlock> houseMT = new QRDecompositionHouseholder_MT_DDRB();
 
-    @Setup
-    public void setup() {
+    @Setup public void setup() {
         Random rand = new Random(234);
 
         A = MatrixOps_DDRB.createRandom(size*4, size/4, -1, 1, rand);
+        A_template = A.copy();
+
+        Q = new DMatrixRBlock(1, 1);
+        R = new DMatrixRBlock(1, 1);
     }
 
-    @Benchmark
-    public void decompose() {
-        if (!qr.decompose(A.copy()))
+    @Setup(Level.Invocation) public void reset() {
+        A.setTo(A_template);
+    }
+
+    @Benchmark public void householder() {
+        if (!house.decompose(A))
             throw new RuntimeException("FAILED?!");
+
+        // get Q and R to fully exercise the code. Compact format to avoid having Q dominate
+        house.getQ(Q, true);
+        house.getR(R, true);
+    }
+
+    @Benchmark public void householder_MT() {
+        if (!houseMT.decompose(A))
+            throw new RuntimeException("FAILED?!");
+
+        // get Q and R to fully exercise the code. Compact format to avoid having Q dominate
+        houseMT.getQ(Q, true);
+        houseMT.getR(R, true);
     }
 
     public static void main( String[] args ) throws RunnerException {

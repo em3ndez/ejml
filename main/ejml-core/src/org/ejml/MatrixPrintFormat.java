@@ -20,18 +20,72 @@ package org.ejml;
 import lombok.Getter;
 import lombok.Setter;
 
-/// Describes how a matrix is formatted when converted into a string. By default, it will
-/// print a matrix into the standard Java format.
-public class MatrixPrintFormat {
-    /// Number of significant digits it will display
-    @Getter @Setter public int precision = 6;
+import static org.ejml.UtilEjml.fancy2LengthExp;
+
+/// Describes how a matrix is formatted when converted into a string.
+///
+/// Controls the precision, column separator, row separator, row prefix/suffix,
+/// matrix prefix/suffix, and column alignment. Predefined formats are provided
+/// for common targets ({@link #DEFAULT}, {@link #JAVA}, {@link #CPP}, {@link #PYTHON});
+/// custom formats can be built via the constructor or fluent setters.
+///
+/// Default formatting:
+/// ```
+/// [{1            , 0.0000013456 , 3            },
+///  {3.2          , 4.45983445   , 1.2345e+15   }]
+/// ```
+public class MatrixPrintFormat extends PrintFormat {
+    /// Default formatting. Modifying this class will change formatting for the entire application, including relevant
+    /// toString().
+    ///
+    /// ```
+    /// [{1            , 0.0000013456 , 3            },
+    ///  {3.2          , 4.45983445   , 1.2345e+15   }]
+    /// ```
+    public final static MatrixPrintFormat DEFAULT = new MatrixPrintFormat();
+
+    /// Default for compact single line. Modifying this class will change formatting for the entire application.
+    ///
+    /// ```
+    /// [{1, 0.000001, 3},{3.2, 4.459834, 1.2345e+15}]
+    /// ```
+    public final static MatrixPrintFormat LINE = new MatrixPrintFormat().withAligned(false).withRowSeparator(",");
+
+    /// Formatting for Java style double[][]. Modifying this class will change formatting for the entire application.
+    /// ```
+    /// {{1            , 0.0000013456 , 3            },
+    ///  {3.2          , 4.45983445   , 1.2345e+15   }}
+    /// ```
+    public final static MatrixPrintFormat JAVA = new MatrixPrintFormat(DEFAULT_PRECISION, ", ", ",\n", "{", "}", "{", "}");
+
+    /// Formatting for CPP double array. Modifying this class will change formatting for the entire application.
+    ///
+    /// ```
+    /// {{1            , 0.0000013456 , 3            },
+    ///  {3.2          , 4.45983445   , 1.2345e+15   }}
+    /// ```
+    public final static MatrixPrintFormat CPP = JAVA;
+    /// Python Numpy style array. Modifying this class will change formatting for the entire application.
+    /// ```
+    /// [[1,0.0000013456,3], [3.2,4.45983445,1.2345e+15]]
+    /// ```
+    public final static MatrixPrintFormat PYTHON = new MatrixPrintFormat(DEFAULT_PRECISION, ",", ", ", "[", "]", "[", "]").withAligned(false);
+    /// Matlab style matrix:
+    /// ```
+    /// [1            0.0000013456 3            ;
+    ///  3.2          4.45983445   1.2345e+15   ]
+    /// ```
+    public final static MatrixPrintFormat MATLAB = new MatrixPrintFormat(DEFAULT_PRECISION, "  ", ";\n", "", "", "[", "]");
+
     @Getter @Setter public String colSeparator = ", ";
     @Getter @Setter public String rowSeparator = ",\n";
     @Getter @Setter public String rowPrefix = "{";
     @Getter @Setter public String rowSuffix = "}";
-    @Getter @Setter public String prefix = "{";
-    @Getter @Setter public String suffix = "}";
-    @Getter @Setter public char decimal = '.';
+    @Getter @Setter public String prefix = "[";
+    @Getter @Setter public String suffix = "]";
+
+    /// If true it will align the columns
+    @Getter @Setter public boolean aligned = true;
 
     public MatrixPrintFormat() {}
 
@@ -51,38 +105,76 @@ public class MatrixPrintFormat {
         this.suffix = suffix;
     }
 
-    public MatrixPrintFormat fsetPrecision( int precision ) {
+    /// Applies padding before a row. Needed for alignment
+    public void rowPadding( boolean firstRow, StringBuilder builder ) {
+        if (firstRow || !aligned)
+            return;
+        for (int j = 0; j < prefix.length(); j++) {
+            builder.append(' ');
+        }
+    }
+
+    /// Prints a formated row in a matrix where it will respect the request to align
+    /// elements in the same column
+    public void row( StringBuilder builder, int size, RowAccess access ) {
+        // Maximum size a number can be, including negative symbol
+        int numChars = aligned ? fancy2LengthExp(precision) + 1 : 0;
+        builder.append(rowPrefix);
+        for (int i = 0; i < size; i++) {
+            double v = access.get(i);
+            String word = aligned ? f(v, numChars) : f(v);
+            builder.append(word);
+            for (int j = word.length(); j < numChars; j++) {
+                builder.append(' ');
+            }
+            if (i < size - 1)
+                builder.append(colSeparator);
+        }
+        builder.append(rowSuffix);
+    }
+
+    public MatrixPrintFormat withPrecision( int precision ) {
         this.precision = precision;
         return this;
     }
 
-    public MatrixPrintFormat fsetColSeparator( String colSeparator) {
+    public MatrixPrintFormat withDecimal( char decimal ) {
+        this.decimal = decimal;
+        return this;
+    }
+
+    public MatrixPrintFormat withColSeparator( String colSeparator ) {
         this.colSeparator = colSeparator;
         return this;
     }
 
-    public MatrixPrintFormat fsetRowSeparator( String rowSeparator) {
+    public MatrixPrintFormat withRowSeparator( String rowSeparator ) {
         this.rowSeparator = rowSeparator;
         return this;
     }
 
-    public MatrixPrintFormat fsetRowPrefix( String rowPrefix) {
+    public MatrixPrintFormat withRowPrefix( String rowPrefix ) {
         this.rowPrefix = rowPrefix;
         return this;
     }
 
-    public MatrixPrintFormat fsetRowSuffix( String rowSuffix) {
+    public MatrixPrintFormat withRowSuffix( String rowSuffix ) {
         this.rowSuffix = rowSuffix;
         return this;
     }
 
-    public MatrixPrintFormat fsetPrefix( String prefix) {
+    public MatrixPrintFormat withPrefix( String prefix ) {
         this.prefix = prefix;
         return this;
     }
 
-    public MatrixPrintFormat fsetSuffix( String suffix) {
+    public MatrixPrintFormat withSuffix( String suffix ) {
         this.suffix = suffix;
+        return this;
+    }
+
+    public MatrixPrintFormat withAligned( boolean aligned ) {
+        this.aligned = aligned;
         return this;
     }
 
@@ -95,6 +187,16 @@ public class MatrixPrintFormat {
         this.prefix = src.prefix;
         this.suffix = src.suffix;
         this.decimal = src.decimal;
+        this.aligned = src.aligned;
         return this;
+    }
+
+    /// Convince function to implement to String with. Places the class name before the formated String.
+    public String toString( MatrixFormattable o ) {
+        return o.getClass().getSimpleName()+" "+o.format();
+    }
+
+    @FunctionalInterface public interface RowAccess {
+        double get( int i );
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -94,7 +94,7 @@ public class LinearSolverQrHouseCol_MT_DDRM extends LinearSolverQrHouseCol_DDRM 
     }
 
     private static class Work {
-        public final DMatrixRMaj a = new DMatrixRMaj(1, 1);
-        public final DGrowArray tmp = new DGrowArray();
+        private final DMatrixRMaj a = new DMatrixRMaj(1, 1);
+        private final DGrowArray tmp = new DGrowArray();
     }
 }

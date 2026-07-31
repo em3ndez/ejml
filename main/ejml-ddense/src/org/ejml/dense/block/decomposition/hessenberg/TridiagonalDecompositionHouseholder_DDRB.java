@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -19,39 +19,30 @@
 package org.ejml.dense.block.decomposition.hessenberg;
 
 import org.ejml.data.DMatrixRBlock;
-import org.ejml.data.DMatrixRMaj;
 import org.ejml.data.DSubmatrixD1;
+import org.ejml.dense.block.Householder_DDRB;
 import org.ejml.dense.block.MatrixMult_DDRB;
-import org.ejml.dense.block.decomposition.qr.QRDecompositionHouseholder_DDRB;
+import org.ejml.dense.block.MatrixOps_DDRB;
 import org.ejml.dense.row.CommonOps_DDRM;
 import org.ejml.interfaces.decomposition.TridiagonalSimilarDecomposition_F64;
 import org.jetbrains.annotations.Nullable;
-
-import static org.ejml.dense.block.InnerMultiplication_DDRB.blockMultPlusTransA;
 
 //CONCURRENT_INLINE import org.ejml.dense.block.*;
 //CONCURRENT_INLINE import org.ejml.concurrency.EjmlConcurrency;
 
 //CONCURRENT_MACRO MatrixMult_DDRB MatrixMult_MT_DDRB
 //CONCURRENT_MACRO TriangularSolver_DDRB TriangularSolver_MT_DDRB
+//CONCURRENT_MACRO Householder_DDRB Householder_MT_DDRB
 
-/**
- * <p>
- * Tridiagonal similar decomposition for block matrices. Orthogonal matrices are computed using
- * householder vectors.
- * </p>
- *
- * <p>
- * Based off algorithm in section 2 of J. J. Dongarra, D. C. Sorensen, S. J. Hammarling,
- * "Block Reduction of Matrices to Condensed Forms for Eigenvalue Computations" Journal of
- * Computations and Applied Mathematics 27 (1989) 215-227<br>
- * <br>
- * Computations of Householder reflectors has been modified from what is presented in that paper to how
- * it is performed in "Fundamentals of Matrix Computations" 2nd ed. by David S. Watkins.
- * </p>
- *
- * @author Peter Abeles
- */
+/// Tridiagonal similar decomposition for block matrices. Orthogonal matrices are computed using
+/// householder vectors.
+///
+/// Based off algorithm in section 2 of J. J. Dongarra, D. C. Sorensen, S. J. Hammarling,
+/// "Block Reduction of Matrices to Condensed Forms for Eigenvalue Computations" Journal of
+/// Computations and Applied Mathematics 27 (1989) 215-227
+///
+/// Computations of Householder reflectors has been modified from what is presented in that paper to how
+/// it is performed in "Fundamentals of Matrix Computations" 2nd ed. by David S. Watkins.
 @SuppressWarnings("NullAway.Init")
 public class TridiagonalDecompositionHouseholder_DDRB
         implements TridiagonalSimilarDecomposition_F64<DMatrixRBlock> {
@@ -65,17 +56,14 @@ public class TridiagonalDecompositionHouseholder_DDRB
     protected DMatrixRBlock tmp = new DMatrixRBlock(1, 1);
     protected double[] gammas = new double[1];
 
-    // temporary storage for zeros and ones in U
-    protected DMatrixRMaj zerosM = new DMatrixRMaj(1, 1);
-
     @Override
     public DMatrixRBlock getT( @Nullable DMatrixRBlock T ) {
         if (T == null) {
             T = new DMatrixRBlock(A.numRows, A.numCols, A.blockLength);
         } else {
-            if (T.numRows != A.numRows || T.numCols != A.numCols)
-                throw new IllegalArgumentException("T must have the same dimensions as the input matrix");
-
+            if (T.blockLength != A.blockLength)
+                throw new RuntimeException("Block lengths don't match");
+            T.reshape(A.numRows, A.numCols);
             CommonOps_DDRM.fill(T, 0);
         }
 
@@ -92,7 +80,7 @@ public class TridiagonalDecompositionHouseholder_DDRB
 
     @Override
     public DMatrixRBlock getQ( @Nullable DMatrixRBlock Q, boolean transposed ) {
-        Q = QRDecompositionHouseholder_DDRB.initializeQ(Q, A.numRows, A.numCols, A.blockLength, false);
+        Q = MatrixOps_DDRB.initializeQ(Q, A.numRows, A.numCols, A.blockLength, false);
 
         int height = Math.min(A.blockLength, A.numRows);
         V.reshape(height, A.numCols, false);
@@ -105,11 +93,7 @@ public class TridiagonalDecompositionHouseholder_DDRB
 
         int N = A.numRows;
 
-        int start = N - N%A.blockLength;
-        if (start == N)
-            start -= A.blockLength;
-        if (start < 0)
-            start = 0;
+        int start = MatrixOps_DDRB.lastBlockStart(N, A.blockLength);
 
         // (Q1^T * (Q2^T * (Q3^t * A)))
         for (int i = start; i >= 0; i -= A.blockLength) {
@@ -134,67 +118,26 @@ public class TridiagonalDecompositionHouseholder_DDRB
             subU.row0 = i;
             subU.row1 = subU.row0 + blockSize;
 
-            // zeros and ones are saved and overwritten in U so that standard matrix multiplication can be used
-            copyZeros(subU);
-
-            // compute W for Q(i) = ( I + W*Y^T)
-            TridiagonalHelper_DDRB.computeW_row(A.blockLength, subU, subW, gammas, i);
+            // Compute W for Q(i) = ( I + W*U^T)
+            Householder_DDRB.computeWRow(A.blockLength, subU, subW, gammas, i);
 
             subQ.col0 = i;
             subQ.row0 = i;
 
-            // Apply the Qi to Q
-            // Qi = I + W*U^T
-
-            // Note that U and V are really row vectors. but standard notation assumed they are column vectors.
-            // which is why the functions called don't match the math above
-
-            // (I + W*U^T)*Q
-            // F=U^T*Q(i)
+            // Apply Qi = I + W*U^T to Q. U holds reflectors in its rows with an implicit unit super-diagonal
+            // F = U^T*Q(i)  /  Q(i)*U^T
             if (transposed)
-                MatrixMult_DDRB.multTransB(A.blockLength, subQ, subU, tmp);
+                Householder_DDRB.multTransB_TriUR1(A.blockLength, subQ, subU, tmp);
             else
-                MatrixMult_DDRB.mult(A.blockLength, subU, subQ, tmp);
+                Householder_DDRB.mult_TriUR1(A.blockLength, subU, subQ, tmp);
             // Q(i+1) = Q(i) + W*F
             if (transposed)
                 MatrixMult_DDRB.multPlus(A.blockLength, tmp, subW, subQ);
             else
                 MatrixMult_DDRB.multPlusTransA(A.blockLength, subW, tmp, subQ);
-
-            replaceZeros(subU);
         }
 
         return Q;
-    }
-
-    private void copyZeros( DSubmatrixD1 subU ) {
-        int N = Math.min(A.blockLength, subU.col1 - subU.col0);
-        for (int i = 0; i < N; i++) {
-            // save the zeros
-            for (int j = 0; j <= i; j++) {
-                zerosM.unsafe_set(i, j, subU.get(i, j));
-                subU.set(i, j, 0);
-            }
-            // save the one
-            if (subU.col0 + i + 1 < subU.original.numCols) {
-                zerosM.unsafe_set(i, i + 1, subU.get(i, i + 1));
-                subU.set(i, i + 1, 1);
-            }
-        }
-    }
-
-    private void replaceZeros( DSubmatrixD1 subU ) {
-        int N = Math.min(A.blockLength, subU.col1 - subU.col0);
-        for (int i = 0; i < N; i++) {
-            // save the zeros
-            for (int j = 0; j <= i; j++) {
-                subU.set(i, j, zerosM.get(i, j));
-            }
-            // save the one
-            if (subU.col0 + i + 1 < subU.original.numCols) {
-                subU.set(i, i + 1, zerosM.get(i, i + 1));
-            }
-        }
     }
 
     @Override
@@ -220,7 +163,6 @@ public class TridiagonalDecompositionHouseholder_DDRB
         int N = orig.numCols;
 
         for (int i = 0; i < N; i += A.blockLength) {
-//            System.out.println("-------- triag i "+i);
             int height = Math.min(A.blockLength, A.numRows - i);
 
             subA.col0 = subU.col0 = i;
@@ -242,44 +184,14 @@ public class TridiagonalDecompositionHouseholder_DDRB
                 subU.set(A.blockLength - 1, A.blockLength, 1);
 
                 // A = A + U*V^T + V*U^T
-                multPlusTransA(A.blockLength, subU, subV, subA);
-                multPlusTransA(A.blockLength, subV, subU, subA);
+                Householder_DDRB.multPlusTransA_symm(A.blockLength, subU, subV, subA);
+                Householder_DDRB.multPlusTransA_symm(A.blockLength, subV, subU, subA);
 
                 subU.set(A.blockLength - 1, A.blockLength, before);
             }
         }
 
         return true;
-    }
-
-    /**
-     * C = C + A^T*B
-     *
-     * @param A row block vector
-     * @param B row block vector
-     */
-    public static void multPlusTransA( int blockLength,
-                                       DSubmatrixD1 A, DSubmatrixD1 B,
-                                       DSubmatrixD1 C ) {
-        int heightA = Math.min(blockLength, A.row1 - A.row0);
-
-        //CONCURRENT_BELOW EjmlConcurrency.loopFor(C.row0 + blockLength, C.row1, blockLength, i -> {
-        for (int i = C.row0 + blockLength; i < C.row1; i += blockLength) {
-            int heightC = Math.min(blockLength, C.row1 - i);
-
-            int indexA = A.row0*A.original.numCols + (i - C.row0 + A.col0)*heightA;
-
-            for (int j = i; j < C.col1; j += blockLength) {
-                int widthC = Math.min(blockLength, C.col1 - j);
-
-                int indexC = i*C.original.numCols + j*heightC;
-                int indexB = B.row0*B.original.numCols + (j - C.col0 + B.col0)*heightA;
-
-                blockMultPlusTransA(A.original.data, B.original.data, C.original.data,
-                        indexA, indexB, indexC, heightA, heightC, widthC);
-            }
-        }
-        //CONCURRENT_ABOVE });
     }
 
     private void init( DMatrixRBlock orig ) {
@@ -291,8 +203,6 @@ public class TridiagonalDecompositionHouseholder_DDRB
 
         if (gammas.length < A.numCols)
             gammas = new double[A.numCols];
-
-        zerosM.reshape(A.blockLength, A.blockLength + 1, false);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2017, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -18,6 +18,7 @@
 
 package org.ejml.dense.row.decompose.lu;
 
+import org.ejml.dense.row.decomposition.lu.GeneralLuDecompositionChecks_ZDRM;
 import org.ejml.dense.row.decomposition.lu.LUDecompositionNR_ZDRM;
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -32,20 +32,14 @@ import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-/**
- * @author Peter Abeles
- */
 public class TestMatrixMult_DDRB extends EjmlStandardJUnit {
     private static final int BLOCK_LENGTH = 4;
 
     private static final int numRows = 10;
     private static final int numCols = 13;
 
-    /**
-     * Checks to see if matrix multiplication variants handles submatrices correctly
-     */
-    @Test
-    public void mult_submatrix() {
+    /// Checks to see if matrix multiplication variants handles submatrices correctly
+    @Test void mult_submatrix() {
         Method[] methods = MatrixMult_DDRB.class.getDeclaredMethods();
 
         int numFound = 0;
@@ -70,7 +64,7 @@ public class TestMatrixMult_DDRB extends EjmlStandardJUnit {
         }
 
         // make sure all the functions were in fact tested
-        assertEquals(7, numFound);
+        assertEquals(9, numFound);
     }
 
     private void checkMult_submatrix( Method func, int operationType, boolean transA, boolean transB ) {
@@ -90,10 +84,8 @@ public class TestMatrixMult_DDRB extends EjmlStandardJUnit {
                 sub(0, BLOCK_LENGTH, BLOCK_LENGTH, numRows));
     }
 
-    /**
-     * Multiplies the two sub-matrices together. Checks to see if the same result
-     * is found when multiplied using the normal algorithm versus the submatrix one.
-     */
+    /// Multiplies the two sub-matrices together. Checks to see if the same result
+    /// is found when multiplied using the normal algorithm versus the submatrix one.
     private void checkMult_submatrix( Method func, int operationType, boolean transA, boolean transB,
                                       DSubmatrixD1 A, DSubmatrixD1 B ) {
         if (A.col0%BLOCK_LENGTH != 0 || A.row0%BLOCK_LENGTH != 0)

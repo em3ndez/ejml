@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
 import lombok.Data;
+import org.ejml.MapPrintFormat;
+import org.ejml.MatrixPrintFormat;
+import org.ejml.UtilEjml;
 import org.ejml.ops.ComplexMath_F64;
 
 /**
@@ -62,8 +64,20 @@ public class ComplexPolar_F64 {
         this.theta = src.theta;
     }
 
-    @Override
-    public String toString() {
-        return "( r = " + r + " theta = " + theta + " )";
+    public String format( MatrixPrintFormat format ) {
+        return format.rowPrefix +
+                UtilEjml.fancyString2(r, format.precision, format.decimal) + format.colSeparator +
+                UtilEjml.fancyString2(theta, format.precision, format.decimal) +
+                format.rowSuffix;
     }
+
+    public String format( MapPrintFormat format ) {
+        return format.itemPrefix +
+                "r" + format.valueSeparator + UtilEjml.fancyString2(r, format.precision, format.decimal) +
+                format.pairSeparator +
+                "theta" + format.valueSeparator + UtilEjml.fancyString2(theta, format.precision, format.decimal) +
+                format.itemSuffix;
+    }
+
+    @Override public String toString() {return format(MapPrintFormat.DEFAULT);}
 }

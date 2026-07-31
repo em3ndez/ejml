@@ -26,6 +26,8 @@ import org.ejml.simple.SimpleMatrix;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 import static org.ejml.equation.TokenList.Type;
@@ -1243,15 +1245,20 @@ public class TestEquation extends EjmlStandardJUnit {
         assertNull(t);
     }
 
-    /// Hard to test output for correctness. Basically just checsk to see if it crashes
+    // Checks to see if print prints anything to stdout
     @Test void print() {
-        // Disable unit test
-        System.setOut(super.systemOut);
+        // Print to our own PrintStream so we can inspect the output
+        var baos = new ByteArrayOutputStream();
+        var out = new PrintStream(baos);
+        System.setOut(out);
+
         var eq = new Equation();
         eq.print("[1 2;3 4]");
         eq.process("A=[1 2;3 4;5 6]");
         eq.print("A");
         eq.print("B=5");
+
+        assertTrue(baos.size() > 0);
     }
 
     @Test void isUncountable() {

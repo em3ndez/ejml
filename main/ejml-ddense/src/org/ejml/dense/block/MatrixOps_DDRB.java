@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2026, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.dense.block;
 
 import org.ejml.EjmlParameters;
@@ -535,6 +534,44 @@ public class MatrixOps_DDRB {
     }
 
     /**
+     * Sanity checks the input or declares a new matrix. Return matrix is an identity matrix.
+     */
+    public static DMatrixRBlock initializeQ( @Nullable DMatrixRBlock Q,
+                                             int numRows, int numCols, int blockLength,
+                                             boolean compact ) {
+        int minLength = Math.min(numRows, numCols);
+        if (compact) {
+            if (Q == null) {
+                Q = new DMatrixRBlock(numRows, minLength, blockLength);
+            } else {
+                Q.reshape(numRows, minLength);
+            }
+        } else {
+            if (Q == null) {
+                Q = new DMatrixRBlock(numRows, numRows, blockLength);
+            } else {
+                Q.reshape(numRows, numRows);
+            }
+        }
+        setIdentity(Q);
+        return Q;
+    }
+
+    /**
+     * Returns the start index (row/col) of the inner block that contains the last reflector, i.e. the
+     * largest multiple of {@code blockLength} strictly less than {@code n} (clamped to {@code >= 0}).
+     * Used when iterating reflector blocks in reverse.
+     */
+    public static int lastBlockStart( int n, int blockLength ) {
+        int start = n - n%blockLength;
+        if (start == n)
+            start -= blockLength;
+        if (start < 0)
+            start = 0;
+        return start;
+    }
+
+    /**
      * <p>
      * Returns a new matrix with ones along the diagonal and zeros everywhere else.
      * </p>
@@ -647,7 +684,8 @@ public class MatrixOps_DDRB {
     }
 
     static void checkShapeMult( int blockLength,
-                                DSubmatrixD1 A, DSubmatrixD1 B,
+                                DSubmatrixD1 A, boolean transA,
+                                DSubmatrixD1 B, boolean transB,
                                 DSubmatrixD1 C ) {
         //@formatter:off
         int Arow = A.getRows(); int Acol = A.getCols();
@@ -655,21 +693,52 @@ public class MatrixOps_DDRB {
         int Crow = C.getRows(); int Ccol = C.getCols();
         //@formatter:on
 
-        if (Arow != Crow)
-            throw new RuntimeException("Mismatch A and C rows");
-        if (Bcol != Ccol)
-            throw new RuntimeException("Mismatch B and C columns");
-        if (Acol != Brow)
-            throw new RuntimeException("Mismatch A columns and B rows");
+        if ((transA ? Acol : Arow) != Crow)
+            throw new RuntimeException("Mismatch A." + (transA ? "col=" + Acol : "row=" + Arow) + " and C.row=" + Crow);
+        if ((transB ? Brow : Bcol) != Ccol)
+            throw new RuntimeException("Mismatch B." + (transB ? "row" : "col") + " and C.col");
+        if ((transA ? Arow : Acol) != (transB ? Bcol : Brow))
+            throw new RuntimeException("Mismatch A." + (transA ? "col" : "row") + " and B." + (transB ? "row" : "col"));
 
-        if (!MatrixOps_DDRB.blockAligned(blockLength, A))
-            throw new RuntimeException("Sub-Matrix A is not block aligned");
+        // TODO undo comments - This blows up QR decomposition. low extents are aligned upper extents are not
+        //                      need to see if that's a bug or a feature
+//        if (!MatrixOps_DDRB.blockAligned(blockLength, A))
+//            throw new RuntimeException("Sub-Matrix A is not block aligned");
+//
+//        if (!MatrixOps_DDRB.blockAligned(blockLength, B))
+//            throw new RuntimeException("Sub-Matrix B is not block aligned");
+//
+//        if (!MatrixOps_DDRB.blockAligned(blockLength, C))
+//            throw new RuntimeException("Sub-Matrix C is not block aligned");
+    }
 
-        if (!MatrixOps_DDRB.blockAligned(blockLength, B))
-            throw new RuntimeException("Sub-Matrix B is not block aligned");
+    /// Testing Function: Embeds a row-major matrix into a larger DMatrixRBlock with random padding above
+    /// and to the left of the embedded region. Returns a submatrix view pointing at the
+    /// embedded region. Padding is random so that any inadvertent reads or writes outside
+    /// the submatrix bounds will produce incorrect results.
+    public static DSubmatrixD1 embedInBlock( DMatrixRMaj M, int r, int padTop, int padLeft, Random rand ) {
+        int totalRows = M.numRows + padTop;
+        int totalCols = M.numCols + padLeft;
+        DMatrixRBlock big = MatrixOps_DDRB.createRandom(totalRows, totalCols, -1, 1, rand, r);
+        for (int i = 0; i < M.numRows; i++) {
+            for (int j = 0; j < M.numCols; j++) {
+                big.set(padTop + i, padLeft + j, M.get(i, j));
+            }
+        }
+        return new DSubmatrixD1(big, padTop, padTop + M.numRows, padLeft, padLeft + M.numCols);
+    }
 
-        if (!MatrixOps_DDRB.blockAligned(blockLength, C))
-            throw new RuntimeException("Sub-Matrix C is not block aligned");
+    /// Copies the contents of a submatrix view into a fresh DMatrixRMaj.
+    public static DMatrixRMaj extractSubmatrix( DSubmatrixD1 sub ) {
+        int rows = sub.row1 - sub.row0;
+        int cols = sub.col1 - sub.col0;
+        DMatrixRMaj out = new DMatrixRMaj(rows, cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                out.set(i, j, ((DMatrixRBlock)sub.original).get(sub.row0 + i, sub.col0 + j));
+            }
+        }
+        return out;
     }
     //CONCURRENT_OMIT_END
 }

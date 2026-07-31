@@ -27,7 +27,6 @@ import org.ejml.dense.block.MatrixOps_DDRB;
 import org.ejml.dense.row.CommonOps_DDRM;
 import org.ejml.dense.row.RandomMatrices_DDRM;
 import org.ejml.dense.row.decomposition.hessenberg.TridiagonalDecompositionHouseholderOrig_DDRM;
-import org.ejml.generic.GenericMatrixOps_F64;
 import org.ejml.simple.SimpleMatrix;
 import org.junit.jupiter.api.Test;
 
@@ -84,52 +83,6 @@ public class TestTridiagonalHelper_DDRB extends EjmlStandardJUnit {
     }
 
     @Test
-    public void computeW_row() {
-
-        for( int width = r; width <= 3*r; width++ ) {
-//            System.out.println("width!!!  "+width);
-            double betas[] = new double[ r ];
-            for( int i = 0; i < r; i++ )
-                betas[i] = i + 0.5;
-
-            SimpleMatrix A = SimpleMatrix.random_DDRM(r,width, -1.0 , 1.0 ,rand);
-
-            // Compute W directly using SimpleMatrix
-            SimpleMatrix v = A.extractVector(true,0);
-            v.set(0,0);
-            v.set(1,1);
-            SimpleMatrix Y = v;
-            SimpleMatrix W = v.scale(-betas[0]);
-
-            for( int i = 1; i < A.numRows(); i++ ) {
-                v = A.extractVector(true,i);
-
-                for( int j = 0; j <= i; j++ )
-                    v.set(j,0);
-                if( i+1 < A.numCols())
-                    v.set(i+1,1);
-
-                SimpleMatrix z = v.transpose().plus(W.transpose().mult(Y.mult(v.transpose()))).scale(-betas[i]);
-
-                W = W.combine(i,0,z.transpose());
-                Y = Y.combine(i,0,v);
-            }
-
-            // now compute it using the block matrix stuff
-            DMatrixRBlock Ab = MatrixOps_DDRB.convert(A.getDDRM(),r);
-            DMatrixRBlock Wb = new DMatrixRBlock(Ab.numRows,Ab.numCols,r);
-
-            DSubmatrixD1 Ab_sub = new DSubmatrixD1(Ab);
-            DSubmatrixD1 Wb_sub = new DSubmatrixD1(Wb);
-
-            TridiagonalHelper_DDRB.computeW_row(r, Ab_sub, Wb_sub, betas, 0);
-
-            // see if the result is the same
-            assertTrue(GenericMatrixOps_F64.isEquivalent(Wb,W.getDDRM(),UtilEjml.TEST_F64));
-        }
-    }
-
-    @Test
     public void applyReflectorsToRow() {
 
         // try different offsets to make sure there are no implicit assumptions
@@ -178,7 +131,7 @@ public class TestTridiagonalHelper_DDRB extends EjmlStandardJUnit {
     }
 
     @Test
-    public void multA_u() {
+    public void multSymmRow() {
         SimpleMatrix A = SimpleMatrix.random_DDRM(2*r+2,2*r+2, -1.0 , 1.0 ,rand);
         // make a symmetric so that this mult will work
         A = A.transpose().mult(A);
@@ -196,7 +149,7 @@ public class TestTridiagonalHelper_DDRB extends EjmlStandardJUnit {
 
         SimpleMatrix v = A.mult(u).transpose();
 
-        TridiagonalHelper_DDRB.multA_u(r, new DSubmatrixD1(Ab),
+        TridiagonalHelper_DDRB.multSymmRow(r, new DSubmatrixD1(Ab),
                 new DSubmatrixD1(V), row);
 
         for( int i = row+1; i < A.numCols(); i++ ) {
@@ -208,7 +161,7 @@ public class TestTridiagonalHelper_DDRB extends EjmlStandardJUnit {
      * Check by performing the calculation manually
      */
     @Test
-    public void computeY() {
+    public void computeYRow() {
         SimpleMatrix A = SimpleMatrix.random_DDRM(2*r+2,2*r+2, -1.0 , 1.0 ,rand);
         A = A.transpose().mult(A); // needs to be symmetric to pass
         SimpleMatrix Vo = SimpleMatrix.random_DDRM(r,A.numCols(), -1.0 , 1.0 ,rand);
@@ -252,7 +205,7 @@ public class TestTridiagonalHelper_DDRB extends EjmlStandardJUnit {
             DMatrixRBlock Ab = MatrixOps_DDRB.convert(A.getDDRM(),r);
             DMatrixRBlock Vb = MatrixOps_DDRB.convert(Vo.getDDRM(),r);
 
-            TridiagonalHelper_DDRB.computeY(r, new DSubmatrixD1(Ab), new DSubmatrixD1(Vb), row, gamma);
+            TridiagonalHelper_DDRB.computeYRow(r, new DSubmatrixD1(Ab), new DSubmatrixD1(Vb), row, gamma);
 
             for( int i = row+1; i < A.numCols(); i++ ) {
                 assertEquals(Vb.get(row,i),y.get(i),UtilEjml.TEST_F64);
@@ -261,7 +214,7 @@ public class TestTridiagonalHelper_DDRB extends EjmlStandardJUnit {
     }
 
     @Test
-    public void computeRowOfV() {
+    public void computeVRow() {
         SimpleMatrix A = SimpleMatrix.random_DDRM(2*r+2,2*r+2, -1.0 , 1.0 , rand);
         SimpleMatrix V = SimpleMatrix.random_DDRM(r,A.numCols(), -1.0 , 1.0 , rand);
 
@@ -281,7 +234,7 @@ public class TestTridiagonalHelper_DDRB extends EjmlStandardJUnit {
             DMatrixRBlock Ab = MatrixOps_DDRB.convert(A.getDDRM(),r);
             DMatrixRBlock Vb = MatrixOps_DDRB.convert(V.getDDRM(),r);
 
-            TridiagonalHelper_DDRB.computeRowOfV(r, new DSubmatrixD1(Ab), new DSubmatrixD1(Vb),
+            TridiagonalHelper_DDRB.computeVRow(r, new DSubmatrixD1(Ab), new DSubmatrixD1(Vb),
                     row, gamma);
 
             for( int i = row+1; i < A.numCols(); i++ ) {
